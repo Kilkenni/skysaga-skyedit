@@ -6,22 +6,17 @@ import { clamp } from "../lib/numbers";
 export default function TopBar({
   applyGridResize,
   applyServerEdits,
-  biomeName,
   cameraMode,
   editsInputRef,
   entityInstances,
   exportJson,
   exportJsonCompressed,
   fileInputRef,
-  gameMode,
-  gridX,
-  gridY,
-  gridZ,
+  mapData,
   importJson,
   scheduleSave,
-  setBiomeName,
+  setMapData,
   setCameraMode,
-  setGameMode,
   setShowHelp,
   setViewMode,
   viewMode,
@@ -112,8 +107,8 @@ export default function TopBar({
         {t.mapSize}
         <select
           value={
-            MAP_SIZES.some((s) => mapSizeKey(s.x, s.y, s.z) === mapSizeKey(gridX, gridY, gridZ))
-              ? mapSizeKey(gridX, gridY, gridZ)
+            MAP_SIZES.some((s) => mapSizeKey(s.x, s.y, s.z) === mapSizeKey(mapData.gridX, mapData.gridY, mapData.gridZ))
+              ? mapSizeKey(mapData.gridX, mapData.gridY, mapData.gridZ)
               : "custom"
           }
           onChange={(e) => {
@@ -123,7 +118,7 @@ export default function TopBar({
           style={{
             ...inputStyle,
             width: 130,
-            color: MAP_SIZES.some((s) => mapSizeKey(s.x, s.y, s.z) === mapSizeKey(gridX, gridY, gridZ))
+            color: MAP_SIZES.some((s) => mapSizeKey(s.x, s.y, s.z) === mapSizeKey(mapData.gridX, mapData.gridY, mapData.gridZ))
               ? inputStyle.color
               : "#ffb86b",
           }}
@@ -145,8 +140,8 @@ export default function TopBar({
           type="number"
           min={1}
           max={MAX_CHUNKS.x}
-          value={gridX}
-          onChange={(e) => applyGridResize(clamp(e.target.value, 1, MAX_CHUNKS.x), gridY, gridZ)}
+          value={mapData.gridX}
+          onChange={(e) => applyGridResize(clamp(e.target.value, 1, MAX_CHUNKS.x), mapData.gridY, mapData.gridZ)}
           style={inputStyle}
         />
       </label>
@@ -156,8 +151,8 @@ export default function TopBar({
           type="number"
           min={1}
           max={MAX_CHUNKS.y}
-          value={gridY}
-          onChange={(e) => applyGridResize(gridX, clamp(e.target.value, 1, MAX_CHUNKS.y), gridZ)}
+          value={mapData.gridY}
+          onChange={(e) => applyGridResize(mapData.gridX, clamp(e.target.value, 1, MAX_CHUNKS.y), mapData.gridZ)}
           style={inputStyle}
         />
       </label>
@@ -167,8 +162,8 @@ export default function TopBar({
           type="number"
           min={1}
           max={MAX_CHUNKS.z}
-          value={gridZ}
-          onChange={(e) => applyGridResize(gridX, gridY, clamp(e.target.value, 1, MAX_CHUNKS.z))}
+          value={mapData.gridZ}
+          onChange={(e) => applyGridResize(mapData.gridX, mapData.gridY, clamp(e.target.value, 1, MAX_CHUNKS.z))}
           style={inputStyle}
         />
       </label>
@@ -176,9 +171,9 @@ export default function TopBar({
       <label style={{ fontSize: 12, display: "flex", gap: 4, alignItems: "center" }}>
         {t.biome}
         <select
-          value={biomeName}
+          value={mapData.biomeName}
           onChange={(e) => {
-            setBiomeName(e.target.value);
+            setMapData({...mapData, biomeName: e.target.value})
             scheduleSave();
           }}
           style={{ ...inputStyle, width: 110 }}
@@ -194,9 +189,9 @@ export default function TopBar({
         {t.gameMode}
         <input
           type="number"
-          value={gameMode}
+          value={mapData.gameMode}
           onChange={(e) => {
-            setGameMode(Number(e.target.value));
+            setMapData({...mapData, gameMode: Number(e.target.value)});
             scheduleSave();
           }}
           style={{ ...inputStyle, width: 50 }}

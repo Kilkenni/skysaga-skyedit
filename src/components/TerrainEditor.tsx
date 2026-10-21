@@ -20,53 +20,38 @@ import PresetsPanel from "./PresetsPanel";
 import EntitiesPanel from "./EntitiesPanel";
 import HelpModal from "./HelpModal";
 import StatsModal from "./StatsModal";
-import TopBar from "./TopBar";
+import TopBar from "./TopBar.tsx";
 import PaletteSidebar from "./PaletteSidebar";
 import ToolbarRow from "./ToolbarRow";
 import LayerNav from "./LayerNav";
 import { VoxelCell, VoxelStore, VoxelStoreEvent } from "../VoxelStore";
+import {storage } from "../operations/persistence";
+import {usePalette} from "../hooks/usePalette.ts"
 
 
-/* LocalStorage temp */
-
-const ns = (shared) => (shared ? "shared:" : "personal:");
-const localStorage = {
-  async get(key, shared) {
-    const raw = window.localStorage.getItem(ns(shared) + key);
-    if (raw === null) throw new Error("key not found: " + key);
-    return { key, value: raw, shared: !!shared };
-  },
-  async set(key, value, shared) {
-    window.localStorage.setItem(ns(shared) + key, value);
-    return { key, value, shared: !!shared };
-  },
-  async delete(key, shared) {
-    window.localStorage.removeItem(ns(shared) + key);
-    return { key, deleted: true, shared: !!shared };
-  },
-  async list(prefix, shared) {
-    const full = ns(shared) + (prefix || "");
-    const keys:any[] = [];
-    for (let i = 0; i < window.localStorage.length; i++) {
-      const k = window.localStorage.key(i);
-      if (k && k.startsWith(full)) keys.push(k.slice(ns(shared).length));
-    }
-    return { keys, prefix, shared: !!shared };
-  },
-};
+export interface MapData {
+  gridX: number,
+  gridY: number,
+  gridZ: number,
+  biomeName: string,
+  gameMode: number
+}
 
 export default function TerrainEditor() {
-  const [gridX, setGridX] = useState(6);
-  const [gridY, setGridY] = useState(4);
-  const [gridZ, setGridZ] = useState(6);
   // FIXED (2026-08-21): "Sky_Island" does not exist in Alpha v10 36731's
   // GeoData.json (confirmed via direct search - zero matches). Real biomes
   // for this build: Desert, Forest, Jungle, Mountain, NPCfriend. Using
   // "Forest" as the default since that's what the server currently sends,
   // but this is just a free-text field - change it to whichever real biome
   // name you want per-map.
-  const [biomeName, setBiomeName] = useState("Forest");
-  const [gameMode, setGameMode] = useState(1);
+  const [mapData, setMapData] = useState<MapData>({
+    gridX: 6,
+    gridY: 4,
+    gridZ: 6,
+    biomeName: "Forest",
+    gameMode: 1,
+  });
+
   const [currentLayer, setCurrentLayer] = useState(0);
   const [zoom, setZoom] = useState(1);
   const zoomRef = useRef(1);
@@ -83,20 +68,20 @@ export default function TerrainEditor() {
   const [onionSkin, setOnionSkin] = useState(false);
   const [onionRange, setOnionRange] = useState(1);
   const [mirrorZ, setMirrorZ] = useState(false);
-  const [selectedBlock, setSelectedBlock] = useState(1);
-  const [hotbar, setHotbar] = useState(() => {
-    const slots = new Array(10).fill(null);
-    const ids = DEFAULT_PALETTE.filter((id) => id !== 0);
-    for (let i = 0; i < 10 && i < ids.length; i++) slots[i] = ids[i];
-    return slots;
-  });
-  const [hotbarIndex, setHotbarIndex] = useState(0);
-  const hotbarRef = useRef(hotbar);
-  const hotbarIndexRef = useRef(0);
-  const [palette, setPalette] = useState(
-    DEFAULT_PALETTE.map((id) => ({ id, label: BLOCK_NAMES[id] || "Block " + id }))
-  );
-  const [customIdInput, setCustomIdInput] = useState("");
+
+  const paletteObj = usePalette({ onChange: scheduleSave })
+  const { selectedBlock,
+    selectedBlockRef,
+    hotbar,
+    setHotbar,
+    hotbarRef,
+    hotbarIndex,
+    palette,
+    setPalette,
+    assignHotbarSlot,
+    selectHotbarSlot,
+  } = paletteObj;
+  
   const [hoverCell, setHoverCell] = useState<any>(null);
   const [voxelCount, setVoxelCount] = useState(0);
   const [status, setStatus] = useState("");
@@ -217,11 +202,10 @@ export default function TerrainEditor() {
   // Search filter for the block palette - needed once BLOCK_NAMES grew from
   // 48 (Alpha 3-era stub table) to the real 146-entry Alpha v10 36731 list;
   // an unfiltered flat scroll of 146 rows was unusable.
-  const [blockSearchQuery, setBlockSearchQuery] = useState("");
   const entityMarkersGroupRef = useRef<any>(null);
 
   const [viewMode, setViewMode] = useState("3d");
-  const [cameraMode, setCameraMode] = useState("fly");
+  const [cameraMode, setCameraMode] = useState("orbit"); // orbit or fly
   const [isLocked, setIsLocked] = useState(false);
   const [pointerLockFailed, setPointerLockFailed] = useState(false);
   const [moveSpeed, setMoveSpeed] = useState(16);
@@ -231,15 +215,20 @@ export default function TerrainEditor() {
   // const voxelsRef = useRef(new Map<string, any>());
   const [terrain, _] = useState<VoxelStore>(() => new VoxelStore);
   const onStoreEventRef = useRef<(e: VoxelStoreEvent) => void>(() => {});
+  const BULK_REBUILD_THRESHOLD = 100; // tune by feel
   onStoreEventRef.current = (event) => {
     // fresh closure every render, so it can use state, draw(), etc.
     setVoxelCount(terrain.size);
     scheduleSave();
-    if (event.type === "reset") { 
-      /* rebuild 3D + draw() */ 
-    }
-    else { 
-      /* for each change: syncVoxel3D(...) ; then draw() once */ 
+
+    if (viewModeRef.current === "3d" && threeRef.current.scene) {
+      if (event.type === "reset" || event.changes.length > BULK_REBUILD_THRESHOLD) { // for large changes, rebuild entirely
+        rebuildInstances();
+      }
+      else { 
+        for(const change of event.changes) //for small, apply incrementally
+          syncVoxel3D(change.x, change.y, change.z, change.prevBlock, change.newBlock);
+      }
     }
     draw();
   };
@@ -254,15 +243,15 @@ export default function TerrainEditor() {
   const isDrawingRef = useRef(false);
   const rectStartRef = useRef<any>(null);
   const previewRectRef = useRef<any>(null);
-  const strokeChangesRef = useRef<any[]>([]);
-  const touchedInStrokeRef = useRef(new Map());
+  // const strokeChangesRef = useRef<any[]>([]);
+  // const touchedInStrokeRef = useRef(new Map());
   const saveTimerRef = useRef<any>(null);
   const fileInputRef = useRef<any>(null);
   const canvas3dRef = useRef<any>(null);
   const toolRef = useRef(tool);
-  const selectedBlockRef = useRef(selectedBlock);
+  
   const dimsRef = useRef({ width: 0, depth: 0, totalHeight: 0 });
-  const paletteRef = useRef(palette);
+  
   const cameraModeRef = useRef(cameraMode);
   const moveSpeedRef = useRef(moveSpeed);
 
@@ -328,9 +317,9 @@ export default function TerrainEditor() {
     leftDown: false,
   });
 
-  const width = gridX * CHUNK;
-  const depth = gridZ * CHUNK;
-  const totalHeight = gridY * CHUNK;
+  const width = mapData.gridX * CHUNK;
+  const depth = mapData.gridZ * CHUNK;
+  const totalHeight = mapData.gridY * CHUNK;
   const cell = CELL_BASE * zoom;
 
   useEffect(() => {
@@ -344,21 +333,11 @@ export default function TerrainEditor() {
       setCopyYTo(currentLayer);
     }
   }, [tool]);
-  useEffect(() => {
-    selectedBlockRef.current = selectedBlock;
-  }, [selectedBlock]);
-  useEffect(() => {
-    hotbarRef.current = hotbar;
-  }, [hotbar]);
-  useEffect(() => {
-    hotbarIndexRef.current = hotbarIndex;
-  }, [hotbarIndex]);
+  
   useEffect(() => {
     dimsRef.current = { width, depth, totalHeight };
   }, [width, depth, totalHeight]);
-  useEffect(() => {
-    paletteRef.current = palette;
-  }, [palette]);
+
   useEffect(() => {
     placingStructureRef.current = placingStructureId;
   }, [placingStructureId]);
@@ -402,14 +381,13 @@ export default function TerrainEditor() {
     if (viewMode === "3d" && threeRef.current.renderer) {
       rebuildInstances();
     }
-    // eslint-disable-next-line
   }, [width, depth, totalHeight]);
 
   // ---- persistence: load on mount ----
   useEffect(() => {
     (async () => {
       try {
-        const result = await localStorage.get(STORAGE_KEY, false);
+        const result = await storage.get(STORAGE_KEY);
         if (result && result.value) {
           const data = JSON.parse(result.value);
           applyLoadedData(data);
@@ -421,7 +399,7 @@ export default function TerrainEditor() {
         // no saved state yet, that's fine
       }
       try {
-        const texResult = await localStorage.get(TEXTURES_STORAGE_KEY, false);
+        const texResult = await storage.get(TEXTURES_STORAGE_KEY);
         if (texResult && texResult.value) {
           const obj = JSON.parse(texResult.value);
           for (const k of Object.keys(obj)) {
@@ -439,10 +417,11 @@ export default function TerrainEditor() {
         // no saved textures yet, that's fine
       }
       try {
-        const structResult = await localStorage.get(STRUCTURES_STORAGE_KEY, false);
+        const structResult = await storage.get(STRUCTURES_STORAGE_KEY);
         if (structResult && structResult.value) {
           const arr = JSON.parse(structResult.value);
-          if (Array.isArray(arr)) setStructures(arr);
+          if (Array.isArray(arr))
+            setStructures(arr);
         }
       } catch (e) {
         // no saved structures yet, that's fine
@@ -454,15 +433,54 @@ export default function TerrainEditor() {
     // eslint-disable-next-line
   }, []);
 
+  interface ExchangeData {
+  mapSizeChunks: { x:number, y:number, z:number },
+  biomeName: string,
+  gameMode: number,
+  voxels: VoxelCell[],
+  entities:{
+    name,
+    x, y, z,
+    items?
+  }[],
+  paletteLabels?:{
+    id:number, 
+    label:string
+  }[],
+  hotbar?,
+  cameraMode?: string,
+}
+
+// ---- export / import ----
+function buildExportData(terrainVoxels:VoxelCell[], entities: any[], mapData: MapData):ExchangeData {
+  const voxels:VoxelCell[] = [];
+  for (const voxel of terrainVoxels) {
+    voxels.push({...voxel});
+  }
+  return {
+    mapSizeChunks: { x: mapData.gridX, y: mapData.gridY, z: mapData.gridZ },
+    biomeName: mapData.biomeName,
+    gameMode: mapData.gameMode,
+    voxels: voxels,
+    entities: entities.map((entity) => {
+      return entity.items && entity.items.length
+        ? { name: entity.name, x: entity.x, y: entity.y, z: entity.z, items: entity.items }
+        : { name: entity.name, x: entity.x, y: entity.y, z: entity.z }
+    }),
+  };
+}
+
   function applyLoadedData(data:ExchangeData) {
+    const newMapData:MapData = {...mapData};
     if (data.mapSizeChunks) {
-      setGridX(clamp(data.mapSizeChunks.x, 1, MAX_CHUNKS.x));
-      setGridY(clamp(data.mapSizeChunks.y, 1, MAX_CHUNKS.y));
-      setGridZ(clamp(data.mapSizeChunks.z, 1, MAX_CHUNKS.z));
+        newMapData.gridX = clamp(data.mapSizeChunks.x, 1, MAX_CHUNKS.x);
+        newMapData.gridY = clamp(data.mapSizeChunks.y, 1, MAX_CHUNKS.y);
+        newMapData.gridZ = clamp(data.mapSizeChunks.z, 1, MAX_CHUNKS.z);
     }
-    if (data.biomeName) setBiomeName(data.biomeName);
+    if (data.biomeName) 
+      newMapData.biomeName = data.biomeName;
     if (typeof data.gameMode === "number") 
-      setGameMode(data.gameMode);
+      newMapData.gameMode = data.gameMode;
     if (Array.isArray(data.paletteLabels)) {
       setPalette(
         data.paletteLabels.map((p) => (BLOCK_NAMES[p.id] ? { ...p, label: BLOCK_NAMES[p.id] } : p))
@@ -498,11 +516,11 @@ export default function TerrainEditor() {
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     saveTimerRef.current = setTimeout(async () => {
       try {
-        const data = buildExportData();
+        const data = buildExportData(Array.from(terrain.cells()), entityInstancesRef.current, mapData);
         data.paletteLabels = palette;
         data.hotbar = hotbarRef.current;
         data.cameraMode = cameraMode;
-        await localStorage.set(STORAGE_KEY, JSON.stringify(data), false);
+        await storage.set(STORAGE_KEY, JSON.stringify(data));
         setStatus(STRINGS.en.savedAt(new Date().toLocaleTimeString()));
       } catch (e) {
         setStatus(STRINGS.en.saveError);
@@ -515,7 +533,7 @@ export default function TerrainEditor() {
     try {
       const obj = {};
       for (const [id, url] of texturesRef.current) obj[id] = url;
-      await localStorage.set(TEXTURES_STORAGE_KEY, JSON.stringify(obj), false);
+      await storage.set(TEXTURES_STORAGE_KEY, JSON.stringify(obj));
     } catch (e) {
       // ignore, non-critical
     }
@@ -533,7 +551,8 @@ export default function TerrainEditor() {
       textureImg2DRef.current.set(blockId, img);
       textureThreeCacheRef.current.delete(blockId);
       setTextureVersion((v) => v + 1);
-      if (viewMode === "3d") rebuildInstances();
+      if (viewMode === "3d") 
+        rebuildInstances();
       saveTextures();
     };
     reader.readAsDataURL(file);
@@ -606,7 +625,8 @@ export default function TerrainEditor() {
       textureThreeCacheRef.current.delete(row.id);
     }
     setTextureVersion((v) => v + 1);
-    if (viewMode === "3d") rebuildInstances();
+    if (viewMode === "3d")
+      rebuildInstances();
     await saveTextures();
     setStatus(STRINGS.en.bulkTexturesApplied(rows.length));
     bulkTextureRows.forEach((r) => URL.revokeObjectURL(r.previewUrl));
@@ -633,7 +653,7 @@ export default function TerrainEditor() {
   // ---- structures library ----
   async function saveStructures(list) {
     try {
-      await localStorage.set(STRUCTURES_STORAGE_KEY, JSON.stringify(list), false);
+      await storage.set(STRUCTURES_STORAGE_KEY, JSON.stringify(list));
     } catch (e) {
       // ignore, non-critical
     }
@@ -646,7 +666,8 @@ export default function TerrainEditor() {
       reader.onload = () => {
         try {
           const data = JSON.parse(reader.result?.toString() || "");
-          if (!Array.isArray(data.voxels)) return;
+          if (!Array.isArray(data.voxels))
+            return;
           const sizeX = data.sizeX || 1;
           const sizeY = data.sizeY || 1;
           const sizeZ = data.sizeZ || 1;
@@ -708,11 +729,8 @@ export default function TerrainEditor() {
       const oldEntry = terrain.get(wx, wy, wz);
       const oldBlock = oldEntry ? oldEntry.block : AIR;
       setVoxel(wx, wy, wz, v.block, v.meta || 0, true);
-      if (viewModeRef.current === "3d")
-        syncVoxel3D(wx, wy, wz, oldBlock, v.block);
     }
     commitStroke();
-    // draw();
   }
 
   // ---- entity placement (not voxels - separate marker list) ----
@@ -784,10 +802,6 @@ export default function TerrainEditor() {
           n++;
         }
         commitStroke();
-
-        if (viewModeRef.current === "3d")
-          rebuildInstances();
-        // draw();
 
         setStatus(STRINGS.en.editsApplied(n));
       } catch (err) {
@@ -932,14 +946,6 @@ export default function TerrainEditor() {
     terrain.commit();
   }
 
-  function undo() {
-    terrain.undo();
-  }
-
-  function redo() {
-    terrain.redo();
-  }
-
   // ---- mirror painting ----
   function setVoxelMirrored(x, y, z, block, meta, record) {
     setVoxel(x, y, z, block, meta, record);
@@ -1001,8 +1007,6 @@ export default function TerrainEditor() {
       setVoxelMirrored(x, y, z, c.block, c.meta, true);
     }
     commitStroke();
-    // draw();
-    if (viewMode === "3d") rebuildInstances();
   }
 
   // ---- road / path tool ----
@@ -1035,13 +1039,10 @@ export default function TerrainEditor() {
           const oldEntry = terrain.get(wx, sy, wz);
           const oldBlock = oldEntry ? oldEntry.block : AIR;
           setVoxel(wx, sy, wz, pathBlock, 0, true);
-          // if (viewModeRef.current === "3d")
-          //   syncVoxel3D(wx, sy, wz, oldBlock, pathBlock);
         }
       }
     }
     commitStroke();
-    // draw();
   }
 
   function randomizeAllParams() {
@@ -1686,9 +1687,8 @@ export default function TerrainEditor() {
     }
 
     commitStroke();
-    // draw();
+
     setStatus(STRINGS.en.generatedSeed(seedVal));
-    if (viewMode === "3d") rebuildInstances();
 
     lastHeightMapRef.current = {
       width,
@@ -1796,8 +1796,7 @@ export default function TerrainEditor() {
       }
     }
     commitStroke();
-    // draw();
-    if (viewMode === "3d") rebuildInstances();
+
     setStatus(STRINGS.en.regenDone);
   }
 
@@ -1875,8 +1874,7 @@ export default function TerrainEditor() {
       }
     }
     commitStroke();
-    // draw();
-    if (viewMode === "3d") rebuildInstances();
+
     setStatus(STRINGS.en.regenDone);
   }
 
@@ -1949,8 +1947,7 @@ export default function TerrainEditor() {
       }
     }
     commitStroke();
-    // draw();
-    if (viewMode === "3d") rebuildInstances();
+
     setStatus(STRINGS.en.regenDone);
   }
 
@@ -2227,7 +2224,8 @@ export default function TerrainEditor() {
     if (blockId === AIR) return;
     let g = getOrCreateGroup(blockId);
     const key = keyOf(x, y, z);
-    if (g.indexMap.has(key)) return;
+    if (g.indexMap.has(key))
+      return;
     if (g.count >= g.capacity) {
       growGroup(blockId);
       g = threeRef.current.groups.get(blockId);
@@ -2384,7 +2382,6 @@ export default function TerrainEditor() {
       return;
     }
 
-    // const oldEntry = voxelsRef.current.get(keyOf(cx, cy, cz));
     const oldEntry = terrain.get(cx,cy,cz);
     const oldBlock = oldEntry ? oldEntry.block : AIR;
     const newBlock = isErase ? AIR : selectedBlockRef.current;
@@ -3173,42 +3170,44 @@ export default function TerrainEditor() {
   }
 
   useEffect(() => {
-    function onKey(e) {
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") {
-        e.preventDefault();
-        if (e.shiftKey) redo();
-        else undo();
+    function onKey(event) {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "z") {
+        event.preventDefault();
+        if (event.shiftKey) 
+          terrain.redo();
+        else 
+          terrain.undo();
         return;
       }
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "y") {
-        e.preventDefault();
-        redo();
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "y") {
+        event.preventDefault();
+        terrain.redo();
         return;
       }
       if (placingEntityRef.current) {
-        if (e.key === "Escape") {
-          e.preventDefault();
+        if (event.key === "Escape") {
+          event.preventDefault();
           setPlacingEntityName(null);
         }
         return;
       }
       if (placingStructureRef.current) {
-        const tag = e.target && e.target.tagName;
+        const tag = event.target && event.target.tagName;
         if (tag === "INPUT" || tag === "TEXTAREA") return;
-        if (e.key.toLowerCase() === "r") {
-          e.preventDefault();
+        if (event.key.toLowerCase() === "r") {
+          event.preventDefault();
           setPlacingRotation((r) => (r + 1) % 4);
-        } else if (e.key === "Escape") {
-          e.preventDefault();
+        } else if (event.key === "Escape") {
+          event.preventDefault();
           setPlacingStructureId(null);
         }
         return;
       }
-      if (/^[0-9]$/.test(e.key)) {
-        const tag = e.target && e.target.tagName;
+      if (/^[0-9]$/.test(event.key)) {
+        const tag = event.target && event.target.tagName;
         if (tag === "INPUT" || tag === "TEXTAREA") return;
-        const slot = e.key === "0" ? 9 : Number(e.key) - 1;
-        e.preventDefault();
+        const slot = event.key === "0" ? 9 : Number(event.key) - 1;
+        event.preventDefault();
         selectHotbarSlot(slot);
       }
     }
@@ -3230,42 +3229,16 @@ export default function TerrainEditor() {
     });
     terrain.clearHistory();
 
-    setGridX(nx);
-    setGridY(ny);
-    setGridZ(nz);
+    setMapData({...mapData, 
+      gridX: nx,
+      gridY: ny,
+      gridZ: nz,
+    })
     if (currentLayer >= newH) 
       setCurrentLayer(newH - 1);
   }
 
-  interface ExchangeData {
-    mapSizeChunks: { x, y, z },
-    biomeName,
-    gameMode,
-    voxels: VoxelCell[],
-    entities:any[],
-    paletteLabels?,
-    hotbar?,
-    cameraMode?
-  }
-
-  // ---- export / import ----
-  function buildExportData():ExchangeData {
-    const voxels:{x,y,z,block,meta}[] = [];
-    for (const voxel of Array.from(terrain.cells())) {
-      voxels.push({...voxel});
-    }
-    return {
-      mapSizeChunks: { x: gridX, y: gridY, z: gridZ },
-      biomeName: biomeName,
-      gameMode: gameMode,
-      voxels: voxels,
-      entities: entityInstancesRef.current.map((e) =>
-        e.items && e.items.length
-          ? { name: e.name, x: e.x, y: e.y, z: e.z, items: e.items }
-          : { name: e.name, x: e.x, y: e.y, z: e.z }
-      ),
-    };
-  }
+  
 
   function ensureAirship() {
     if (entityInstancesRef.current.some((e) => e.name === "Airship")) return true;
@@ -3302,7 +3275,7 @@ export default function TerrainEditor() {
 
   function exportJson() {
     if (!ensureAirship()) return;
-    const data = buildExportData();
+    const data = buildExportData(Array.from(terrain.cells()), entityInstancesRef.current, mapData);
     const blob = new Blob([JSON.stringify(data, null, 2)], {
       type: "application/json",
     });
@@ -3323,7 +3296,7 @@ export default function TerrainEditor() {
       return;
     }
     if (!ensureAirship()) return;
-    const data = buildExportData();
+    const data = buildExportData(Array.from(terrain.cells()), entityInstancesRef.current, mapData);
     const json = JSON.stringify(data);
     const rawBlob = new Blob([json], { type: "application/json" });
     const cs = new CompressionStream("gzip");
@@ -3344,7 +3317,7 @@ export default function TerrainEditor() {
   // ---- named save slots ----
   async function refreshSaveSlots() {
     try {
-      const res = await localStorage.list("terrain-editor-slot:", false);
+      const res = await storage.list("terrain-editor-slot:");
       const names = (res && res.keys ? res.keys : []).map((k) =>
         k.slice("terrain-editor-slot:".length)
       );
@@ -3357,10 +3330,10 @@ export default function TerrainEditor() {
   async function saveNamedSlot(name) {
     const trimmed = (name || "").trim();
     if (!trimmed) return;
-    const data = buildExportData();
+    const data = buildExportData(Array.from(terrain.cells()), entityInstancesRef.current, mapData);
     data.paletteLabels = palette;
     try {
-      await localStorage.set("terrain-editor-slot:" + trimmed, JSON.stringify(data), false);
+      await storage.set("terrain-editor-slot:" + trimmed, JSON.stringify(data));
       await refreshSaveSlots();
       setStatus(STRINGS.en.slotSaved(trimmed));
     } catch (e) {
@@ -3370,13 +3343,11 @@ export default function TerrainEditor() {
 
   async function loadNamedSlot(name) {
     try {
-      const res = await localStorage.get("terrain-editor-slot:" + name, false);
+      const res = await storage.get("terrain-editor-slot:" + name);
       if (res && res.value) {
         const data = JSON.parse(res.value);
         applyLoadedData(data);
-        // draw();
-        if (viewMode === "3d")
-          rebuildInstances();
+
         setStatus(STRINGS.en.slotLoaded(name));
       }
     } catch (e) {
@@ -3386,7 +3357,7 @@ export default function TerrainEditor() {
 
   async function deleteNamedSlot(name) {
     try {
-      await localStorage.delete("terrain-editor-slot:" + name, false);
+      await storage.delete("terrain-editor-slot:" + name);
       await refreshSaveSlots();
     } catch (e) {
       // ignore
@@ -3548,7 +3519,7 @@ export default function TerrainEditor() {
 
   async function refreshPresets() {
     try {
-      const res = await localStorage.list("terrain-editor-preset:", false);
+      const res = await storage.list("terrain-editor-preset:");
       const names = (res && res.keys ? res.keys : []).map((k) =>
         k.slice("terrain-editor-preset:".length)
       );
@@ -3562,10 +3533,9 @@ export default function TerrainEditor() {
     const trimmed = (name || "").trim();
     if (!trimmed) return;
     try {
-      await localStorage.set(
+      await storage.set(
         "terrain-editor-preset:" + trimmed,
         JSON.stringify(getGeneratorParams()),
-        false
       );
       await refreshPresets();
       setStatus(STRINGS.en.presetSaved(trimmed));
@@ -3576,7 +3546,7 @@ export default function TerrainEditor() {
 
   async function loadPreset(name) {
     try {
-      const res = await localStorage.get("terrain-editor-preset:" + name, false);
+      const res = await storage.get("terrain-editor-preset:" + name);
       if (res && res.value) {
         applyGeneratorParams(JSON.parse(res.value));
         setStatus(STRINGS.en.presetLoaded(name));
@@ -3588,7 +3558,7 @@ export default function TerrainEditor() {
 
   async function deletePreset(name) {
     try {
-      await localStorage.delete("terrain-editor-preset:" + name, false);
+      await storage.delete("terrain-editor-preset:" + name);
       await refreshPresets();
     } catch (e) {
       // ignore
@@ -3623,10 +3593,8 @@ export default function TerrainEditor() {
       try {
         const data = JSON.parse(reader.result?.toString() || "");
         applyLoadedData(data);
-        // draw();
+
         setStatus(STRINGS.en.importedFrom(file.name));
-        if (viewMode === "3d")
-          rebuildInstances();
       } catch (err ) {
         setStatus(STRINGS.en.importError((err as Error).message));
       }
@@ -3635,47 +3603,7 @@ export default function TerrainEditor() {
     e.target.value = "";
   }
 
-  // ---- hotbar ----
-  function selectHotbarSlot(i) {
-    setHotbarIndex(i);
-    const id = hotbarRef.current[i];
-    if (id) setSelectedBlock(id);
-  }
-
-  function assignHotbarSlot(i, blockId) {
-    setHotbar((prev) => {
-      const next = [...prev];
-      next[i] = blockId;
-      return next;
-    });
-    scheduleSave();
-  }
-
-  function cycleHotbar(direction) {
-    const st = hotbarRef;
-    let idx = hotbarIndexRef.current;
-    for (let i = 0; i < 10; i++) {
-      idx = (idx + direction + 10) % 10;
-      if (st.current[idx]) break;
-    }
-    setHotbarIndex(idx);
-    if (st.current[idx]) setSelectedBlock(st.current[idx]);
-  }
-
-  function addCustomBlock() {
-    const id = clamp(customIdInput, 1, 255);
-    if (!id) return;
-    if (!palette.find((p) => p.id === id)) {
-      setPalette([...palette, { id, label: BLOCK_NAMES[id] || "Block " + id }]);
-    }
-    setSelectedBlock(id);
-    setCustomIdInput("");
-  }
-
-  function renamePaletteEntry(id, label) {
-    if (BLOCK_NAMES[id]) return; // real block names are locked, not user-editable
-    setPalette(palette.map((p) => (p.id === id ? { ...p, label } : p)));
-  }
+  
 
   const chunkY = Math.floor(currentLayer / CHUNK);
   const localY = currentLayer % CHUNK;
@@ -3775,22 +3703,17 @@ export default function TerrainEditor() {
       <TopBar
         applyGridResize={applyGridResize}
         applyServerEdits={applyServerEdits}
-        biomeName={biomeName}
         cameraMode={cameraMode}
         editsInputRef={editsInputRef}
         entityInstances={entityInstances}
         exportJson={exportJson}
         exportJsonCompressed={exportJsonCompressed}
         fileInputRef={fileInputRef}
-        gameMode={gameMode}
-        gridX={gridX}
-        gridY={gridY}
-        gridZ={gridZ}
+        mapData={mapData}
         importJson={importJson}
         scheduleSave={scheduleSave}
-        setBiomeName={setBiomeName}
+        setMapData={setMapData}
         setCameraMode={setCameraMode}
-        setGameMode={setGameMode}
         setShowHelp={setShowHelp}
         setViewMode={setViewMode}
         viewMode={viewMode}
@@ -3798,17 +3721,9 @@ export default function TerrainEditor() {
 
       <div style={{ display: "flex", flex: 1, minHeight: 0 }}>
         <PaletteSidebar
-          addCustomBlock={addCustomBlock}
-          blockSearchQuery={blockSearchQuery}
+          paletteObj={paletteObj}
           clearTexture={clearTexture}
-          customIdInput={customIdInput}
           handleTextureFile={handleTextureFile}
-          palette={palette}
-          renamePaletteEntry={renamePaletteEntry}
-          selectedBlock={selectedBlock}
-          setBlockSearchQuery={setBlockSearchQuery}
-          setCustomIdInput={setCustomIdInput}
-          setSelectedBlock={setSelectedBlock}
           setTextureTargetId={setTextureTargetId}
           textureFileInputRef={textureFileInputRef}
           textureTargetId={textureTargetId}
@@ -3831,7 +3746,7 @@ export default function TerrainEditor() {
             moveSpeed={moveSpeed}
             onionRange={onionRange}
             onionSkin={onionSkin}
-            redo={redo}
+            redo={()=> terrain.redo()}
             resetCameraView={resetCameraView}
             roadBlock={roadBlock}
             roadWidth={roadWidth}
@@ -3860,7 +3775,7 @@ export default function TerrainEditor() {
             tool={tool}
             toolBtn={toolBtn}
             totalHeight={totalHeight}
-            undo={undo}
+            undo={()=>terrain.undo()}
             viewMode={viewMode}
             zoom={zoom}
             zoomRef={zoomRef}
@@ -4288,7 +4203,7 @@ export default function TerrainEditor() {
           <LayerNav
             chunkY={chunkY}
             currentLayer={currentLayer}
-            gridY={gridY}
+            gridY={mapData.gridY}
             localY={localY}
             setCurrentLayer={setCurrentLayer}
             totalHeight={totalHeight}

@@ -2,25 +2,29 @@ import { STRINGS } from "../i18n/strings";
 import { inputStyle, actionBtn } from "../styles/inline";
 import { colorForId } from "../lib/colors";
 import { BLOCK_NAMES } from "../constants";
+import { useState } from "react";
 
 export default function PaletteSidebar({
-  addCustomBlock,
-  blockSearchQuery,
+  paletteObj,
   clearTexture,
-  customIdInput,
   handleTextureFile,
-  palette,
-  renamePaletteEntry,
-  selectedBlock,
-  setBlockSearchQuery,
-  setCustomIdInput,
-  setSelectedBlock,
   setTextureTargetId,
   textureFileInputRef,
   textureTargetId,
   textureVersion,
   texturesRef,
 }) {
+  const {
+    addCustomBlock,
+    customIdInput,
+    palette,
+    renamePaletteEntry,
+    selectedBlock,
+    setCustomIdInput,
+    setSelectedBlock,
+  } = paletteObj;
+  const [blockSearchQuery, setBlockSearchQuery] = useState("");
+
   const t = STRINGS.en;
   return (
     <div
