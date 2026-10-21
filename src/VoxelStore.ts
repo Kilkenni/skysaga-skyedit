@@ -225,8 +225,7 @@ export class VoxelStore {
     for (const c of cells) {
       if (c.block !== AIR) this.#map.set(keyOf(c.x, c.y, c.z), { block: c.block, meta: c.meta ?? 0 });
     }
-    this.#undo = [];
-    this.#redo = [];
+    this.clearHistory();
     this.#pending = [];
     this.#emit({ type: "reset" });
   }

@@ -24,7 +24,7 @@ import TopBar from "./TopBar";
 import PaletteSidebar from "./PaletteSidebar";
 import ToolbarRow from "./ToolbarRow";
 import LayerNav from "./LayerNav";
-import { Voxel, VoxelCell, VoxelStore } from "../VoxelStore";
+import { VoxelCell, VoxelStore, VoxelStoreEvent } from "../VoxelStore";
 
 
 /* LocalStorage temp */
@@ -230,6 +230,24 @@ export default function TerrainEditor() {
 
   // const voxelsRef = useRef(new Map<string, any>());
   const [terrain, _] = useState<VoxelStore>(() => new VoxelStore);
+  const onStoreEventRef = useRef<(e: VoxelStoreEvent) => void>(() => {});
+  onStoreEventRef.current = (event) => {
+    // fresh closure every render, so it can use state, draw(), etc.
+    setVoxelCount(terrain.size);
+    scheduleSave();
+    if (event.type === "reset") { 
+      /* rebuild 3D + draw() */ 
+    }
+    else { 
+      /* for each change: syncVoxel3D(...) ; then draw() once */ 
+    }
+    draw();
+  };
+
+  useEffect(() => {
+    return terrain.subscribe((e) => onStoreEventRef.current(e)); // cleanup - unsubscribe
+  }, [terrain]);
+
   const canvasRef = useRef<any>(null);
   const containerRef = useRef<any>(null);
   const editsInputRef = useRef<any>(null);
@@ -238,8 +256,6 @@ export default function TerrainEditor() {
   const previewRectRef = useRef<any>(null);
   const strokeChangesRef = useRef<any[]>([]);
   const touchedInStrokeRef = useRef(new Map());
-  const undoStackRef = useRef<any[]>([]);
-  const redoStackRef = useRef<any[]>([]);
   const saveTimerRef = useRef<any>(null);
   const fileInputRef = useRef<any>(null);
   const canvas3dRef = useRef<any>(null);
@@ -438,14 +454,15 @@ export default function TerrainEditor() {
     // eslint-disable-next-line
   }, []);
 
-  function applyLoadedData(data) {
+  function applyLoadedData(data:ExchangeData) {
     if (data.mapSizeChunks) {
       setGridX(clamp(data.mapSizeChunks.x, 1, MAX_CHUNKS.x));
       setGridY(clamp(data.mapSizeChunks.y, 1, MAX_CHUNKS.y));
       setGridZ(clamp(data.mapSizeChunks.z, 1, MAX_CHUNKS.z));
     }
     if (data.biomeName) setBiomeName(data.biomeName);
-    if (typeof data.gameMode === "number") setGameMode(data.gameMode);
+    if (typeof data.gameMode === "number") 
+      setGameMode(data.gameMode);
     if (Array.isArray(data.paletteLabels)) {
       setPalette(
         data.paletteLabels.map((p) => (BLOCK_NAMES[p.id] ? { ...p, label: BLOCK_NAMES[p.id] } : p))
@@ -457,16 +474,9 @@ export default function TerrainEditor() {
       setHotbar(slots);
     }
     // const m = new Map<string, Voxel>();
-    if (Array.isArray(data.voxels)) {
-      for (const v of data.voxels) {
-        // m.set(keyOf(v.x, v.y, v.z), { block: v.block, meta: v.meta || 0 });
-        terrain.set(v.x, v.y, v.z, v.block, v.meta || 0 );
-      }
+    if (Array.isArray(data.voxels)) {   
+      terrain.replaceAll(data.voxels);
     }
-    //voxelsRef.current = m; //REMOVE
-    // terrain.replaceAll(m);
-    undoStackRef.current = [];
-    setVoxelCount(terrain.size);
 
     if (Array.isArray(data.entities)) {
       setEntityInstances(
@@ -535,7 +545,8 @@ export default function TerrainEditor() {
     textureThreeCacheRef.current.delete(blockId);
     setTextureVersion((v) => v + 1);
     draw();
-    if (viewMode === "3d") rebuildInstances();
+    if (viewMode === "3d")
+      rebuildInstances();
     saveTextures();
   }
 
@@ -697,10 +708,11 @@ export default function TerrainEditor() {
       const oldEntry = terrain.get(wx, wy, wz);
       const oldBlock = oldEntry ? oldEntry.block : AIR;
       setVoxel(wx, wy, wz, v.block, v.meta || 0, true);
-      if (viewModeRef.current === "3d") syncVoxel3D(wx, wy, wz, oldBlock, v.block);
+      if (viewModeRef.current === "3d")
+        syncVoxel3D(wx, wy, wz, oldBlock, v.block);
     }
     commitStroke();
-    draw();
+    // draw();
   }
 
   // ---- entity placement (not voxels - separate marker list) ----
@@ -741,8 +753,8 @@ export default function TerrainEditor() {
       items: [],
     };
     setEntityInstances((prev) => [...prev, instance]);
-    draw();
-    scheduleSave();
+    // draw();
+    
   }
 
   function setEntityItems(id, text) {
@@ -751,7 +763,7 @@ export default function TerrainEditor() {
       .map((s) => s.trim())
       .filter(Boolean);
     setEntityInstances((prev) => prev.map((e) => (e.id === id ? { ...e, items } : e)));
-    scheduleSave();
+
   }
 
   function applyServerEdits(file) {
@@ -759,7 +771,8 @@ export default function TerrainEditor() {
     reader.onload = () => {
       try {
         const edits = JSON.parse(reader.result?.toString() || "");
-        if (!Array.isArray(edits)) throw new Error("expected an array of [x, y, z, block]");
+        if (!Array.isArray(edits)) 
+          throw new Error("expected an array of [x, y, z, block]");
         const dims = dimsRef.current;
         beginStroke();
         let n = 0;
@@ -771,11 +784,11 @@ export default function TerrainEditor() {
           n++;
         }
         commitStroke();
-        //setVoxelCount(voxelsRef.current.size);
-        setVoxelCount(terrain.size);
-        if (viewModeRef.current === "3d") rebuildInstances();
-        draw();
-        scheduleSave();
+
+        if (viewModeRef.current === "3d")
+          rebuildInstances();
+        // draw();
+
         setStatus(STRINGS.en.editsApplied(n));
       } catch (err) {
         setStatus(STRINGS.en.importError((err as Error).message));
@@ -786,14 +799,14 @@ export default function TerrainEditor() {
 
   function removeEntityInstance(id) {
     setEntityInstances((prev) => prev.filter((e) => e.id !== id));
-    draw();
-    scheduleSave();
+    // draw();
+
   }
 
   function clearAllEntityInstances() {
     setEntityInstances([]);
-    draw();
-    scheduleSave();
+    // draw();
+
   }
 
   function saveCurrentMapAsStructure(name, category) {
@@ -988,7 +1001,7 @@ export default function TerrainEditor() {
       setVoxelMirrored(x, y, z, c.block, c.meta, true);
     }
     commitStroke();
-    draw();
+    // draw();
     if (viewMode === "3d") rebuildInstances();
   }
 
@@ -1022,12 +1035,13 @@ export default function TerrainEditor() {
           const oldEntry = terrain.get(wx, sy, wz);
           const oldBlock = oldEntry ? oldEntry.block : AIR;
           setVoxel(wx, sy, wz, pathBlock, 0, true);
-          if (viewModeRef.current === "3d") syncVoxel3D(wx, sy, wz, oldBlock, pathBlock);
+          // if (viewModeRef.current === "3d")
+          //   syncVoxel3D(wx, sy, wz, oldBlock, pathBlock);
         }
       }
     }
     commitStroke();
-    draw();
+    // draw();
   }
 
   function randomizeAllParams() {
@@ -1672,7 +1686,7 @@ export default function TerrainEditor() {
     }
 
     commitStroke();
-    draw();
+    // draw();
     setStatus(STRINGS.en.generatedSeed(seedVal));
     if (viewMode === "3d") rebuildInstances();
 
@@ -1782,7 +1796,7 @@ export default function TerrainEditor() {
       }
     }
     commitStroke();
-    draw();
+    // draw();
     if (viewMode === "3d") rebuildInstances();
     setStatus(STRINGS.en.regenDone);
   }
@@ -1861,7 +1875,7 @@ export default function TerrainEditor() {
       }
     }
     commitStroke();
-    draw();
+    // draw();
     if (viewMode === "3d") rebuildInstances();
     setStatus(STRINGS.en.regenDone);
   }
@@ -1935,7 +1949,7 @@ export default function TerrainEditor() {
       }
     }
     commitStroke();
-    draw();
+    // draw();
     if (viewMode === "3d") rebuildInstances();
     setStatus(STRINGS.en.regenDone);
   }
@@ -2254,9 +2268,12 @@ export default function TerrainEditor() {
   }
 
   function syncVoxel3D(x, y, z, oldBlock, newBlock) {
-    if (oldBlock === newBlock) return;
-    if (oldBlock !== AIR) removeInstanceAtCoord(oldBlock, x, y, z);
-    if (newBlock !== AIR) addInstance(newBlock, x, y, z);
+    if (oldBlock === newBlock)
+      return;
+    if (oldBlock !== AIR)
+      removeInstanceAtCoord(oldBlock, x, y, z);
+    if (newBlock !== AIR)
+      addInstance(newBlock, x, y, z);
   }
 
   function panOrbit(dx, dy) {
@@ -2372,7 +2389,7 @@ export default function TerrainEditor() {
     const oldBlock = oldEntry ? oldEntry.block : AIR;
     const newBlock = isErase ? AIR : selectedBlockRef.current;
     setVoxel(cx, cy, cz, newBlock, 0, true);
-    syncVoxel3D(cx, cy, cz, oldBlock, newBlock);
+    // syncVoxel3D(cx, cy, cz, oldBlock, newBlock);
     setCurrentLayer(cy);
   }
 
@@ -2405,7 +2422,7 @@ export default function TerrainEditor() {
     )
       return;
     setVoxel(cx, cy, cz, AIR, 0, true);
-    syncVoxel3D(cx, cy, cz, blockId, AIR);
+    // syncVoxel3D(cx, cy, cz, blockId, AIR);
     setCurrentLayer(cy);
   }
 
@@ -2453,7 +2470,7 @@ export default function TerrainEditor() {
     const oldBlock = oldEntry ? oldEntry.block : AIR;
     const newBlock = selectedBlockRef.current;
     setVoxel(cx, cy, cz, newBlock, 0, true);
-    syncVoxel3D(cx, cy, cz, oldBlock, newBlock);
+    // syncVoxel3D(cx, cy, cz, oldBlock, newBlock);
     setCurrentLayer(cy);
   }
 
@@ -2846,7 +2863,7 @@ export default function TerrainEditor() {
       stack.push([x, z - 1]);
     }
     commitStroke();
-    draw();
+    // draw();
   }
 
   function fillRect(x0, z0, x1, z1, block) {
@@ -2861,7 +2878,7 @@ export default function TerrainEditor() {
       }
     }
     commitStroke();
-    draw();
+    // draw();
   }
 
   function clearLayer() {
@@ -3216,17 +3233,15 @@ export default function TerrainEditor() {
     setGridX(nx);
     setGridY(ny);
     setGridZ(nz);
-    if (currentLayer >= newH) setCurrentLayer(newH - 1);
-    setVoxelCount(terrain.size); // goes away once a subscriber owns the counter
-    undoStackRef.current = [];
-    scheduleSave();
+    if (currentLayer >= newH) 
+      setCurrentLayer(newH - 1);
   }
 
-  interface exchangeData {
+  interface ExchangeData {
     mapSizeChunks: { x, y, z },
     biomeName,
     gameMode,
-    voxels,
+    voxels: VoxelCell[],
     entities:any[],
     paletteLabels?,
     hotbar?,
@@ -3234,7 +3249,7 @@ export default function TerrainEditor() {
   }
 
   // ---- export / import ----
-  function buildExportData():exchangeData {
+  function buildExportData():ExchangeData {
     const voxels:{x,y,z,block,meta}[] = [];
     for (const voxel of Array.from(terrain.cells())) {
       voxels.push({...voxel});
@@ -3282,7 +3297,6 @@ export default function TerrainEditor() {
     entityInstancesRef.current = [...entityInstancesRef.current, instance];
     setEntityInstances(entityInstancesRef.current);
     draw();
-    scheduleSave();
     return true;
   }
 
@@ -3360,8 +3374,9 @@ export default function TerrainEditor() {
       if (res && res.value) {
         const data = JSON.parse(res.value);
         applyLoadedData(data);
-        draw();
-        if (viewMode === "3d") rebuildInstances();
+        // draw();
+        if (viewMode === "3d")
+          rebuildInstances();
         setStatus(STRINGS.en.slotLoaded(name));
       }
     } catch (e) {
@@ -3608,9 +3623,10 @@ export default function TerrainEditor() {
       try {
         const data = JSON.parse(reader.result?.toString() || "");
         applyLoadedData(data);
-        draw();
+        // draw();
         setStatus(STRINGS.en.importedFrom(file.name));
-        if (viewMode === "3d") rebuildInstances();
+        if (viewMode === "3d")
+          rebuildInstances();
       } catch (err ) {
         setStatus(STRINGS.en.importError((err as Error).message));
       }
