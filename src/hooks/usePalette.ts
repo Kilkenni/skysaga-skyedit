@@ -23,9 +23,7 @@ function usePalette({onChange}:paletteProps) {
     return slots;
   });
   const hotbarRef = useRef(hotbar);
-  const [hotbarIndex, setHotbarIndex] = useState(0);
-
-  const hotbarIndexRef = useRef(0);
+  
   const [palette, setPalette] = useState(
     DEFAULT_PALETTE.map((id) => ({ id, label: BLOCK_NAMES[id] || "Block " + id }))
   );
@@ -35,9 +33,7 @@ function usePalette({onChange}:paletteProps) {
   useEffect(() => {
     hotbarRef.current = hotbar;
   }, [hotbar]);
-  useEffect(() => {
-    hotbarIndexRef.current = hotbarIndex;
-  }, [hotbarIndex]);
+  
   useEffect(() => {
     paletteRef.current = palette;
   }, [palette]);
@@ -47,9 +43,9 @@ function usePalette({onChange}:paletteProps) {
 
   // ---- hotbar ----
   function selectHotbarSlot(i: number) {
-    setHotbarIndex(i);
     const id = hotbarRef.current[i];
-    if (id) setSelectedBlock(id);
+    if (id)
+      setSelectedBlock(id);
   }
 
   function assignHotbarSlot(i: number, blockId: number) {
@@ -59,20 +55,6 @@ function usePalette({onChange}:paletteProps) {
       return next;
     });
     onChange();
-  }
-
-  function cycleHotbar(direction:1|-1) {
-    const st = hotbarRef;
-    let idx = hotbarIndexRef.current;
-    for (let i = 0; i < 10; i++) {
-      idx = (idx + direction + 10) % 10;
-      if (st.current[idx])
-        break;
-    }
-    setHotbarIndex(idx);
-    if (st.current[idx]) {
-      setSelectedBlock(st.current[idx]!);
-    }
   }
 
   function addCustomBlock() {
@@ -96,10 +78,7 @@ function usePalette({onChange}:paletteProps) {
     selectedBlockRef,
     hotbar,
     setHotbar,
-    hotbarIndex,
-    setHotbarIndex,
     hotbarRef,
-    hotbarIndexRef,
     palette,
     setPalette,
     paletteRef,
@@ -108,7 +87,6 @@ function usePalette({onChange}:paletteProps) {
 
     selectHotbarSlot,
     assignHotbarSlot,
-    cycleHotbar,
     addCustomBlock,
     renamePaletteEntry
   };

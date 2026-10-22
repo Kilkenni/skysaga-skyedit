@@ -27,6 +27,7 @@ import LayerNav from "./LayerNav";
 import { VoxelCell, VoxelStore, VoxelStoreEvent } from "../VoxelStore";
 import {storage } from "../operations/persistence";
 import {usePalette} from "../hooks/usePalette.ts"
+import PaletteHotbar from "./PaletteHotbar.tsx";
 
 
 export interface MapData {
@@ -75,7 +76,6 @@ export default function TerrainEditor() {
     hotbar,
     setHotbar,
     hotbarRef,
-    hotbarIndex,
     palette,
     setPalette,
     assignHotbarSlot,
@@ -181,8 +181,8 @@ export default function TerrainEditor() {
   const [newStructureName, setNewStructureName] = useState("Structure");
   const [newStructureCategory, setNewStructureCategory] = useState("other");
   const structureFileInputRef = useRef(null);
-  const structuresRef = useRef<any[]>([]);
-  const viewModeRef = useRef("3d");
+  const structuresRef = useRef<typeof structures>([]);
+  const viewModeRef = useRef<typeof viewMode>("3d");
 
   const [placingStructureId, setPlacingStructureId] = useState(null);
   const [placingRotation, setPlacingRotation] = useState(0);
@@ -204,8 +204,8 @@ export default function TerrainEditor() {
   // an unfiltered flat scroll of 146 rows was unusable.
   const entityMarkersGroupRef = useRef<any>(null);
 
-  const [viewMode, setViewMode] = useState("3d");
-  const [cameraMode, setCameraMode] = useState("orbit"); // orbit or fly
+  const [viewMode, setViewMode] = useState<"2d"|"3d">("3d");
+  const [cameraMode, setCameraMode] = useState<"orbit"|"fly">("orbit");
   const [isLocked, setIsLocked] = useState(false);
   const [pointerLockFailed, setPointerLockFailed] = useState(false);
   const [moveSpeed, setMoveSpeed] = useState(16);
@@ -214,7 +214,7 @@ export default function TerrainEditor() {
 
   // const voxelsRef = useRef(new Map<string, any>());
   const [terrain, _] = useState<VoxelStore>(() => new VoxelStore);
-  const onStoreEventRef = useRef<(e: VoxelStoreEvent) => void>(() => {});
+  const onStoreEventRef = useRef<(event: VoxelStoreEvent) => void>(() => {});
   const BULK_REBUILD_THRESHOLD = 100; // tune by feel
   onStoreEventRef.current = (event) => {
     // fresh closure every render, so it can use state, draw(), etc.
@@ -934,7 +934,7 @@ function buildExportData(terrainVoxels:VoxelCell[], entities: any[], mapData: Ma
   }
 
   // ---- voxel editing ----
-  function setVoxel(x, y, z, block, meta, record) {
+  function setVoxel(x:number, y:number, z:number, block:number, meta, record) {
     terrain.set(x, y, z, block, meta);
   }
 
@@ -3238,8 +3238,6 @@ function buildExportData(terrainVoxels:VoxelCell[], entities: any[], mapData: Ma
       setCurrentLayer(newH - 1);
   }
 
-  
-
   function ensureAirship() {
     if (entityInstancesRef.current.some((e) => e.name === "Airship")) return true;
     const dims = dimsRef.current;
@@ -3544,7 +3542,7 @@ function buildExportData(terrainVoxels:VoxelCell[], entities: any[], mapData: Ma
     }
   }
 
-  async function loadPreset(name) {
+  async function loadPreset(name:string) {
     try {
       const res = await storage.get("terrain-editor-preset:" + name);
       if (res && res.value) {
@@ -3556,7 +3554,7 @@ function buildExportData(terrainVoxels:VoxelCell[], entities: any[], mapData: Ma
     }
   }
 
-  async function deletePreset(name) {
+  async function deletePreset(name:string) {
     try {
       await storage.delete("terrain-editor-preset:" + name);
       await refreshPresets();
@@ -3608,7 +3606,7 @@ function buildExportData(terrainVoxels:VoxelCell[], entities: any[], mapData: Ma
   const chunkY = Math.floor(currentLayer / CHUNK);
   const localY = currentLayer % CHUNK;
 
-  const toolBtn = (id, label, title) => (
+  const toolBtn = (id:string, label:string, title:string) => (
     <button
       onClick={() => setTool(id)}
       title={title}
@@ -3626,7 +3624,7 @@ function buildExportData(terrainVoxels:VoxelCell[], entities: any[], mapData: Ma
     </button>
   );
 
-  const featureRow = (key, checked, onToggle, label, popoverBody) => {
+  const featureRow = (key, checked:boolean, onToggle:React.ChangeEventHandler, label:string, popoverBody) => {
     const isOpen = openPopover === key;
     return (
       <div
@@ -4121,56 +4119,15 @@ function buildExportData(terrainVoxels:VoxelCell[], entities: any[], mapData: Ma
               </>
             )}
 
-            <div
-              style={{
-                position: "absolute",
-                bottom: 10,
-                left: "50%",
-                transform: "translateX(-50%)",
-                display: "flex",
-                gap: 4,
-                background: "rgba(10,12,17,0.85)",
-                border: "1px solid #2a2f3a",
-                borderRadius: 8,
-                padding: 5,
-                pointerEvents: viewMode === "3d" && cameraMode === "fly" && isLocked ? "none" : "auto",
-              }}
-              title={t.hotbarHint}
-            >
-              {hotbar.map((blockId, i) => (
-                <div
-                  key={i}
-                  onClick={() => selectHotbarSlot(i)}
-                  onContextMenu={(e) => {
-                    e.preventDefault();
-                    assignHotbarSlot(i, selectedBlock);
-                  }}
-                  style={{
-                    width: 34,
-                    height: 34,
-                    borderRadius: 5,
-                    background: blockId ? colorForId(blockId) : "#1a1d24",
-                    border:
-                      hotbarIndex === i ? "2px solid #6ea8fe" : "1px solid #2a2f3a",
-                    cursor: "pointer",
-                    position: "relative",
-                    flexShrink: 0,
-                  }}
-                >
-                  <span
-                    style={{
-                      position: "absolute",
-                      bottom: 1,
-                      right: 3,
-                      fontSize: 9,
-                      color: "rgba(255,255,255,0.7)",
-                    }}
-                  >
-                    {i === 9 ? 0 : i + 1}
-                  </span>
-                </div>
-              ))}
-            </div>
+            <PaletteHotbar
+              slots={hotbar}
+              // activeIndex={hotbarIndex}
+              selectedBlock={selectedBlock}
+              hint={t.hotbarHint}
+              disabled={viewMode === "3d" && cameraMode === "fly" && isLocked}
+              onSelect={selectHotbarSlot}
+              onAssign={assignHotbarSlot}
+            />
           </div>
 
           <div
