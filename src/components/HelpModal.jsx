@@ -11,7 +11,7 @@ export default function HelpModal({
       style={{
         position: "fixed",
         inset: 0,
-        background: "rgba(0,0,0,0.65)",
+        backgroundColor: "rgba(0,0,0,0.65)",
         zIndex: 100,
         display: "flex",
         alignItems: "center",
@@ -22,7 +22,7 @@ export default function HelpModal({
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
-          background: "#12151b",
+          backgroundColor: "#12151b",
           border: "1px solid #2a2f3a",
           borderRadius: 10,
           maxWidth: 720,

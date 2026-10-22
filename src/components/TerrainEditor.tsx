@@ -25,7 +25,7 @@ import PaletteSidebar from "./PaletteSidebar";
 import ToolbarRow from "./ToolbarRow";
 import LayerNav from "./LayerNav";
 import { VoxelCell, VoxelStore, VoxelStoreEvent } from "../VoxelStore";
-import {storage } from "../operations/persistence";
+import {storage, createNamedStore } from "../lib/persistence.ts";
 import {usePalette} from "../hooks/usePalette.ts"
 import PaletteHotbar from "./PaletteHotbar.tsx";
 
@@ -88,7 +88,186 @@ export default function TerrainEditor() {
   const [loaded, setLoaded] = useState(false);
 
   const [showRandomPanel, setShowRandomPanel] = useState(false);
-  const [randSeed, setRandSeed] = useState(() => Math.floor(Math.random() * 1000000));
+
+  interface RngParams {
+    randMinH: number,
+    randMaxH: number,
+
+    randGroundDepth: number,
+    randBaseBlock: number,
+    randSurfaceBlock: number, // block ID
+    randDecoBlocks: string, // id:weight
+    randDecoChance: number,
+
+    randIsland: boolean,
+    randIslandMode: string, // todo enum "floating"
+    randIslandSize: string, // todo enum "large"
+    randIslandIrregularity: number,
+    randBottomRoughness: number,
+    randMaxThickness: number,
+
+    randArchipelago: boolean,
+    randIslandCount: number,
+
+    randSeaLevel: number,
+    randSeaBlock: number,
+    
+    randHills: boolean,
+    randHillStrength: number, // %
+    randMountains: boolean,
+    randMountainHeight: number,
+    randPlateaus: boolean,
+    randPlateauHeight: number,
+    randValleys: boolean,
+    randValleyDepth: number,
+
+    randRivers: boolean,
+    randRiverBlock: number,
+    randRiverWidth: number,
+    randWaterfalls: boolean,
+    randWaterfallDrop: number, // threshold
+
+    randLakes: boolean,
+    randLakeBlock: number,
+    randLakeSize: number,
+
+    randCaves: boolean,
+    randCaveDensity: number, // %
+    randCaveGlow: boolean,
+    randCaveGlowChance: number,
+    randCaveGlowBlock: number, // block ID
+
+    randTrees: boolean,
+    randTreeDensity: number,
+    randTreeMinHeight: number,
+    randTreeMaxHeight: number,
+    randTreeWoodBlock: number,
+    randTreeLeavesBlock: number,
+    randTreeSpacing: number,
+    randForests: boolean, // cluster into patches
+    randForestDensity: number,
+
+    randBushes: boolean,
+    randBushDensity: number,
+    randBushBlock: number,
+    randBushSpacing: number,
+
+    randAltitudeBlocks: boolean,
+    randBeachLevel: number,
+    randBeachBlock: number, // block ID
+    randSnowLevel: number,
+    randSnowBlock: number, // block ID
+
+    randSmoothShore: boolean,
+    randShoreRadius: number,
+    randShoreBlock: number,
+    randShoreCoverage: number, // in  %
+
+    randOres: boolean,
+    randOreBlocks: string, // IDs separated by comma
+    randOreCount: number, // vein count
+    randOreVeinSize: number,
+    randOreBigChance: number, // big cluster change, %
+    randOreBigSize: number,
+
+    randErosion: boolean,
+    randErosionStrength: number,
+    randErosionIterations: number,
+  }
+
+  const DEFAULT_RNG_PARAMS:RngParams = {
+    randMinH: 0,
+    randMaxH: 25,
+
+    randGroundDepth: 43,
+    randBaseBlock: 24,
+    randSurfaceBlock: 1, 
+    randDecoBlocks: "", 
+    randDecoChance: 0,
+
+    randIsland: true,
+    randIslandMode: "floating",
+    randIslandSize: "large", 
+    randIslandIrregularity: 55,
+    randBottomRoughness: 20,
+    randMaxThickness: 25,
+
+    randArchipelago: false,
+    randIslandCount: 3,
+
+    randSeaLevel: 15,
+    randSeaBlock: 50,
+    
+    randHills: true,
+    randHillStrength: 40,
+    randMountains: false,
+    randMountainHeight: 32,
+    randPlateaus: false,
+    randPlateauHeight: 20,
+    randValleys: false,
+    randValleyDepth: 15,
+
+    randRivers: false,
+    randRiverBlock: 50,
+    randRiverWidth: 3,
+    randWaterfalls: false,
+    randWaterfallDrop: 5,
+
+    randLakes: false,
+    randLakeBlock: 50,
+    randLakeSize: 5,
+
+    randCaves: false,
+    randCaveDensity: 35,
+    randCaveGlow: false,
+    randCaveGlowChance: 3,
+    randCaveGlowBlock: 21,
+
+    randTrees: false,
+    randTreeDensity: 15,
+    randTreeMinHeight: 3,
+    randTreeMaxHeight: 6,
+    randTreeWoodBlock: 5,
+    randTreeLeavesBlock: 14,
+    randTreeSpacing: 3,
+    randForests: false,
+    randForestDensity: 45,
+
+    randBushes: false,
+    randBushDensity: 15,
+    randBushBlock: 14,
+    randBushSpacing: 1,
+
+    randAltitudeBlocks: false,
+    randBeachLevel: 50,
+    randBeachBlock: 24, 
+    randSnowLevel: 85,
+    randSnowBlock: 10,
+
+    randSmoothShore: false,
+    randShoreRadius: 2,
+    randShoreBlock: 24,
+    randShoreCoverage: 45,
+
+    randOres: false,
+    randOreBlocks: "25,26,42",
+    randOreCount: 40,
+    randOreVeinSize: 2,
+    randOreBigChance: 8, 
+    randOreBigSize: 5,
+
+    randErosion: false,
+    randErosionStrength: 40,
+    randErosionIterations: 2,
+  }
+
+  const [rngParameters, setRngParameters] = useState<RngParams>(DEFAULT_RNG_PARAMS);
+
+  function updateRngParameter<K extends keyof RngParams>(paramName: K, value: RngParams[K]) {
+    setRngParameters(prev => ({...prev, [paramName]: value}) );
+  }
+
+  const [randSeed, setRandSeed] = useState<number>(() => Math.floor(Math.random() * 1000000));
   const [randMinH, setRandMinH] = useState(0);
   const [randMaxH, setRandMaxH] = useState(25);
   const [randGroundDepth, setRandGroundDepth] = useState(43);
@@ -135,11 +314,6 @@ export default function TerrainEditor() {
   const [randWaterfalls, setRandWaterfalls] = useState(false);
   const [randWaterfallDrop, setRandWaterfallDrop] = useState(5);
 
-  const [showPresets, setShowPresets] = useState(false);
-  const [presets, setPresets] = useState<any[]>([]);
-  const [newPresetName, setNewPresetName] = useState("Preset 1");
-  const lastHeightMapRef = useRef<any>(null);
-
   const [randHills, setRandHills] = useState(true);
   const [randHillStrength, setRandHillStrength] = useState(40);
   const [randMountains, setRandMountains] = useState(false);
@@ -171,6 +345,11 @@ export default function TerrainEditor() {
   const [randBushDensity, setRandBushDensity] = useState(15);
   const [randBushBlock, setRandBushBlock] = useState(14);
   const [randBushSpacing, setRandBushSpacing] = useState(1);
+
+  const [showPresets, setShowPresets] = useState(false);
+  const [presets, setPresets] = useState<string[]>([]);
+  const [newPresetName, setNewPresetName] = useState("Preset 1");
+  const lastHeightMapRef = useRef<any>(null);
 
   const [openPopover, setOpenPopover] = useState<any>(null);
   const popoverAnchorRef = useRef<any>(null);
@@ -266,7 +445,7 @@ export default function TerrainEditor() {
   const [showBulkTexturePanel, setShowBulkTexturePanel] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
   const [showSaves, setShowSaves] = useState(false);
-  const [saveSlots, setSaveSlots] = useState<any[]>([]);
+  const [saveSlots, setSaveSlots] = useState<string[]>([]);
   const [newSlotName, setNewSlotName] = useState("Slot 1");
   const [showStats, setShowStats] = useState(false);
   const [statsData, setStatsData] = useState<any>(null);
@@ -3312,58 +3491,38 @@ function buildExportData(terrainVoxels:VoxelCell[], entities: any[], mapData: Ma
     setStatus(STRINGS.en.exportedCompressed(json.length, compressedBlob.size, pct));
   }
 
-  // ---- named save slots ----
+  // ---- named save slots for the MAP (terrain) in storage ----
+  const mapStoragePrefix = "terrain-editor-slot:";
+  const mapStorage = createNamedStore<ExchangeData>(mapStoragePrefix);
+
   async function refreshSaveSlots() {
-    try {
-      const res = await storage.list("terrain-editor-slot:");
-      const names = (res && res.keys ? res.keys : []).map((k) =>
-        k.slice("terrain-editor-slot:".length)
-      );
-      setSaveSlots(names.sort());
-    } catch (e) {
-      setSaveSlots([]);
-    }
+    setSaveSlots(await mapStorage.list())
   }
 
-  async function saveNamedSlot(name) {
-    const trimmed = (name || "").trim();
-    if (!trimmed) return;
+  async function saveNamedSlot(name:string) {
+    const normName = name.trim();
     const data = buildExportData(Array.from(terrain.cells()), entityInstancesRef.current, mapData);
     data.paletteLabels = palette;
-    try {
-      await storage.set("terrain-editor-slot:" + trimmed, JSON.stringify(data));
-      await refreshSaveSlots();
-      setStatus(STRINGS.en.slotSaved(trimmed));
-    } catch (e) {
-      // ignore, non-critical
+    mapStorage.save(normName, data);
+    await refreshSaveSlots();
+    setStatus(STRINGS.en.slotSaved(normName));
+  }
+
+  async function loadNamedSlot(name:string) {
+    const data = await mapStorage.load(name);
+    if(data) {
+      applyLoadedData(data);
+      setStatus(STRINGS.en.slotLoaded(name));
     }
   }
 
-  async function loadNamedSlot(name) {
-    try {
-      const res = await storage.get("terrain-editor-slot:" + name);
-      if (res && res.value) {
-        const data = JSON.parse(res.value);
-        applyLoadedData(data);
-
-        setStatus(STRINGS.en.slotLoaded(name));
-      }
-    } catch (e) {
-      // ignore
-    }
-  }
-
-  async function deleteNamedSlot(name) {
-    try {
-      await storage.delete("terrain-editor-slot:" + name);
-      await refreshSaveSlots();
-    } catch (e) {
-      // ignore
-    }
+  async function deleteNamedSlot(name:string) {
+    await mapStorage.delete(name);
+    await refreshSaveSlots();
   }
 
   // ---- generator presets (settings only, not the map itself) ----
-  function getGeneratorParams() {
+  function getGeneratorParams():RngParams {
     return {
       randMinH,
       randMaxH,
@@ -3437,7 +3596,7 @@ function buildExportData(terrainVoxels:VoxelCell[], entities: any[], mapData: Ma
     };
   }
 
-  function applyGeneratorParams(p) {
+  function applyGeneratorParams(p: RngParams) {
     if (!p) return;
     const setters = {
       randMinH: setRandMinH,
@@ -3515,52 +3674,32 @@ function buildExportData(terrainVoxels:VoxelCell[], entities: any[], mapData: Ma
     }
   }
 
+  const rngPresetPrefix = "terrain-editor-preset:";
+  const rngPresetStorage = createNamedStore<RngParams>(rngPresetPrefix);
+
   async function refreshPresets() {
-    try {
-      const res = await storage.list("terrain-editor-preset:");
-      const names = (res && res.keys ? res.keys : []).map((k) =>
-        k.slice("terrain-editor-preset:".length)
-      );
-      setPresets(names.sort());
-    } catch (e) {
-      setPresets([]);
-    }
+    setPresets(await rngPresetStorage.list())
   }
 
-  async function savePreset(name) {
-    const trimmed = (name || "").trim();
-    if (!trimmed) return;
-    try {
-      await storage.set(
-        "terrain-editor-preset:" + trimmed,
-        JSON.stringify(getGeneratorParams()),
-      );
-      await refreshPresets();
-      setStatus(STRINGS.en.presetSaved(trimmed));
-    } catch (e) {
-      // ignore
-    }
+  async function savePreset(name:string) {
+    const normName = name.trim();
+
+    rngPresetStorage.save(normName, getGeneratorParams());
+    await refreshPresets();
+    setStatus(STRINGS.en.presetSaved(normName));
   }
 
   async function loadPreset(name:string) {
-    try {
-      const res = await storage.get("terrain-editor-preset:" + name);
-      if (res && res.value) {
-        applyGeneratorParams(JSON.parse(res.value));
-        setStatus(STRINGS.en.presetLoaded(name));
-      }
-    } catch (e) {
-      // ignore
+    const data = await rngPresetStorage.load(name);
+    if(data) {
+      applyGeneratorParams(data);
+      setStatus(STRINGS.en.presetLoaded(name));
     }
   }
 
   async function deletePreset(name:string) {
-    try {
-      await storage.delete("terrain-editor-preset:" + name);
-      await refreshPresets();
-    } catch (e) {
-      // ignore
-    }
+    await rngPresetStorage.delete(name);
+    await refreshPresets();
   }
 
   // ---- map statistics ----

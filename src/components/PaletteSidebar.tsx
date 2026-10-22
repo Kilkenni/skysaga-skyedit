@@ -33,7 +33,7 @@ export default function PaletteSidebar({
         border: "1px solid #1e222b",
         padding: 12,
         overflowY: "auto",
-        background: "#0e1117",
+        backgroundColor: "#0e1117",
       }}
     >
       <div style={{ fontSize: 12, color: "#8a91a3", marginBottom: 8 }}>
@@ -70,7 +70,7 @@ export default function PaletteSidebar({
               borderRadius: 6,
               marginBottom: 3,
               cursor: "pointer",
-              background: selectedBlock === p.id ? "#22314d" : "transparent",
+              backgroundColor: selectedBlock === p.id ? "#22314d" : "transparent",
               border:
                 selectedBlock === p.id
                   ? "1px solid #6ea8fe"
@@ -88,7 +88,7 @@ export default function PaletteSidebar({
                 width: 16,
                 height: 16,
                 borderRadius: 3,
-                background: hasTexture ? "#000" : colorForId(p.id),
+                backgroundColor: hasTexture ? "#000" : colorForId(p.id),
                 backgroundImage: hasTexture
                   ? `url(${texturesRef.current.get(p.id)})`
                   : "none",
@@ -122,7 +122,7 @@ export default function PaletteSidebar({
                 onClick={(e) => e.stopPropagation()}
                 style={{
                   flex: 1,
-                  background: "transparent",
+                  backgroundColor: "transparent",
                   border: "none",
                   color: "#e6e8ee",
                   fontSize: 12,
@@ -138,7 +138,7 @@ export default function PaletteSidebar({
                 }}
                 title={t.clearTexture}
                 style={{
-                  background: "transparent",
+                  backgroundColor: "transparent",
                   border: "none",
                   color: "#8a91a3",
                   cursor: "pointer",
@@ -197,7 +197,7 @@ export default function PaletteSidebar({
           marginTop: 16,
           padding: 8,
           borderRadius: 6,
-          background: "#161a22",
+          backgroundColor: "#161a22",
           fontSize: 11,
           color: "#8a91a3",
           lineHeight: 1.5,
@@ -210,7 +210,7 @@ export default function PaletteSidebar({
             height: 20,
             marginTop: 4,
             borderRadius: 4,
-            background: texturesRef.current.has(selectedBlock)
+            backgroundColor: texturesRef.current.has(selectedBlock)
               ? "#000"
               : colorForId(selectedBlock),
             backgroundImage: texturesRef.current.has(selectedBlock)
