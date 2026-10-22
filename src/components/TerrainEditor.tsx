@@ -26,16 +26,59 @@ import ToolbarRow from "./ToolbarRow";
 import LayerNav from "./LayerNav";
 import { VoxelCell, VoxelStore, VoxelStoreEvent } from "../VoxelStore";
 import {storage, createNamedStore } from "../lib/persistence.ts";
-import {usePalette} from "../hooks/usePalette.ts"
+import {Hotbar, PaletteEntry, usePalette} from "../hooks/usePalette.ts"
 import PaletteHotbar from "./PaletteHotbar.tsx";
 
 
-export interface MapData {
+interface MapData {
   gridX: number,
   gridY: number,
   gridZ: number,
   biomeName: string,
   gameMode: number
+}
+
+const DEFAULT_MAP_DATA:MapData = {
+  gridX: 6,
+  gridY: 4,
+  gridZ: 6,
+  biomeName: "Forest",
+  gameMode: 1,
+}
+
+interface EntityData {
+  name: string,
+  x: number,
+  y: number,
+  z: number,
+  items?: string[] // container contents
+}
+
+interface EntityDataId extends EntityData {
+  id: number,
+}
+
+export interface LevelData {
+  mapSizeChunks: { x:number, y:number, z:number },
+  biomeName: string,
+  gameMode: number,
+  voxels: VoxelCell[],
+  entities: EntityData[],
+  paletteLabels?:PaletteEntry[],
+  hotbar?: Hotbar,
+  cameraMode?: "orbit" | "fly",
+}
+
+const DEFAULT_LEVEL_DATA:LevelData = {
+  mapSizeChunks: {
+    x: DEFAULT_MAP_DATA.gridX,
+    y: DEFAULT_MAP_DATA.gridY,
+    z: DEFAULT_MAP_DATA.gridZ,
+  },
+  biomeName: DEFAULT_MAP_DATA.biomeName,
+  gameMode: DEFAULT_MAP_DATA.gameMode,
+  voxels: [],
+  entities: [],
 }
 
 export default function TerrainEditor() {
@@ -45,13 +88,7 @@ export default function TerrainEditor() {
   // "Forest" as the default since that's what the server currently sends,
   // but this is just a free-text field - change it to whichever real biome
   // name you want per-map.
-  const [mapData, setMapData] = useState<MapData>({
-    gridX: 6,
-    gridY: 4,
-    gridZ: 6,
-    biomeName: "Forest",
-    gameMode: 1,
-  });
+  const [mapData, setMapData] = useState<MapData>(DEFAULT_MAP_DATA);
 
   const [currentLayer, setCurrentLayer] = useState(0);
   const [zoom, setZoom] = useState(1);
@@ -370,8 +407,8 @@ export default function TerrainEditor() {
   const structureThumbsRef = useRef(new Map());
   const [thumbVersion, setThumbVersion] = useState(0);
 
-  const [entityInstances, setEntityInstances] = useState<any[]>([]);
-  const entityInstancesRef = useRef<any[]>([]);
+  const [entityInstances, setEntityInstances] = useState<EntityDataId[]>([]);
+  const entityInstancesRef = useRef<EntityDataId[]>([]);
   const [placingEntityName, setPlacingEntityName] = useState(null);
   const placingEntityRef = useRef(null);
   const [showEntitiesPanel, setShowEntitiesPanel] = useState(false);
@@ -612,83 +649,96 @@ export default function TerrainEditor() {
     // eslint-disable-next-line
   }, []);
 
-  interface ExchangeData {
-  mapSizeChunks: { x:number, y:number, z:number },
-  biomeName: string,
-  gameMode: number,
-  voxels: VoxelCell[],
-  entities:{
-    name,
-    x, y, z,
-    items?
-  }[],
-  paletteLabels?:{
-    id:number, 
-    label:string
-  }[],
-  hotbar?,
-  cameraMode?: string,
-}
-
-// ---- export / import ----
-function buildExportData(terrainVoxels:VoxelCell[], entities: any[], mapData: MapData):ExchangeData {
-  const voxels:VoxelCell[] = [];
-  for (const voxel of terrainVoxels) {
-    voxels.push({...voxel});
+  // ---- export / import ----
+  function buildExportData(terrainVoxels:VoxelCell[], entities: any[], mapData: MapData):LevelData {
+    const voxels:VoxelCell[] = [];
+    for (const voxel of terrainVoxels) {
+      voxels.push({...voxel});
+    }
+    return {
+      mapSizeChunks: { x: mapData.gridX, y: mapData.gridY, z: mapData.gridZ },
+      biomeName: mapData.biomeName,
+      gameMode: mapData.gameMode,
+      voxels: voxels,
+      entities: entities.map((entity) => {
+        return entity.items && entity.items.length
+          ? { name: entity.name, x: entity.x, y: entity.y, z: entity.z, items: entity.items }
+          : { name: entity.name, x: entity.x, y: entity.y, z: entity.z }
+      }),
+    };
   }
-  return {
-    mapSizeChunks: { x: mapData.gridX, y: mapData.gridY, z: mapData.gridZ },
-    biomeName: mapData.biomeName,
-    gameMode: mapData.gameMode,
-    voxels: voxels,
-    entities: entities.map((entity) => {
-      return entity.items && entity.items.length
-        ? { name: entity.name, x: entity.x, y: entity.y, z: entity.z, items: entity.items }
-        : { name: entity.name, x: entity.x, y: entity.y, z: entity.z }
-    }),
-  };
-}
 
-  function applyLoadedData(data:ExchangeData) {
-    const newMapData:MapData = {...mapData};
-    if (data.mapSizeChunks) {
-        newMapData.gridX = clamp(data.mapSizeChunks.x, 1, MAX_CHUNKS.x);
-        newMapData.gridY = clamp(data.mapSizeChunks.y, 1, MAX_CHUNKS.y);
-        newMapData.gridZ = clamp(data.mapSizeChunks.z, 1, MAX_CHUNKS.z);
-    }
-    if (data.biomeName) 
-      newMapData.biomeName = data.biomeName;
-    if (typeof data.gameMode === "number") 
-      newMapData.gameMode = data.gameMode;
-    if (Array.isArray(data.paletteLabels)) {
-      setPalette(
-        data.paletteLabels.map((p) => (BLOCK_NAMES[p.id] ? { ...p, label: BLOCK_NAMES[p.id] } : p))
-      );
-    }
-    if (Array.isArray(data.hotbar)) {
-      const slots = new Array(10).fill(null);
-      for (let i = 0; i < 10; i++) slots[i] = data.hotbar[i] || null;
-      setHotbar(slots);
-    }
-    // const m = new Map<string, Voxel>();
-    if (Array.isArray(data.voxels)) {   
-      terrain.replaceAll(data.voxels);
+  function parseLevelData(raw: unknown): LevelData {
+    function isNum(something:any):boolean {
+      return (typeof something === "number" && Number.isFinite(something));
     }
 
-    if (Array.isArray(data.entities)) {
-      setEntityInstances(
-        data.entities.map((e) => ({
-          id: Date.now() + Math.floor(Math.random() * 1000000),
-          name: e.name,
-          x: e.x,
-          y: e.y,
-          z: e.z,
-          items: Array.isArray(e.items) ? e.items.map(String) : [],
-        }))
-      );
-    } else {
-      setEntityInstances([]);
+    const data:LevelData = {...DEFAULT_LEVEL_DATA};
+    if(raw === null || typeof raw === "string")
+      return data; // shouldn't we throw here instead?
+    const dataPart = raw as Partial<LevelData>;
+    if (dataPart.mapSizeChunks) {
+      data.mapSizeChunks = {
+        x: clamp(dataPart.mapSizeChunks.x, 1, MAX_CHUNKS.x),
+        y: clamp(dataPart.mapSizeChunks.y, 1, MAX_CHUNKS.y),
+        z: clamp(dataPart.mapSizeChunks.z, 1, MAX_CHUNKS.z),
+      }
     }
+    if (dataPart.biomeName) 
+      data.biomeName = dataPart.biomeName;
+    if (typeof dataPart.gameMode === "number") 
+      data.gameMode = dataPart.gameMode;
+
+    if(Array.isArray(dataPart.voxels)) {
+      for(const rawVoxel of dataPart.voxels) {
+        const {x, y, z, block, meta} = rawVoxel;
+        if(isNum(x) && isNum(y) && isNum(z) && isNum(block)) // bad voxels are silently skipped for now
+          data.voxels.push({...rawVoxel, meta: rawVoxel.meta || 0})
+      }
+    }
+
+    if (Array.isArray(dataPart.entities)) {
+      for (const entity of dataPart.entities) {
+        const {x, y, z, name, items} = entity;
+        if(typeof name === "string" && isNum(x) && isNum(y) && isNum(z)) // broken entities are silently skipped for now
+          data.entities.push({...entity, items: Array.isArray(entity.items) ? entity.items.map(String) : undefined})
+      }
+    }
+
+    if (Array.isArray(dataPart.paletteLabels)) {
+      data.paletteLabels = [];
+      for(const pLabel of dataPart.paletteLabels)
+        if(isNum(pLabel.id) && typeof (pLabel.label) === "string")
+          data.paletteLabels.push(BLOCK_NAMES[pLabel.id] ? { ...pLabel, label: BLOCK_NAMES[pLabel.id] } : pLabel);
+    }
+
+    if (Array.isArray(dataPart.hotbar)) {
+      data.hotbar = new Array(10).fill(null);
+      for (let i = 0; i < 10; i++)
+        if(isNum(dataPart.hotbar[i]))
+          data.hotbar[i] = dataPart.hotbar[i];
+    }
+    
+    return data;
+  }
+
+  function applyLoadedData(raw:unknown) {
+    const data = parseLevelData(raw);
+    const {x: gridX, y: gridY, z: gridZ} = data.mapSizeChunks;
+    const {biomeName, gameMode} = data;
+    setMapData({ gridX, gridY, gridZ, biomeName, gameMode });
+ 
+    terrain.replaceAll(data.voxels);
+
+    setEntityInstances(data.entities.map((entity) => ({...entity, id: Date.now() + Math.floor(Math.random() * 1000000)})));
+    // todo: replace with a proper ID generator like UIID later?
+    
+    if (data.paletteLabels && data.paletteLabels.length > 0) {
+      setPalette([...data.paletteLabels]);
+    }
+    if (data.hotbar) {
+      setHotbar([...data.hotbar]);
+    }   
   }
 
   function scheduleSave() {
@@ -701,7 +751,7 @@ function buildExportData(terrainVoxels:VoxelCell[], entities: any[], mapData: Ma
         data.cameraMode = cameraMode;
         await storage.set(STORAGE_KEY, JSON.stringify(data));
         setStatus(STRINGS.en.savedAt(new Date().toLocaleTimeString()));
-      } catch (e) {
+      } catch (error) {
         setStatus(STRINGS.en.saveError);
       }
     }, 700);
@@ -3493,7 +3543,7 @@ function buildExportData(terrainVoxels:VoxelCell[], entities: any[], mapData: Ma
 
   // ---- named save slots for the MAP (terrain) in storage ----
   const mapStoragePrefix = "terrain-editor-slot:";
-  const mapStorage = createNamedStore<ExchangeData>(mapStoragePrefix);
+  const mapStorage = createNamedStore<LevelData>(mapStoragePrefix);
 
   async function refreshSaveSlots() {
     setSaveSlots(await mapStorage.list())

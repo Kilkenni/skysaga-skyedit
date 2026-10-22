@@ -24,7 +24,7 @@ function usePalette({onChange}:paletteProps) {
   });
   const hotbarRef = useRef(hotbar);
   
-  const [palette, setPalette] = useState(
+  const [palette, setPalette] = useState<PaletteEntry[]>(
     DEFAULT_PALETTE.map((id) => ({ id, label: BLOCK_NAMES[id] || "Block " + id }))
   );
   const paletteRef = useRef(palette);
