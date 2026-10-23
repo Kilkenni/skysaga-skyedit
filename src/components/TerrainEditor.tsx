@@ -25,9 +25,10 @@ import PaletteSidebar from "./PaletteSidebar";
 import ToolbarRow from "./ToolbarRow";
 import LayerNav from "./LayerNav";
 import { VoxelCell, VoxelStore, VoxelStoreEvent } from "../VoxelStore";
-import {storage, createNamedStore, writeJson, readJson } from "../lib/persistence.ts";
+import {storage, createNamedStore, writeJson, readJson } from "../lib/storage.ts";
 import {Hotbar, PaletteEntry, usePalette} from "../hooks/usePalette.ts"
 import PaletteHotbar from "./PaletteHotbar.tsx";
+import { RngParams } from "../lib/mapGenerator.ts";
 
 
 interface MapData {
@@ -56,6 +57,21 @@ interface EntityData {
 
 interface EntityDataId extends EntityData {
   id: number,
+}
+
+interface Structure {
+  id: number,
+  name: string,
+  category: string,
+  sizeX: number,
+  sizeY: number,
+  sizeZ: number,
+  voxels,
+  enabled: boolean,
+  count: number,
+  rotate: boolean,
+  minSpacing: number,
+  requireFlat: boolean,
 }
 
 export interface LevelData {
@@ -94,92 +110,6 @@ function getDefaultLevelData():LevelData {
     voxels: [],
     entities: [],
   }
-}
-
-export interface RngParams {
-  randMinH: number,
-  randMaxH: number,
-
-  randGroundDepth: number,
-  randBaseBlock: number,
-  randSurfaceBlock: number, // block ID
-  randDecoBlocks: string, // id:weight
-  randDecoChance: number,
-
-  randIsland: boolean,
-  randIslandMode: string, // todo enum "floating"
-  randIslandSize: string, // todo enum "large"
-  randIslandIrregularity: number,
-  randBottomRoughness: number,
-  randMaxThickness: number,
-
-  randArchipelago: boolean,
-  randIslandCount: number,
-
-  randSeaLevel: number,
-  randSeaBlock: number,
-  
-  randHills: boolean,
-  randHillStrength: number, // %
-  randMountains: boolean,
-  randMountainHeight: number,
-  randPlateaus: boolean,
-  randPlateauHeight: number,
-  randValleys: boolean,
-  randValleyDepth: number,
-
-  randRivers: boolean,
-  randRiverBlock: number,
-  randRiverWidth: number,
-  randWaterfalls: boolean,
-  randWaterfallDrop: number, // threshold
-
-  randLakes: boolean,
-  randLakeBlock: number,
-  randLakeSize: number,
-
-  randCaves: boolean,
-  randCaveDensity: number, // %
-  randCaveGlow: boolean,
-  randCaveGlowChance: number,
-  randCaveGlowBlock: number, // block ID
-
-  randTrees: boolean,
-  randTreeDensity: number,
-  randTreeMinHeight: number,
-  randTreeMaxHeight: number,
-  randTreeWoodBlock: number,
-  randTreeLeavesBlock: number,
-  randTreeSpacing: number,
-  randForests: boolean, // cluster into patches
-  randForestDensity: number,
-
-  randBushes: boolean,
-  randBushDensity: number,
-  randBushBlock: number,
-  randBushSpacing: number,
-
-  randAltitudeBlocks: boolean,
-  randBeachLevel: number,
-  randBeachBlock: number, // block ID
-  randSnowLevel: number,
-  randSnowBlock: number, // block ID
-
-  randSmoothShore: boolean,
-  randShoreRadius: number,
-  randShoreBlock: number,
-  randShoreCoverage: number, // in  %
-
-  randOres: boolean,
-  randOreBlocks: string, // IDs separated by comma
-  randOreCount: number, // vein count
-  randOreVeinSize: number,
-  randOreBigChance: number, // big cluster change, %
-  randOreBigSize: number,
-
-  randErosion: boolean,
-  randErosionStrength: number,
-  randErosionIterations: number,
 }
 
 // Tools
@@ -241,7 +171,7 @@ export default function TerrainEditor() {
   const [onionRange, setOnionRange] = useState(1);
   const [mirrorZ, setMirrorZ] = useState(false);
   
-  const [hoverCell, setHoverCell] = useState<any>(null);
+  const [hoverCell, setHoverCell] = useState<{x:number, z:number}|null>(null);
   const [voxelCount, setVoxelCount] = useState(0);
   const [status, setStatus] = useState("");
   const [loaded, setLoaded] = useState(false);
@@ -346,14 +276,13 @@ export default function TerrainEditor() {
   const [newPresetName, setNewPresetName] = useState("Preset 1");
   const lastHeightMapRef = useRef<any>(null);
 
-  const [openPopover, setOpenPopover] = useState<any>(null);
+  const [openPopover, setOpenPopover] = useState<string|null>(null);
   const popoverAnchorRef = useRef<any>(null);
 
   const [showStructuresPanel, setShowStructuresPanel] = useState(false);
-  const [structures, setStructures] = useState<any[]>([]);
-  const [structureCategoryFilter, setStructureCategoryFilter] = useState("all");
-  const [newStructureName, setNewStructureName] = useState("Structure");
-  const [newStructureCategory, setNewStructureCategory] = useState("other");
+  const [structures, setStructures] = useState<Structure[]>([]);
+
+  
   const structureFileInputRef = useRef(null);
   const structuresRef = useRef<typeof structures>([]);
   const viewModeRef = useRef<typeof viewMode>("3d");
@@ -411,17 +340,15 @@ export default function TerrainEditor() {
     return terrain.subscribe((e) => onStoreEventRef.current(e)); // cleanup - unsubscribe
   }, [terrain]);
 
-  const canvasRef = useRef<any>(null);
-  const containerRef = useRef<any>(null);
-  const editsInputRef = useRef<any>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const isDrawingRef = useRef(false);
-  const rectStartRef = useRef<any>(null);
-  const previewRectRef = useRef<any>(null);
+  const rectStartRef = useRef<{x:number, z:number}>(null);
+  const previewRectRef = useRef<{ x0:number, z0:number, x1:number, z1:number}>(null);
   // const strokeChangesRef = useRef<any[]>([]);
   // const touchedInStrokeRef = useRef(new Map());
-  const saveTimerRef = useRef<any>(null);
-  const fileInputRef = useRef<any>(null);
-  const canvas3dRef = useRef<any>(null);
+  const saveTimerRef = useRef<number>(null);
+  const canvas3dRef = useRef<HTMLCanvasElement>(null);
   const toolRef = useRef(tool);
   
   const dimsRef = useRef({ width: 0, depth: 0, totalHeight: 0 });
@@ -432,8 +359,7 @@ export default function TerrainEditor() {
   const texturesRef = useRef(new Map()); // blockId -> dataURL
   const textureImg2DRef = useRef(new Map()); // blockId -> HTMLImageElement (2D canvas)
   const textureThreeCacheRef = useRef(new Map()); // blockId -> THREE.Texture
-  const textureFileInputRef = useRef(null);
-  const [textureTargetId, setTextureTargetId] = useState(null);
+  const [textureTargetId, setTextureTargetId] = useState<number|null>(null);
   const [textureVersion, setTextureVersion] = useState(0);
 
   const bulkFolderInputRef = useRef(null);
@@ -441,10 +367,16 @@ export default function TerrainEditor() {
   const [showHelp, setShowHelp] = useState(false);
   const [showSaves, setShowSaves] = useState(false);
   const [saveSlots, setSaveSlots] = useState<string[]>([]);
-  const [newSlotName, setNewSlotName] = useState("Slot 1");
+  
   const [showStats, setShowStats] = useState(false);
-  const [statsData, setStatsData] = useState<any>(null);
-  const [bulkTextureRows, setBulkTextureRows] = useState<any[]>([]);
+  const [statsData, setStatsData] = useState<{total:number, rows}|null>(null);
+  const [bulkTextureRows, setBulkTextureRows] = useState<{
+    file: File;
+    name: string;
+    id: number | null;
+    previewUrl: string;
+    include: boolean;
+  }[]>([]);
   const [bulkApplying, setBulkApplying] = useState(false);
 
   const threeRef = useRef<any>({
@@ -536,8 +468,8 @@ export default function TerrainEditor() {
   }, [placingStructureId]);
   useEffect(() => {
     if (!openPopover) return undefined;
-    function onDocMouseDown(e) {
-      if (popoverAnchorRef.current && !popoverAnchorRef.current.contains(e.target)) {
+    function onDocMouseDown(event:MouseEvent) {
+      if (popoverAnchorRef.current && !popoverAnchorRef.current.contains(event.target)) {
         setOpenPopover(null);
       }
     }
@@ -561,7 +493,6 @@ export default function TerrainEditor() {
   useEffect(() => {
     (async () => {
       try {
-        //const result = await storage.get(STORAGE_KEY);
         const result = { STORAGE_KEY, value: await readJson<LevelData>(STORAGE_KEY)};
         if (result && result.value) {
           const data = result.value;
@@ -730,7 +661,7 @@ export default function TerrainEditor() {
     }
   }
 
-  function handleTextureFile(blockId, file) {
+  function handleTextureFile(blockId, file:File) {
     if (!file) return;
     const reader = new FileReader();
     reader.onload = () => {
@@ -863,7 +794,7 @@ export default function TerrainEditor() {
           const sizeX = data.sizeX || 1;
           const sizeY = data.sizeY || 1;
           const sizeZ = data.sizeZ || 1;
-          const entry = {
+          const entry:Structure = {
             id: Date.now() + Math.floor(Math.random() * 1000),
             name: data.name || file.name.replace(/\.json$/i, ""),
             category: ["building", "dungeon", "decoration", "other"].includes(data.category)
@@ -906,7 +837,7 @@ export default function TerrainEditor() {
     return structureThumbsRef.current.get(entry.id);
   }
 
-  function stampStructureAt(anchorX, anchorY, anchorZ, entry, rotationSteps) {
+  function stampStructureAt(anchorX: number, anchorY: number, anchorZ: number, entry, rotationSteps) {
     const dims = dimsRef.current;
     const rotated = getRotatedStructure(entry, rotationSteps);
     beginStroke();
@@ -926,7 +857,7 @@ export default function TerrainEditor() {
   }
 
   // ---- entity placement (not voxels - separate marker list) ----
-  function placeEntityAt(name, x, y, z) {
+  function placeEntityAt(name:string, x:number, y:number, z:number) {
     const dims = dimsRef.current;
     if (x < 0 || x >= dims.width || y < 0 || y >= dims.totalHeight || z < 0 || z >= dims.depth)
       return;
@@ -954,7 +885,7 @@ export default function TerrainEditor() {
         }
       }
     }
-    const instance = {
+    const instance:EntityDataId = {
       id: Date.now() + Math.floor(Math.random() * 1000),
       name,
       x,
@@ -1071,27 +1002,7 @@ export default function TerrainEditor() {
     setStatus(STRINGS.en.structureSaved(entry.name));
   }
 
-  function exportStructure(entry) {
-    const data = {
-      name: entry.name,
-      category: entry.category || "other",
-      sizeX: entry.sizeX,
-      sizeY: entry.sizeY,
-      sizeZ: entry.sizeZ,
-      voxels: entry.voxels,
-    };
-    const blob = new Blob([JSON.stringify(data, null, 2)], {
-      type: "application/json",
-    });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = (entry.name || "structure").replace(/\s+/g, "_") + ".json";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }
+  
 
   function deleteStructure(id) {
     setStructures((prev) => {
@@ -2417,7 +2328,7 @@ export default function TerrainEditor() {
     g.coords = newCoords;
   }
 
-  function addInstance(blockId, x, y, z) {
+  function addInstance(blockId, x:number, y:number, z:number) {
     if (blockId === AIR) return;
     let g = getOrCreateGroup(blockId);
     const key = keyOf(x, y, z);
@@ -2439,7 +2350,7 @@ export default function TerrainEditor() {
     g.mesh.instanceMatrix.needsUpdate = true;
   }
 
-  function removeInstanceAtCoord(blockId, x, y, z) {
+  function removeInstanceAtCoord(blockId, x:number, y:number, z:number) {
     const st = threeRef.current;
     const g = st.groups.get(blockId);
     if (!g) return;
@@ -2869,9 +2780,11 @@ export default function TerrainEditor() {
 
   useEffect(() => {
     const el = containerRef.current;
-    if (!el) return undefined;
+    if (el === null)
+      return undefined;
     function onWheel2d(e) {
-      if (viewModeRef.current !== "2d") return;
+      if (viewModeRef.current !== "2d" || el === null)
+        return;
       e.preventDefault();
       const rect = el.getBoundingClientRect();
       const ox = e.clientX - rect.left;
@@ -3105,10 +3018,12 @@ export default function TerrainEditor() {
     const ctx = canvas.getContext("2d");
     canvas.width = width * cell;
     canvas.height = depth * cell;
+    if(!ctx)
+      throw new Error("Canvas has no context `2d`");
     ctx.imageSmoothingEnabled = false;
     ctx.fillStyle = "#12151b";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-
+    
     if (onionSkin) {
       for (let off = -onionRange; off <= onionRange; off++) {
         if (off === 0) continue;
@@ -3257,17 +3172,19 @@ export default function TerrainEditor() {
     draw();
   }, [draw]);
 
-  function cellFromEvent(e) {
+  function cellFromEvent(event:React.MouseEvent<HTMLCanvasElement>) {
+    if(!canvasRef.current)
+      throw new Error("canvasRef is undefined!")
     const rect = canvasRef.current.getBoundingClientRect();
-    const px = e.clientX - rect.left;
-    const py = e.clientY - rect.top;
+    const px = event.clientX - rect.left;
+    const py = event.clientY - rect.top;
     const x = Math.floor(px / cell);
     const z = Math.floor(py / cell);
     return { x, z };
   }
 
-  function handleMouseDown(e) {
-    const { x, z } = cellFromEvent(e);
+  function handleMouseDown(event:React.MouseEvent<HTMLCanvasElement>) {
+    const { x, z } = cellFromEvent(event);
     if (x < 0 || x >= width || z < 0 || z >= depth) return;
     if (placingEntityName) {
       const surfaceY = findSurfaceY(x, z);
@@ -3310,8 +3227,8 @@ export default function TerrainEditor() {
     }
   }
 
-  function handleMouseMove(e) {
-    const { x, z } = cellFromEvent(e);
+  function handleMouseMove(event:React.MouseEvent<HTMLCanvasElement>) {
+    const { x, z } = cellFromEvent(event);
     setHoverCell({ x, z });
     if (!isDrawingRef.current) return;
     if (x < 0 || x >= width || z < 0 || z >= depth) return;
@@ -3600,9 +3517,10 @@ export default function TerrainEditor() {
     setShowStats(true);
   }
 
-  function importJson(e) {
-    const file = e.target.files && e.target.files[0];
-    if (!file) return;
+  function importJson(event:React.ChangeEvent<HTMLInputElement, HTMLInputElement> ) {
+    const file = event.target.files && event.target.files[0];
+    if (!file)
+      return;
     const reader = new FileReader();
     reader.onload = () => {
       try {
@@ -3615,10 +3533,8 @@ export default function TerrainEditor() {
       }
     };
     reader.readAsText(file);
-    e.target.value = "";
+    event.target.value = "";
   }
-
-  
 
   const chunkY = Math.floor(currentLayer / CHUNK);
   const localY = currentLayer % CHUNK;
@@ -3725,11 +3641,9 @@ export default function TerrainEditor() {
         applyGridResize={applyGridResize}
         applyServerEdits={applyServerEdits}
         cameraMode={cameraMode}
-        editsInputRef={editsInputRef}
         entityInstances={entityInstances}
         exportJson={exportJson}
         exportJsonCompressed={exportJsonCompressed}
-        fileInputRef={fileInputRef}
         mapData={mapData}
         importJson={importJson}
         scheduleSave={scheduleSave}
@@ -3746,7 +3660,6 @@ export default function TerrainEditor() {
           clearTexture={clearTexture}
           handleTextureFile={handleTextureFile}
           setTextureTargetId={setTextureTargetId}
-          textureFileInputRef={textureFileInputRef}
           textureTargetId={textureTargetId}
           textureVersion={textureVersion}
           texturesRef={texturesRef}
@@ -3774,6 +3687,8 @@ export default function TerrainEditor() {
             updateRoadParams={updateRoadParams}
             // roadBlock={roadParams.roadBlock}
             // roadWidth={roadParams.roadWidth}
+            // setRoadBlock={setRoadBlock}
+            // setRoadWidth={setRoadWidth}
             setCopyYFrom={setCopyYFrom}
             setCopyYTo={setCopyYTo}
             setMirrorX={setMirrorX}
@@ -3781,8 +3696,6 @@ export default function TerrainEditor() {
             setMoveSpeed={setMoveSpeed}
             setOnionRange={setOnionRange}
             setOnionSkin={setOnionSkin}
-            // setRoadBlock={setRoadBlock}
-            // setRoadWidth={setRoadWidth}
             setShowBulkTexturePanel={setShowBulkTexturePanel}
             setShowEntitiesPanel={setShowEntitiesPanel}
             setShowPresets={setShowPresets}
@@ -3822,23 +3735,18 @@ export default function TerrainEditor() {
             <StructuresPanel
               deleteStructure={deleteStructure}
               ensureStructureThumb={ensureStructureThumb}
-              exportStructure={exportStructure}
               importStructureFiles={importStructureFiles}
-              newStructureCategory={newStructureCategory}
-              newStructureName={newStructureName}
+
               openPopover={openPopover}
               placingRotation={placingRotation}
               placingStructureId={placingStructureId}
               popoverAnchorRef={popoverAnchorRef}
               saveCurrentMapAsStructure={saveCurrentMapAsStructure}
-              setNewStructureCategory={setNewStructureCategory}
-              setNewStructureName={setNewStructureName}
+
               setOpenPopover={setOpenPopover}
               setPlacingRotation={setPlacingRotation}
               setPlacingStructureId={setPlacingStructureId}
-              setStructureCategoryFilter={setStructureCategoryFilter}
               setStructureCount={setStructureCount}
-              structureCategoryFilter={structureCategoryFilter}
               structureFileInputRef={structureFileInputRef}
               structures={structures}
               thumbVersion={thumbVersion}
@@ -3863,10 +3771,8 @@ export default function TerrainEditor() {
             <SavesPanel
               deleteNamedSlot={deleteNamedSlot}
               loadNamedSlot={loadNamedSlot}
-              newSlotName={newSlotName}
               saveNamedSlot={saveNamedSlot}
               saveSlots={saveSlots}
-              setNewSlotName={setNewSlotName}
             />
           )}
 

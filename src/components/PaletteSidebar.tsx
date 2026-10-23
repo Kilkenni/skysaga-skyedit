@@ -2,18 +2,28 @@ import { STRINGS } from "../i18n/strings";
 import { inputStyle, actionBtn } from "../styles/inline";
 import { colorForId } from "../lib/colors";
 import { BLOCK_NAMES } from "../constants";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { PaletteEntry } from "../hooks/usePalette";
+
+interface Props {
+  paletteObj,
+  clearTexture,
+  handleTextureFile,
+  setTextureTargetId: (newId) => void,
+  textureTargetId,
+  textureVersion,
+  texturesRef,
+}
 
 export default function PaletteSidebar({
   paletteObj,
   clearTexture,
   handleTextureFile,
   setTextureTargetId,
-  textureFileInputRef,
   textureTargetId,
   textureVersion,
   texturesRef,
-}) {
+}:Props) {
   const {
     addCustomBlock,
     customIdInput,
@@ -24,6 +34,7 @@ export default function PaletteSidebar({
     setSelectedBlock,
   } = paletteObj;
   const [blockSearchQuery, setBlockSearchQuery] = useState("");
+  const textureFileInputRef = useRef<HTMLInputElement>(null);
 
   const t = STRINGS.en;
   return (
@@ -50,12 +61,12 @@ export default function PaletteSidebar({
         style={{ ...inputStyle, width: "100%", marginBottom: 8, boxSizing: "border-box" }}
       />
       {palette
-        .filter((p) => {
+        .filter((p:PaletteEntry) => {
           if (!blockSearchQuery) return true;
           const q = blockSearchQuery.toLowerCase();
           return String(p.id).includes(q) || p.label.toLowerCase().includes(q);
         })
-        .map((p) => {
+        .map((p:PaletteEntry) => {
         const hasTexture = texturesRef.current.has(p.id);
         void textureVersion;
         return (
@@ -81,7 +92,7 @@ export default function PaletteSidebar({
               onClick={(e) => {
                 e.stopPropagation();
                 setTextureTargetId(p.id);
-                textureFileInputRef.current.click();
+                textureFileInputRef.current?.click();
               }}
               title={t.textureHint}
               style={{

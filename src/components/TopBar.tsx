@@ -2,16 +2,16 @@ import { STRINGS } from "../i18n/strings";
 import { inputStyle, actionBtn } from "../styles/inline";
 import { MAP_SIZES, REAL_BIOMES, MAX_CHUNKS, mapSizeKey } from "../constants";
 import { clamp } from "../lib/numbers";
+import { useRef } from "react";
 
 export default function TopBar({
   applyGridResize,
   applyServerEdits,
   cameraMode,
-  editsInputRef,
   entityInstances,
   exportJson,
   exportJsonCompressed,
-  fileInputRef,
+
   mapData,
   importJson,
   scheduleSave,
@@ -21,7 +21,10 @@ export default function TopBar({
   setViewMode,
   viewMode,
 }) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const editsInputRef = useRef<HTMLInputElement>(null);
   const t = STRINGS.en;
+
   return (
     <div
       style={{
@@ -204,7 +207,7 @@ export default function TopBar({
         {t.helpBtn}
       </button>
 
-      <button onClick={() => fileInputRef.current.click()} style={actionBtn}>
+      <button onClick={() => fileInputRef.current?.click()} style={actionBtn}>
         {t.importJson}
       </button>
       <input
@@ -214,7 +217,7 @@ export default function TopBar({
         onChange={importJson}
         style={{ display: "none" }}
       />
-      <button onClick={() => editsInputRef.current.click()} style={actionBtn} title={t.applyEditsTitle}>
+      <button onClick={() => editsInputRef.current?.click()} style={actionBtn} title={t.applyEditsTitle}>
         {t.applyEdits}
       </button>
       <input

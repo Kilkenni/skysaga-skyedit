@@ -2,7 +2,7 @@ import { STRINGS } from "../i18n/strings";
 import { inputStyle, actionBtn } from "../styles/inline";
 import { colorForId } from "../lib/colors";
 import { clamp, parseIdList } from "../lib/numbers";
-import { RngParams } from "./TerrainEditor";
+import { RngParams } from "../lib/mapGenerator";
 import React from "react";
 
 interface Props {

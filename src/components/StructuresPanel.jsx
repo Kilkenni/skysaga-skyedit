@@ -2,33 +2,54 @@ import { STRINGS } from "../i18n/strings";
 import { inputStyle, actionBtn } from "../styles/inline";
 import { clamp } from "../lib/numbers";
 
+function exportStructure(entry) {
+    const data = {
+      name: entry.name,
+      category: entry.category || "other",
+      sizeX: entry.sizeX,
+      sizeY: entry.sizeY,
+      sizeZ: entry.sizeZ,
+      voxels: entry.voxels,
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], {
+      type: "application/json",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = (entry.name || "structure").replace(/\s+/g, "_") + ".json";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
 export default function StructuresPanel({
   deleteStructure,
   ensureStructureThumb,
-  exportStructure,
   importStructureFiles,
-  newStructureCategory,
-  newStructureName,
+
   openPopover,
   placingRotation,
   placingStructureId,
   popoverAnchorRef,
   saveCurrentMapAsStructure,
-  setNewStructureCategory,
-  setNewStructureName,
+
   setOpenPopover,
   setPlacingRotation,
   setPlacingStructureId,
-  setStructureCategoryFilter,
   setStructureCount,
-  structureCategoryFilter,
   structureFileInputRef,
   structures,
   thumbVersion,
   toggleStructure,
   updateStructureField,
 }) {
+  const [structureCategoryFilter, setStructureCategoryFilter] = useState("all");
+  const [newStructureName, setNewStructureName] = useState("Structure");
+  const [newStructureCategory, setNewStructureCategory] = useState("other");
   const t = STRINGS.en;
+
   return (
     <div
       style={{

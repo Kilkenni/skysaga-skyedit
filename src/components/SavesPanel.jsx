@@ -4,12 +4,12 @@ import { inputStyle, actionBtn } from "../styles/inline";
 export default function SavesPanel({
   deleteNamedSlot,
   loadNamedSlot,
-  newSlotName,
   saveNamedSlot,
   saveSlots,
-  setNewSlotName,
 }) {
+  const [newSlotName, setNewSlotName] = useState("Slot 1");
   const t = STRINGS.en;
+  
   return (
     <div
       style={{
