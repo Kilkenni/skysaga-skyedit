@@ -1,7 +1,8 @@
+import { VoxelCell } from "../VoxelStore";
 import { colorForId } from "./colors";
 
-export function rotateStructure90(voxels, sizeX, sizeZ) {
-  const rotated = voxels.map((v) => ({
+function rotateStructure90(voxels:VoxelCell[], sizeX: number, sizeZ: number) {
+  const rotated: VoxelCell[] = voxels.map((v) => ({
     x: v.z,
     y: v.y,
     z: sizeX - 1 - v.x,
@@ -11,7 +12,7 @@ export function rotateStructure90(voxels, sizeX, sizeZ) {
   return { voxels: rotated, sizeX: sizeZ, sizeZ: sizeX };
 }
 
-export function getRotatedStructure(entry, rotationSteps) {
+function getRotatedStructure(entry, rotationSteps) {
   let cur = { voxels: entry.voxels, sizeX: entry.sizeX, sizeZ: entry.sizeZ };
   const steps = ((rotationSteps % 4) + 4) % 4;
   for (let i = 0; i < steps; i++) {
@@ -20,7 +21,7 @@ export function getRotatedStructure(entry, rotationSteps) {
   return { voxels: cur.voxels, sizeX: cur.sizeX, sizeY: entry.sizeY, sizeZ: cur.sizeZ };
 }
 
-export function generateStructureThumbnail(entry) {
+function generateStructureThumbnail(entry) {
   const cell = 4;
   const w = Math.max(1, Math.min(entry.sizeX, 48)) * cell;
   const d = Math.max(1, Math.min(entry.sizeZ, 48)) * cell;
@@ -28,6 +29,11 @@ export function generateStructureThumbnail(entry) {
   canvas.width = w;
   canvas.height = d;
   const ctx = canvas.getContext("2d");
+  /**
+   * @todo Temporary hack, needs a better guard against null
+   */
+  if(ctx === null)
+    throw new Error("No context on canvas!");
   ctx.fillStyle = "#12151b";
   ctx.fillRect(0, 0, w, d);
   const topAt = new Map();
@@ -46,4 +52,10 @@ export function generateStructureThumbnail(entry) {
     ctx.fillRect(x * cell, z * cell, cell, cell);
   }
   return canvas.toDataURL();
+}
+
+export {
+  rotateStructure90,
+  getRotatedStructure,
+  generateStructureThumbnail
 }

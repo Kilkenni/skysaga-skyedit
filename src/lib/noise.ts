@@ -1,4 +1,4 @@
-export function mulberry32(seed) {
+function mulberry32(seed) {
   let s = seed | 0;
   return function () {
     s = (s + 0x6d2b79f5) | 0;
@@ -8,7 +8,7 @@ export function mulberry32(seed) {
   };
 }
 
-export function makeValueNoise(rand, w, d, cellSize) {
+function makeValueNoise(rand:()=>number, w:number, d:number, cellSize:number) {
   const gw = Math.ceil(w / cellSize) + 2;
   const gd = Math.ceil(d / cellSize) + 2;
   const grid = new Array(gw * gd);
@@ -34,7 +34,7 @@ export function makeValueNoise(rand, w, d, cellSize) {
   };
 }
 
-export function makeValueNoise3D(rand, w, h, d, cellSize) {
+function makeValueNoise3D(rand:()=>number, w:number, h:number, d:number, cellSize: number) {
   const gw = Math.ceil(w / cellSize) + 2;
   const gh = Math.ceil(h / cellSize) + 2;
   const gd = Math.ceil(d / cellSize) + 2;
@@ -73,4 +73,10 @@ export function makeValueNoise3D(rand, w, h, d, cellSize) {
     const c1 = c01 + (c11 - c01) * sy;
     return c0 + (c1 - c0) * sz;
   };
+}
+
+export {
+  mulberry32,
+  makeValueNoise,
+  makeValueNoise3D
 }

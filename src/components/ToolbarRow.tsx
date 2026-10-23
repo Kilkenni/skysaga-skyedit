@@ -2,8 +2,9 @@ import { STRINGS } from "../i18n/strings";
 import { inputStyle, actionBtn } from "../styles/inline";
 import { colorForId } from "../lib/colors";
 import { clamp } from "../lib/numbers";
+import { RoadParams } from "./TerrainEditor";
 
-export default function ToolbarRow({
+interface props {
   cameraMode,
   clearLayer,
   clipboardInfo,
@@ -19,8 +20,13 @@ export default function ToolbarRow({
   onionSkin,
   redo,
   resetCameraView,
-  roadBlock,
+  roadParams: RoadParams,
+  updateRoadParams: <K extends keyof RoadParams>(paramName: K, value: RoadParams[K]) => void,
+  /*roadBlock,
   roadWidth,
+  setRoadBlock,
+  setRoadWidth,*/
+
   setCopyYFrom,
   setCopyYTo,
   setMirrorX,
@@ -28,8 +34,6 @@ export default function ToolbarRow({
   setMoveSpeed,
   setOnionRange,
   setOnionSkin,
-  setRoadBlock,
-  setRoadWidth,
   setShowBulkTexturePanel,
   setShowEntitiesPanel,
   setShowPresets,
@@ -50,7 +54,59 @@ export default function ToolbarRow({
   viewMode,
   zoom,
   zoomRef,
-}) {
+}
+
+export default function ToolbarRow({
+  cameraMode,
+  clearLayer,
+  clipboardInfo,
+  computeMapStats,
+  copyLayer,
+  copyYFrom,
+  copyYTo,
+  fillLayer,
+  mirrorX,
+  mirrorZ,
+  moveSpeed,
+  onionRange,
+  onionSkin,
+  redo,
+  resetCameraView,
+  roadParams,
+  updateRoadParams,
+  /*roadBlock,
+  roadWidth,
+  setRoadBlock,
+  setRoadWidth,*/
+
+  setCopyYFrom,
+  setCopyYTo,
+  setMirrorX,
+  setMirrorZ,
+  setMoveSpeed,
+  setOnionRange,
+  setOnionSkin,
+  setShowBulkTexturePanel,
+  setShowEntitiesPanel,
+  setShowPresets,
+  setShowRandomPanel,
+  setShowSaves,
+  setShowStructuresPanel,
+  setZoom,
+  showBulkTexturePanel,
+  showEntitiesPanel,
+  showPresets,
+  showRandomPanel,
+  showSaves,
+  showStructuresPanel,
+  tool,
+  toolBtn,
+  totalHeight,
+  undo,
+  viewMode,
+  zoom,
+  zoomRef,
+}:props) {
   const t = STRINGS.en;
   return (
     <div
@@ -117,8 +173,8 @@ export default function ToolbarRow({
                   type="number"
                   min={1}
                   max={9}
-                  value={roadWidth}
-                  onChange={(e) => setRoadWidth(clamp(e.target.value, 1, 9))}
+                  value={roadParams.roadWidth}
+                  onChange={(e) => updateRoadParams("roadWidth", clamp(e.target.value, 1, 9))}
                   style={{ ...inputStyle, width: 40 }}
                 />
               </label>
@@ -130,8 +186,8 @@ export default function ToolbarRow({
                   type="number"
                   min={1}
                   max={255}
-                  value={roadBlock}
-                  onChange={(e) => setRoadBlock(clamp(e.target.value, 1, 255))}
+                  value={roadParams.roadBlock}
+                  onChange={(e) => updateRoadParams("roadBlock", clamp(e.target.value, 1, 255))}
                   style={{ ...inputStyle, width: 46 }}
                 />
                 <span
@@ -139,7 +195,7 @@ export default function ToolbarRow({
                     width: 12,
                     height: 12,
                     borderRadius: 3,
-                    background: colorForId(clamp(roadBlock, 1, 255)),
+                    background: colorForId(clamp(roadParams.roadBlock, 1, 255)),
                   }}
                 />
               </label>

@@ -1,8 +1,6 @@
 # SkySaga Terrain Editor
 
-Browser voxel level editor (React 18 + three.js r128, bundled with Vite).
-This repo was produced by mechanically splitting the single-file prototype
-`SPA_Editor.html` — behaviour is unchanged, only the file layout is new.
+Browser voxel level editor (React 18 + three.js r128, bundled with Vite), based on the single-file prototype.
 
 ## Run
 
@@ -32,7 +30,6 @@ src/
     numbers.js             clamp, id-list parsing, weighted pick
     structures.js          structure rotation + thumbnails
     keys.js                keyOf(x,y,z)
-    storagePolyfill.js     window.storage -> localStorage (Claude artifacts had it built in)
   styles/
     inline.js              shared inline-style objects (inputStyle, actionBtn)
     global.css
@@ -43,11 +40,9 @@ src/
     HelpModal, StatsModal
 ```
 
-## Known state of the refactor (read before extending)
+## ToDo (possibly outdated)
 
-This is a *starting point*, not a finished architecture:
-
-- **`TerrainEditor.jsx` is still ~4,300 lines.** It owns every `useState`, the voxel
+- **`TerrainEditor.jsx` is still 4000+ lines.** It owns every `useState`, the voxel
   store, undo/redo, the terrain generator, and the whole three.js scene. These
   functions share state through closures, so they can't be moved out mechanically.
 - **Child components receive props by name, 1:1 with the old closure variables.**
@@ -59,9 +54,9 @@ This is a *starting point*, not a finished architecture:
 - `react-hooks/exhaustive-deps` is off (see `eslint.config.js`) because the prototype
   deliberately reads refs inside effects.
 
-Suggested order of attack: generator params object -> extract `generateRandomTerrain`
+Suggested order: generator params object -> extract `generateRandomTerrain`
 and the `regenerate*` functions into `lib/generator/` as pure functions
-(`(params, dims, rand) => heightMap + voxel writes`) -> `useVoxelStore` (voxels, undo/redo)
+(`(params, dims, rand) => heightMap + voxel writes`) ->
 -> `useThreeScene` (renderer, camera modes, instancing) -> `useStorage` (autosave, slots,
 presets, textures).
 

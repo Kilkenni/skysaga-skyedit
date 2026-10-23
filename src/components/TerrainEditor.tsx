@@ -96,6 +96,14 @@ function getDefaultLevelData():LevelData {
   }
 }
 
+// Tools
+
+export interface RoadParams {
+  roadPending: {x: number, z: number}|null,
+  roadWidth: number,
+  roadBlock: number,
+}
+
 export default function TerrainEditor() {
   // FIXED (2026-08-21): "Sky_Island" does not exist in Alpha v10 36731's
   // GeoData.json (confirmed via direct search - zero matches). Real biomes
@@ -125,10 +133,20 @@ export default function TerrainEditor() {
   const zoomRef = useRef(1);
   const [tool, setTool] = useState("pencil");
   const clipboardRef = useRef<any>(null);
-  const roadStartRef = useRef<any>(null);
-  const [roadPending, setRoadPending] = useState<any>(null);
+
+  /*
+  const [roadPending, setRoadPending] = useState<{x: number, z: number}|null>(null);
   const [roadWidth, setRoadWidth] = useState(2);
   const [roadBlock, setRoadBlock] = useState(18);
+  */
+
+  // Road Tool
+  const [roadParams, setRoadParams] = useState<RoadParams>({roadPending:null, roadWidth: 2, roadBlock: 18});
+  function updateRoadParams<K extends keyof RoadParams>(paramName: K, value: RoadParams[K]) {
+    setRoadParams(prev => ({...prev, [paramName]: value}) );
+  }
+  const roadStartRef = useRef<typeof roadParams.roadPending>(null);
+
   const [clipboardInfo, setClipboardInfo] = useState<any>(null);
   const [copyYFrom, setCopyYFrom] = useState(0);
   const [copyYTo, setCopyYTo] = useState(0);
@@ -562,7 +580,7 @@ export default function TerrainEditor() {
     toolRef.current = tool;
     if (tool !== "road") {
       roadStartRef.current = null;
-      setRoadPending(null);
+      updateRoadParams("roadPending", null);
     }
     if (tool === "copy") {
       setCopyYFrom(currentLayer);
@@ -744,7 +762,7 @@ export default function TerrainEditor() {
   }
 
   function applyLoadedData(raw:unknown) {
-    const data = parseLevelData(raw);
+    const data = parseLevelData(raw); // backward compatibility for old saves
     const {x: gridX, y: gridY, z: gridZ} = data.mapSizeChunks;
     const {biomeName, gameMode} = data;
     setMapData({ gridX, gridY, gridZ, biomeName, gameMode });
@@ -1219,11 +1237,11 @@ export default function TerrainEditor() {
     const minY = Math.max(0, Math.min(copyYFrom, copyYTo));
     const maxY = Math.min(totalHeight - 1, Math.max(copyYFrom, copyYTo));
     const cells:{
-      dx,
-      dy,
-      dz,
-      block,
-      meta
+      dx: number,
+      dy: number,
+      dz: number,
+      block: number,
+      meta: number
     }[] = [];
     for (let x = minX; x <= maxX; x++) {
       for (let y = minY; y <= maxY; y++) {
@@ -1249,7 +1267,7 @@ export default function TerrainEditor() {
     setTool("paste");
   }
 
-  function pasteRegionAt(x0, z0) {
+  function pasteRegionAt(x0: number, z0: number) {
     const clip = clipboardRef.current;
     if (!clip) return;
     beginStroke();
@@ -1264,7 +1282,7 @@ export default function TerrainEditor() {
   }
 
   // ---- road / path tool ----
-  function findSurfaceY(x, z) {
+  function findSurfaceY(x: number, z: number) {
     for (let y = totalHeight - 1; y >= 0; y--) {
       // const v = voxelsRef.current.get(keyOf(x, y, z));
       const v = terrain.get(x, y, z);
@@ -1273,7 +1291,7 @@ export default function TerrainEditor() {
     return -1;
   }
 
-  function drawRoad(x0, z0, x1, z1, widthBlocks, pathBlock) {
+  function drawRoad(x0: number, z0: number, x1: number, z1: number, widthBlocks: number, pathBlock: number) {
     const steps = Math.max(Math.abs(x1 - x0), Math.abs(z1 - z0), 1);
     const r = Math.max(0, Math.floor(widthBlocks / 2));
     beginStroke();
@@ -1431,7 +1449,7 @@ export default function TerrainEditor() {
     const treeSpacing = clamp(randTreeSpacing, 0, 20);
     const plantedTrees:{x,z}[] = [];
 
-    function canPlantTree(tx, tz) {
+    function canPlantTree(tx: number, tz: number) {
       const spacing2 = treeSpacing * treeSpacing;
       for (const p of plantedTrees) {
         const dx = tx - p.x;
@@ -1441,7 +1459,7 @@ export default function TerrainEditor() {
       return true;
     }
 
-    function plantTree(tx, groundY, tz) {
+    function plantTree(tx: number, groundY: number, tz: number) {
       const trunkHeight = treeMinH + Math.floor(rand() * (treeMaxH - treeMinH + 1));
       const trunkTop = groundY + trunkHeight - 1;
       if (trunkTop + 3 >= totalHeight) return;
@@ -1484,7 +1502,7 @@ export default function TerrainEditor() {
       z: number
     }[] = [];
 
-    function canPlantBush(tx, tz) {
+    function canPlantBush(tx: number, tz: number) {
       const spacing2 = bushSpacing * bushSpacing;
       for (const p of plantedBushes) {
         const dx = tx - p.x;
@@ -1494,7 +1512,7 @@ export default function TerrainEditor() {
       return true;
     }
 
-    function plantBush(tx, groundY, tz) {
+    function plantBush(tx: number, groundY: number, tz: number) {
       const layers = [
         { dy: 0, radius: 1 },
         { dy: 1, radius: 1 },
@@ -1809,7 +1827,7 @@ export default function TerrainEditor() {
       const oreBigChance = clamp(randOreBigChance, 0, 100) / 100;
       const oreBigR = clamp(randOreBigSize, 1, 10);
 
-      function placeOreBlob(cx, cy, cz, oreBlock, r) {
+      function placeOreBlob(cx: number, cy: number, cz: number, oreBlock, r) {
         for (let dx = -r; dx <= r; dx++) {
           for (let dy = -r; dy <= r; dy++) {
             for (let dz = -r; dz <= r; dz++) {
@@ -1954,10 +1972,11 @@ export default function TerrainEditor() {
   }
 
   // ---- targeted regeneration (decor / trees / ore only, reuses last heightMap) ----
-  function clearVoxelsByBlockIds(idSet) {
+  function clearVoxelsByBlockIds(idSet: Set<number>) {
     const toRemove:VoxelCell[] = [];
     for (const voxel of Array.from(terrain.cells())) {
-      if (idSet.has(voxel.block)) toRemove.push(voxel);
+      if (idSet.has(voxel.block))
+        toRemove.push(voxel);
     }
     
     for (const voxel of toRemove) {
@@ -1965,7 +1984,7 @@ export default function TerrainEditor() {
     }
   }
 
-  function plantTreeStandalone(rand, tx, groundY, tz, opts) {
+  function plantTreeStandalone(rand: ()=> number, tx: number, groundY: number, tz: number, opts):void {
     const { treeWood, treeLeaves, treeMinH, treeMaxH, width, depth, totalHeight } = opts;
     const trunkHeight = treeMinH + Math.floor(rand() * (treeMaxH - treeMinH + 1));
     const trunkTop = groundY + trunkHeight - 1;
@@ -1998,7 +2017,7 @@ export default function TerrainEditor() {
     }
   }
 
-  function plantBushStandalone(rand, tx, groundY, tz, opts) {
+  function plantBushStandalone(rand: ()=> number, tx: number, groundY: number, tz: number, opts):void {
     const { bushBlock, width, depth, totalHeight } = opts;
     const layers = [
       { dy: 0, radius: 1 },
@@ -2035,7 +2054,9 @@ export default function TerrainEditor() {
       setStatus(STRINGS.en.regenNothingToDo);
       return;
     }
-    const idSet = new Set(decoWeightedList.map((e) => e?.id ));
+    const idSet = new Set(decoWeightedList
+      .filter((e) => e !== null)
+      .map((e) => e.id ));
     beginStroke();
     clearVoxelsByBlockIds(idSet);
     for (let x = 0; x < width; x++) {
@@ -3267,13 +3288,13 @@ export default function TerrainEditor() {
       ctx.setLineDash([]);
     }
 
-    if (roadPending) {
+    if (roadParams.roadPending !== null) {
       ctx.strokeStyle = "#ffd166";
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.arc(
-        roadPending.x * cell + cell / 2,
-        roadPending.z * cell + cell / 2,
+        roadParams.roadPending.x * cell + cell / 2,
+        roadParams.roadPending.z * cell + cell / 2,
         cell * 0.6,
         0,
         Math.PI * 2
@@ -3308,7 +3329,7 @@ export default function TerrainEditor() {
       }
       ctx.globalAlpha = 1;
     }
-  }, [width, depth, cell, currentLayer, mirrorX, mirrorZ, roadPending, onionSkin, onionRange, totalHeight, entityInstances]);
+  }, [width, depth, cell, currentLayer, mirrorX, mirrorZ, roadParams.roadPending, onionSkin, onionRange, totalHeight, entityInstances]);
 
   useEffect(() => {
     draw();
@@ -3344,12 +3365,12 @@ export default function TerrainEditor() {
     if (tool === "road") {
       if (!roadStartRef.current) {
         roadStartRef.current = { x, z };
-        setRoadPending({ x, z });
+        updateRoadParams("roadPending", { x, z });
       } else {
         const start = roadStartRef.current;
-        drawRoad(start.x, start.z, x, z, roadWidth, roadBlock);
+        drawRoad(start.x, start.z, x, z, roadParams.roadWidth, roadParams.roadBlock);
         roadStartRef.current = null;
-        setRoadPending(null);
+        updateRoadParams("roadPending", null);
       }
       return;
     }
@@ -3969,8 +3990,11 @@ export default function TerrainEditor() {
             onionSkin={onionSkin}
             redo={()=> terrain.redo()}
             resetCameraView={resetCameraView}
-            roadBlock={roadBlock}
-            roadWidth={roadWidth}
+
+            roadParams={roadParams}
+            updateRoadParams={updateRoadParams}
+            // roadBlock={roadParams.roadBlock}
+            // roadWidth={roadParams.roadWidth}
             setCopyYFrom={setCopyYFrom}
             setCopyYTo={setCopyYTo}
             setMirrorX={setMirrorX}
@@ -3978,8 +4002,8 @@ export default function TerrainEditor() {
             setMoveSpeed={setMoveSpeed}
             setOnionRange={setOnionRange}
             setOnionSkin={setOnionSkin}
-            setRoadBlock={setRoadBlock}
-            setRoadWidth={setRoadWidth}
+            // setRoadBlock={setRoadBlock}
+            // setRoadWidth={setRoadWidth}
             setShowBulkTexturePanel={setShowBulkTexturePanel}
             setShowEntitiesPanel={setShowEntitiesPanel}
             setShowPresets={setShowPresets}
