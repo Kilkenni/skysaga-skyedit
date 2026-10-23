@@ -1,6 +1,6 @@
 import { AIR } from "../constants";
 
-function clamp(v, min, max) {
+function clamp(v:string|number, min:number, max:number):number {
   v = Number(v);
   if (isNaN(v))
     return min;

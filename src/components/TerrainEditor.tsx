@@ -96,6 +96,92 @@ function getDefaultLevelData():LevelData {
   }
 }
 
+export interface RngParams {
+  randMinH: number,
+  randMaxH: number,
+
+  randGroundDepth: number,
+  randBaseBlock: number,
+  randSurfaceBlock: number, // block ID
+  randDecoBlocks: string, // id:weight
+  randDecoChance: number,
+
+  randIsland: boolean,
+  randIslandMode: string, // todo enum "floating"
+  randIslandSize: string, // todo enum "large"
+  randIslandIrregularity: number,
+  randBottomRoughness: number,
+  randMaxThickness: number,
+
+  randArchipelago: boolean,
+  randIslandCount: number,
+
+  randSeaLevel: number,
+  randSeaBlock: number,
+  
+  randHills: boolean,
+  randHillStrength: number, // %
+  randMountains: boolean,
+  randMountainHeight: number,
+  randPlateaus: boolean,
+  randPlateauHeight: number,
+  randValleys: boolean,
+  randValleyDepth: number,
+
+  randRivers: boolean,
+  randRiverBlock: number,
+  randRiverWidth: number,
+  randWaterfalls: boolean,
+  randWaterfallDrop: number, // threshold
+
+  randLakes: boolean,
+  randLakeBlock: number,
+  randLakeSize: number,
+
+  randCaves: boolean,
+  randCaveDensity: number, // %
+  randCaveGlow: boolean,
+  randCaveGlowChance: number,
+  randCaveGlowBlock: number, // block ID
+
+  randTrees: boolean,
+  randTreeDensity: number,
+  randTreeMinHeight: number,
+  randTreeMaxHeight: number,
+  randTreeWoodBlock: number,
+  randTreeLeavesBlock: number,
+  randTreeSpacing: number,
+  randForests: boolean, // cluster into patches
+  randForestDensity: number,
+
+  randBushes: boolean,
+  randBushDensity: number,
+  randBushBlock: number,
+  randBushSpacing: number,
+
+  randAltitudeBlocks: boolean,
+  randBeachLevel: number,
+  randBeachBlock: number, // block ID
+  randSnowLevel: number,
+  randSnowBlock: number, // block ID
+
+  randSmoothShore: boolean,
+  randShoreRadius: number,
+  randShoreBlock: number,
+  randShoreCoverage: number, // in  %
+
+  randOres: boolean,
+  randOreBlocks: string, // IDs separated by comma
+  randOreCount: number, // vein count
+  randOreVeinSize: number,
+  randOreBigChance: number, // big cluster change, %
+  randOreBigSize: number,
+
+  randErosion: boolean,
+  randErosionStrength: number,
+  randErosionIterations: number,
+}
+
 // Tools
 
 export interface RoadParams {
@@ -154,8 +240,6 @@ export default function TerrainEditor() {
   const [onionSkin, setOnionSkin] = useState(false);
   const [onionRange, setOnionRange] = useState(1);
   const [mirrorZ, setMirrorZ] = useState(false);
-
-  
   
   const [hoverCell, setHoverCell] = useState<any>(null);
   const [voxelCount, setVoxelCount] = useState(0);
@@ -164,93 +248,7 @@ export default function TerrainEditor() {
 
   const [showRandomPanel, setShowRandomPanel] = useState(false);
 
-  interface RngParams {
-    randMinH: number,
-    randMaxH: number,
-
-    randGroundDepth: number,
-    randBaseBlock: number,
-    randSurfaceBlock: number, // block ID
-    randDecoBlocks: string, // id:weight
-    randDecoChance: number,
-
-    randIsland: boolean,
-    randIslandMode: string, // todo enum "floating"
-    randIslandSize: string, // todo enum "large"
-    randIslandIrregularity: number,
-    randBottomRoughness: number,
-    randMaxThickness: number,
-
-    randArchipelago: boolean,
-    randIslandCount: number,
-
-    randSeaLevel: number,
-    randSeaBlock: number,
-    
-    randHills: boolean,
-    randHillStrength: number, // %
-    randMountains: boolean,
-    randMountainHeight: number,
-    randPlateaus: boolean,
-    randPlateauHeight: number,
-    randValleys: boolean,
-    randValleyDepth: number,
-
-    randRivers: boolean,
-    randRiverBlock: number,
-    randRiverWidth: number,
-    randWaterfalls: boolean,
-    randWaterfallDrop: number, // threshold
-
-    randLakes: boolean,
-    randLakeBlock: number,
-    randLakeSize: number,
-
-    randCaves: boolean,
-    randCaveDensity: number, // %
-    randCaveGlow: boolean,
-    randCaveGlowChance: number,
-    randCaveGlowBlock: number, // block ID
-
-    randTrees: boolean,
-    randTreeDensity: number,
-    randTreeMinHeight: number,
-    randTreeMaxHeight: number,
-    randTreeWoodBlock: number,
-    randTreeLeavesBlock: number,
-    randTreeSpacing: number,
-    randForests: boolean, // cluster into patches
-    randForestDensity: number,
-
-    randBushes: boolean,
-    randBushDensity: number,
-    randBushBlock: number,
-    randBushSpacing: number,
-
-    randAltitudeBlocks: boolean,
-    randBeachLevel: number,
-    randBeachBlock: number, // block ID
-    randSnowLevel: number,
-    randSnowBlock: number, // block ID
-
-    randSmoothShore: boolean,
-    randShoreRadius: number,
-    randShoreBlock: number,
-    randShoreCoverage: number, // in  %
-
-    randOres: boolean,
-    randOreBlocks: string, // IDs separated by comma
-    randOreCount: number, // vein count
-    randOreVeinSize: number,
-    randOreBigChance: number, // big cluster change, %
-    randOreBigSize: number,
-
-    randErosion: boolean,
-    randErosionStrength: number,
-    randErosionIterations: number,
-  }
-
-  const DEFAULT_RNG_PARAMS:RngParams = {
+  const DEFAULT_RNG_PARAMS:Readonly<RngParams> = {
     randMinH: 0,
     randMaxH: 25,
 
@@ -262,7 +260,7 @@ export default function TerrainEditor() {
 
     randIsland: true,
     randIslandMode: "floating",
-    randIslandSize: "large", 
+    randIslandSize: "small", 
     randIslandIrregularity: 55,
     randBottomRoughness: 20,
     randMaxThickness: 25,
@@ -276,7 +274,7 @@ export default function TerrainEditor() {
     randHills: true,
     randHillStrength: 40,
     randMountains: false,
-    randMountainHeight: 32,
+    randMountainHeight: 35,
     randPlateaus: false,
     randPlateauHeight: 20,
     randValleys: false,
@@ -336,90 +334,12 @@ export default function TerrainEditor() {
     randErosionIterations: 2,
   }
 
-  const [rngParameters, setRngParameters] = useState<RngParams>(DEFAULT_RNG_PARAMS);
-
+  const [rngParameters, setRngParameters] = useState<RngParams>({...DEFAULT_RNG_PARAMS});
   function updateRngParameter<K extends keyof RngParams>(paramName: K, value: RngParams[K]) {
     setRngParameters(prev => ({...prev, [paramName]: value}) );
   }
 
   const [randSeed, setRandSeed] = useState<number>(() => Math.floor(Math.random() * 1000000));
-  const [randMinH, setRandMinH] = useState(0);
-  const [randMaxH, setRandMaxH] = useState(25);
-  const [randGroundDepth, setRandGroundDepth] = useState(43);
-  const [randErosion, setRandErosion] = useState(false);
-  const [randErosionStrength, setRandErosionStrength] = useState(40);
-  const [randErosionIterations, setRandErosionIterations] = useState(2);
-  const [randBaseBlock, setRandBaseBlock] = useState(24);
-  const [randSurfaceBlock, setRandSurfaceBlock] = useState(1);
-  const [randDecoBlocks, setRandDecoBlocks] = useState("");
-  const [randDecoChance, setRandDecoChance] = useState(0);
-  const [randIsland, setRandIsland] = useState(true);
-  const [randIslandIrregularity, setRandIslandIrregularity] = useState(55);
-  const [randIslandSize, setRandIslandSize] = useState("large");
-  const [randIslandMode, setRandIslandMode] = useState("floating");
-  const [randSeaLevel, setRandSeaLevel] = useState(15);
-  const [randSeaBlock, setRandSeaBlock] = useState(50);
-  const [randBottomRoughness, setRandBottomRoughness] = useState(20);
-  const [randMaxThickness, setRandMaxThickness] = useState(25);
-  const [randArchipelago, setRandArchipelago] = useState(false);
-  const [randIslandCount, setRandIslandCount] = useState(3);
-
-  const [randAltitudeBlocks, setRandAltitudeBlocks] = useState(false);
-  const [randBeachLevel, setRandBeachLevel] = useState(50);
-  const [randBeachBlock, setRandBeachBlock] = useState(24);
-  const [randSnowLevel, setRandSnowLevel] = useState(85);
-  const [randSnowBlock, setRandSnowBlock] = useState(10);
-
-  const [randOres, setRandOres] = useState(false);
-  const [randOreBlocks, setRandOreBlocks] = useState("25,26,42");
-  const [randOreCount, setRandOreCount] = useState(40);
-  const [randOreVeinSize, setRandOreVeinSize] = useState(2);
-  const [randOreBigChance, setRandOreBigChance] = useState(8);
-  const [randOreBigSize, setRandOreBigSize] = useState(5);
-
-  const [randCaveGlow, setRandCaveGlow] = useState(false);
-  const [randCaveGlowChance, setRandCaveGlowChance] = useState(3);
-  const [randCaveGlowBlock, setRandCaveGlowBlock] = useState(21);
-
-  const [randSmoothShore, setRandSmoothShore] = useState(false);
-  const [randShoreRadius, setRandShoreRadius] = useState(2);
-  const [randShoreBlock, setRandShoreBlock] = useState(24);
-  const [randShoreCoverage, setRandShoreCoverage] = useState(45);
-
-  const [randWaterfalls, setRandWaterfalls] = useState(false);
-  const [randWaterfallDrop, setRandWaterfallDrop] = useState(5);
-
-  const [randHills, setRandHills] = useState(true);
-  const [randHillStrength, setRandHillStrength] = useState(40);
-  const [randMountains, setRandMountains] = useState(false);
-  const [randMountainHeight, setRandMountainHeight] = useState(35);
-  const [randRivers, setRandRivers] = useState(false);
-  const [randRiverBlock, setRandRiverBlock] = useState(50);
-  const [randRiverWidth, setRandRiverWidth] = useState(3);
-  const [randCaves, setRandCaves] = useState(false);
-  const [randCaveDensity, setRandCaveDensity] = useState(35);
-
-  const [randLakes, setRandLakes] = useState(false);
-  const [randLakeBlock, setRandLakeBlock] = useState(50);
-  const [randLakeSize, setRandLakeSize] = useState(5);
-  const [randValleys, setRandValleys] = useState(false);
-  const [randValleyDepth, setRandValleyDepth] = useState(15);
-  const [randPlateaus, setRandPlateaus] = useState(false);
-  const [randPlateauHeight, setRandPlateauHeight] = useState(20);
-  const [randForests, setRandForests] = useState(false);
-  const [randForestDensity, setRandForestDensity] = useState(45);
-
-  const [randTrees, setRandTrees] = useState(false);
-  const [randTreeDensity, setRandTreeDensity] = useState(15);
-  const [randTreeMinHeight, setRandTreeMinHeight] = useState(3);
-  const [randTreeMaxHeight, setRandTreeMaxHeight] = useState(6);
-  const [randTreeWoodBlock, setRandTreeWoodBlock] = useState(5);
-  const [randTreeLeavesBlock, setRandTreeLeavesBlock] = useState(14);
-  const [randTreeSpacing, setRandTreeSpacing] = useState(3);
-  const [randBushes, setRandBushes] = useState(false);
-  const [randBushDensity, setRandBushDensity] = useState(15);
-  const [randBushBlock, setRandBushBlock] = useState(14);
-  const [randBushSpacing, setRandBushSpacing] = useState(1);
 
   const [showPresets, setShowPresets] = useState(false);
   const [presets, setPresets] = useState<string[]>([]);
@@ -1320,78 +1240,80 @@ export default function TerrainEditor() {
   function randomizeAllParams() {
     const r = (min, max) => Math.round(min + Math.random() * (max - min));
     setRandSeed(Math.floor(Math.random() * 1000000));
-    setRandMinH(r(0, 5));
-    const maxH = r(15, 40);
-    setRandMaxH(maxH);
-    setRandGroundDepth(r(15, 50));
-    setRandHillStrength(r(20, 70));
-    setRandMountainHeight(r(15, 45));
-    setRandPlateauHeight(r(10, 30));
-    setRandValleyDepth(r(8, 25));
-    setRandRiverWidth(r(2, 15));
-    setRandLakeSize(r(2, 8));
-    setRandCaveDensity(r(15, 50));
-    setRandTreeDensity(r(5, 30));
-    setRandForestDensity(r(30, 70));
-    setRandOreCount(r(10, 80));
-    setRandErosionStrength(r(20, 60));
-    setRandIslandIrregularity(r(20, 80));
-    setRandIslandSize(["small", "medium", "large"][Math.floor(Math.random() * 3)]);
-    setRandBottomRoughness(r(10, 35));
-    setRandMaxThickness(r(15, 35));
+    setRngParameters((prev) => ({
+      ...prev,
+      randMinH: r(0, 5),
+      randMaxH: r(15, 40),
+
+      randGroundDepth: r(15, 50),
+      randHillStrength: r(20, 70),
+      randMountainHeight: r(15, 45),
+      randPlateauHeight: r(10, 30),
+      randValleyDepth: r(8, 25),
+      randRiverWidth: r(2, 15),
+      randLakeSize: r(2, 8),
+      randCaveDensity: r(15, 50),
+      randTreeDensity: r(5, 30),
+      randForestDensity: r(30, 70),
+      randOreCount: r(10, 80),
+      randErosionStrength: r(20, 60),
+
+      randIslandIrregularity: r(20, 80),
+      randIslandSize: (["small", "medium", "large"][Math.floor(Math.random() * 3)]),
+      randBottomRoughness: r(10, 35),
+      randMaxThickness: r(15, 35),
+    }));
     setStatus(STRINGS.en.randomizedAll);
   }
 
-  function generateRandomTerrain() {
+  function generateRandomTerrain(params:RngParams) {
     const seedVal = Number(randSeed) || Math.floor(Math.random() * 1e9);
     const rand = mulberry32(seedVal);
     const noiseCoarse = makeValueNoise(rand, width, depth, 18);
     const noiseFine = makeValueNoise(rand, width, depth, 6);
     const mountainMask = makeValueNoise(rand, width, depth, 40);
     const mountainDetail = makeValueNoise(rand, width, depth, 10);
-    const plateauMask = randPlateaus ? makeValueNoise(rand, width, depth, 34) : null;
-    const valleyMask = randValleys ? makeValueNoise(rand, width, depth, 30) : null;
-    const valleyDetail = randValleys ? makeValueNoise(rand, width, depth, 9) : null;
-    const riverNoise = randRivers ? makeValueNoise(rand, width, depth, 24) : null;
-    const lakeNoise = randLakes ? makeValueNoise(rand, width, depth, 30) : null;
-    const forestMask = randForests ? makeValueNoise(rand, width, depth, 20) : null;
-    const islandShapeNoise = randIsland
-      ? makeValueNoise(rand, width, depth, Math.max(8, Math.max(width, depth) / 3.2))
-      : null;
-    const raggedBottom = randIsland && randIslandMode !== "island";
+    const plateauMask = params.randPlateaus ? makeValueNoise(rand, width, depth, 34) : null;
+    const valleyMask = params.randValleys ? makeValueNoise(rand, width, depth, 30) : null;
+    const valleyDetail = params.randValleys ? makeValueNoise(rand, width, depth, 9) : null;
+    const riverNoise = params.randRivers ? makeValueNoise(rand, width, depth, 24) : null;
+    const lakeNoise = params.randLakes ? makeValueNoise(rand, width, depth, 30) : null;
+    const forestMask = params.randForests ? makeValueNoise(rand, width, depth, 20) : null;
+    const islandShapeNoise = params.randIsland ? 
+      makeValueNoise(rand, width, depth, Math.max(8, Math.max(width, depth) / 3.2)) : null;
+    const raggedBottom = params.randIsland && params.randIslandMode !== "island";
     const bottomNoiseCoarse = raggedBottom
       ? makeValueNoise(rand, width, depth, Math.max(8, Math.max(width, depth) / 4))
       : null;
     const bottomNoiseFine = raggedBottom ? makeValueNoise(rand, width, depth, 6) : null;
-    const caveNoise = randCaves
-      ? makeValueNoise3D(rand, width, totalHeight, depth, 8)
-      : null;
+    const caveNoise = params.randCaves ? 
+      makeValueNoise3D(rand, width, totalHeight, depth, 8) : null;
 
-    const minH = clamp(randMinH, 0, totalHeight);
-    const maxH = clamp(randMaxH, minH, totalHeight);
-    const groundDepth = clamp(randGroundDepth, 0, totalHeight);
-    const bottomRoughness = clamp(randBottomRoughness, 0, totalHeight);
-    const maxThickness = clamp(randMaxThickness, 1, totalHeight);
-    const baseBlock = clamp(randBaseBlock, 1, 255);
-    const surfaceBlock = clamp(randSurfaceBlock, 1, 255);
-    const decoWeightedList = parseWeightedIdList(randDecoBlocks);
-    const decoChance = clamp(randDecoChance, 0, 100) / 100;
-    const hillStrength = clamp(randHillStrength, 0, 100) / 100;
-    const mountainBoost = clamp(randMountainHeight, 0, totalHeight);
-    const plateauHeight = clamp(randPlateauHeight, 1, totalHeight);
-    const valleyDepth = clamp(randValleyDepth, 1, totalHeight);
-    const riverBlock = clamp(randRiverBlock, 1, 255);
-    const riverThreshold = clamp(randRiverWidth, 1, 40) / 100;
-    const lakeBlock = clamp(randLakeBlock, 1, 255);
-    const lakeThreshold = 1 - clamp(randLakeSize, 1, 10) / 12;
-    const caveThreshold = 1 - clamp(randCaveDensity, 0, 100) / 100;
-    const forestDensity = clamp(randForestDensity, 0, 100) / 100;
-    const islandIrregularity = clamp(randIslandIrregularity, 0, 100) / 100;
+    const minH = clamp(params.randMinH, 0, totalHeight);
+    const maxH = clamp(params.randMaxH, minH, totalHeight);
+    const groundDepth = clamp(params.randGroundDepth, 0, totalHeight);
+    const bottomRoughness = clamp(params.randBottomRoughness, 0, totalHeight);
+    const maxThickness = clamp(params.randMaxThickness, 1, totalHeight);
+    const baseBlock = clamp(params.randBaseBlock, 1, 255);
+    const surfaceBlock = clamp(params.randSurfaceBlock, 1, 255);
+    const decoWeightedList = parseWeightedIdList(params.randDecoBlocks);
+    const decoChance = clamp(params.randDecoChance, 0, 100) / 100;
+    const hillStrength = clamp(params.randHillStrength, 0, 100) / 100;
+    const mountainBoost = clamp(params.randMountainHeight, 0, totalHeight);
+    const plateauHeight = clamp(params.randPlateauHeight, 1, totalHeight);
+    const valleyDepth = clamp(params.randValleyDepth, 1, totalHeight);
+    const riverBlock = clamp(params.randRiverBlock, 1, 255);
+    const riverThreshold = clamp(params.randRiverWidth, 1, 40) / 100;
+    const lakeBlock = clamp(params.randLakeBlock, 1, 255);
+    const lakeThreshold = 1 - clamp(params.randLakeSize, 1, 10) / 12;
+    const caveThreshold = 1 - clamp(params.randCaveDensity, 0, 100) / 100;
+    const forestDensity = clamp(params.randForestDensity, 0, 100) / 100;
+    const islandIrregularity = clamp(params.randIslandIrregularity, 0, 100) / 100;
     const islandMarginFactor =
-      { small: 0.42, medium: 0.7, large: 0.96 }[randIslandSize] || 0.96;
-    const isFloatingIsland = randIslandMode !== "island";
-    const seaLevel = clamp(randSeaLevel, 0, totalHeight);
-    const seaBlock = clamp(randSeaBlock, 1, 255);
+      { small: 0.42, medium: 0.7, large: 0.96 }[params.randIslandSize] || 0.96;
+    const isFloatingIsland = params.randIslandMode !== "island";
+    const seaLevel = clamp(params.randSeaLevel, 0, totalHeight);
+    const seaBlock = clamp(params.randSeaBlock, 1, 255);
     const riverLakeSurfaceH = isFloatingIsland
       ? groundDepth + Math.max(1, Math.round(minH * 0.6))
       : seaLevel;
@@ -1401,9 +1323,9 @@ export default function TerrainEditor() {
       z:number,
       radius:number
     }[] = [];
-    if (randIsland) {
-      if (randArchipelago) {
-        const count = clamp(randIslandCount, 1, 8);
+    if (params.randIsland) {
+      if (params.randArchipelago) {
+        const count = clamp(params.randIslandCount, 1, 8);
         const baseRadius =
           (Math.min(width, depth) / 2) * islandMarginFactor / Math.sqrt(count);
         for (let i = 0; i < count; i++) {
@@ -1421,32 +1343,32 @@ export default function TerrainEditor() {
       }
     }
 
-    const altitudeOn = randAltitudeBlocks;
-    const beachLevel = clamp(randBeachLevel, 0, totalHeight);
-    const beachBlock = clamp(randBeachBlock, 1, 255);
-    const snowLevel = clamp(randSnowLevel, 0, totalHeight);
-    const snowBlock = clamp(randSnowBlock, 1, 255);
+    const altitudeOn = params.randAltitudeBlocks;
+    const beachLevel = clamp(params.randBeachLevel, 0, totalHeight);
+    const beachBlock = clamp(params.randBeachBlock, 1, 255);
+    const snowLevel = clamp(params.randSnowLevel, 0, totalHeight);
+    const snowBlock = clamp(params.randSnowBlock, 1, 255);
 
-    const oresOn = randOres;
-    const oreBlockList = parseIdList(randOreBlocks);
+    const oresOn = params.randOres;
+    const oreBlockList = parseIdList(params.randOreBlocks);
     const oreCountScaled = Math.round(
-      clamp(randOreCount, 0, 500) * ((width * depth) / (128 * 128))
+      clamp(params.randOreCount, 0, 500) * ((width * depth) / (128 * 128))
     );
-    const oreVeinR = clamp(randOreVeinSize, 1, 5);
+    const oreVeinR = clamp(params.randOreVeinSize, 1, 5);
 
-    const caveGlowOn = randCaveGlow && randCaves;
-    const caveGlowChance = clamp(randCaveGlowChance, 0, 100) / 100;
-    const caveGlowBlock = clamp(randCaveGlowBlock, 1, 255);
+    const caveGlowOn = params.randCaveGlow && params.randCaves;
+    const caveGlowChance = clamp(params.randCaveGlowChance, 0, 100) / 100;
+    const caveGlowBlock = clamp(params.randCaveGlowBlock, 1, 255);
 
-    const shoreBlock = clamp(randShoreBlock, 1, 255);
-    const shoreRadius = clamp(randShoreRadius, 1, 5);
+    const shoreBlock = clamp(params.randShoreBlock, 1, 255);
+    const shoreRadius = clamp(params.randShoreRadius, 1, 5);
 
-    const treeChance = clamp(randTreeDensity, 0, 100) / 100;
-    const treeMinH = clamp(randTreeMinHeight, 1, 20);
-    const treeMaxH = clamp(randTreeMaxHeight, treeMinH, 20);
-    const treeWood = clamp(randTreeWoodBlock, 1, 255);
-    const treeLeaves = clamp(randTreeLeavesBlock, 1, 255);
-    const treeSpacing = clamp(randTreeSpacing, 0, 20);
+    const treeChance = clamp(params.randTreeDensity, 0, 100) / 100;
+    const treeMinH = clamp(params.randTreeMinHeight, 1, 20);
+    const treeMaxH = clamp(params.randTreeMaxHeight, treeMinH, 20);
+    const treeWood = clamp(params.randTreeWoodBlock, 1, 255);
+    const treeLeaves = clamp(params.randTreeLeavesBlock, 1, 255);
+    const treeSpacing = clamp(params.randTreeSpacing, 0, 20);
     const plantedTrees:{x,z}[] = [];
 
     function canPlantTree(tx: number, tz: number) {
@@ -1494,9 +1416,9 @@ export default function TerrainEditor() {
       plantedTrees.push({ x: tx, z: tz });
     }
 
-    const bushChance = clamp(randBushDensity, 0, 100) / 100;
-    const bushBlock = clamp(randBushBlock, 1, 255);
-    const bushSpacing = clamp(randBushSpacing, 0, 10);
+    const bushChance = clamp(params.randBushDensity, 0, 100) / 100;
+    const bushBlock = clamp(params.randBushBlock, 1, 255);
+    const bushSpacing = clamp(params.randBushSpacing, 0, 10);
     const plantedBushes:{
       x: number,
       z: number
@@ -1549,11 +1471,11 @@ export default function TerrainEditor() {
 
     for (let x = 0; x < width; x++) {
       for (let z = 0; z < depth; z++) {
-        let n = randHills
+        let n = params.randHills
           ? noiseCoarse(x, z) * (1 - hillStrength * 0.5) + noiseFine(x, z) * hillStrength
           : noiseCoarse(x, z);
 
-        if (randIsland) {
+        if (params.randIsland) {
           let shapeVar = 1;
           if (islandShapeNoise) {
             shapeVar = 1 + islandShapeNoise(x, z) * islandIrregularity * 1.6;
@@ -1572,7 +1494,7 @@ export default function TerrainEditor() {
 
         let h = Math.floor(minH + n * (maxH - minH));
 
-        if (randMountains) {
+        if (params.randMountains) {
           const mask = mountainMask(x, z);
           if (mask > 0.6) {
             const ridged = 1 - Math.abs(mountainDetail(x, z) * 2 - 1);
@@ -1581,7 +1503,7 @@ export default function TerrainEditor() {
           }
         }
 
-        if (randPlateaus && plateauMask) {
+        if (params.randPlateaus && plateauMask) {
           const mask = plateauMask(x, z);
           if (mask > 0.62) {
             const strength = (mask - 0.62) / 0.38;
@@ -1589,7 +1511,7 @@ export default function TerrainEditor() {
           }
         }
 
-        if (randValleys && valleyMask) {
+        if (params.randValleys && valleyMask) {
           const mask = valleyMask(x, z);
           if (mask > 0.6 && valleyDetail) {
             const ridged = 1 - Math.abs(valleyDetail(x, z) * 2 - 1);
@@ -1602,7 +1524,7 @@ export default function TerrainEditor() {
 
         let isWater = false;
         let waterBlock = surfaceBlock;
-        if (randRivers && riverNoise) {
+        if (params.randRivers && riverNoise) {
           const rv = Math.abs(riverNoise(x, z) * 2 - 1);
           if (rv < riverThreshold) {
             isWater = true;
@@ -1610,7 +1532,7 @@ export default function TerrainEditor() {
             h = Math.min(h, riverLakeSurfaceH);
           }
         }
-        if (!isWater && randLakes && lakeNoise) {
+        if (!isWater && params.randLakes && lakeNoise) {
           const lk = lakeNoise(x, z);
           if (lk > lakeThreshold) {
             isWater = true;
@@ -1630,9 +1552,9 @@ export default function TerrainEditor() {
       }
     }
 
-    if (randErosion) {
-      const erosionStrength = clamp(randErosionStrength, 0, 100) / 100;
-      const erosionIterations = clamp(randErosionIterations, 1, 5);
+    if (params.randErosion) {
+      const erosionStrength = clamp(params.randErosionStrength, 0, 100) / 100;
+      const erosionIterations = clamp(params.randErosionIterations, 1, 5);
       for (let iter = 0; iter < erosionIterations; iter++) {
         const next = heightMap.slice();
         for (let x = 0; x < width; x++) {
@@ -1665,11 +1587,11 @@ export default function TerrainEditor() {
     }
 
     let shoreMap:Uint8Array|null = null;
-    if (randSmoothShore) {
+    if (params.randSmoothShore) {
       shoreMap = new Uint8Array(width * depth);
       const r2 = shoreRadius * shoreRadius;
       const shoreNoise = makeValueNoise(rand, width, depth, Math.max(6, shoreRadius * 4));
-      const shoreThreshold = 1 - clamp(randShoreCoverage, 0, 100) / 100;
+      const shoreThreshold = 1 - clamp(params.randShoreCoverage, 0, 100) / 100;
       for (let x = 0; x < width; x++) {
         for (let z = 0; z < depth; z++) {
           const idx = x * depth + z;
@@ -1752,9 +1674,9 @@ export default function TerrainEditor() {
         }
 
         let treePlanted = false;
-        if (!isWater && !isSubmerged && height < totalHeight && randTrees) {
+        if (!isWater && !isSubmerged && height < totalHeight && params.randTrees) {
           let effectiveTreeChance = treeChance;
-          if (randForests && forestMask) {
+          if (params.randForests && forestMask) {
             effectiveTreeChance = forestMask(x, z) > 0.55 ? forestDensity : 0;
           }
           if (effectiveTreeChance > 0 && rand() < effectiveTreeChance && canPlantTree(x, z)) {
@@ -1769,7 +1691,7 @@ export default function TerrainEditor() {
           !isWater &&
           !isSubmerged &&
           height < totalHeight &&
-          randBushes &&
+          params.randBushes &&
           bushChance > 0 &&
           rand() < bushChance &&
           canPlantBush(x, z)
@@ -1794,8 +1716,8 @@ export default function TerrainEditor() {
       }
     }
 
-    if (randWaterfalls && randRivers) {
-      const dropThreshold = clamp(randWaterfallDrop, 2, 30);
+    if (params.randWaterfalls && params.randRivers) {
+      const dropThreshold = clamp(params.randWaterfallDrop, 2, 30);
       for (let x = 0; x < width; x++) {
         for (let z = 0; z < depth; z++) {
           const idx = x * depth + z;
@@ -1824,8 +1746,8 @@ export default function TerrainEditor() {
     }
 
     if (oresOn && oreBlockList.length && oreCountScaled > 0) {
-      const oreBigChance = clamp(randOreBigChance, 0, 100) / 100;
-      const oreBigR = clamp(randOreBigSize, 1, 10);
+      const oreBigChance = clamp(params.randOreBigChance, 0, 100) / 100;
+      const oreBigR = clamp(params.randOreBigSize, 1, 10);
 
       function placeOreBlob(cx: number, cy: number, cz: number, oreBlock, r) {
         for (let dx = -r; dx <= r; dx++) {
@@ -2041,15 +1963,15 @@ export default function TerrainEditor() {
     }
   }
 
-  function regenerateDecorations() {
+  function regenerateDecorations(params:RngParams) {
     const snap = lastHeightMapRef.current;
     if (!snap || snap.width !== width || snap.depth !== depth || snap.totalHeight !== totalHeight) {
       setStatus(STRINGS.en.regenNeedsGenerate);
       return;
     }
     const rand = mulberry32(Math.floor(Math.random() * 1e9));
-    const decoWeightedList = parseWeightedIdList(randDecoBlocks);
-    const decoChance = clamp(randDecoChance, 0, 100) / 100;
+    const decoWeightedList = parseWeightedIdList(params.randDecoBlocks);
+    const decoChance = clamp(params.randDecoChance, 0, 100) / 100;
     if (!decoWeightedList.length || decoChance <= 0) {
       setStatus(STRINGS.en.regenNothingToDo);
       return;
@@ -2075,28 +1997,28 @@ export default function TerrainEditor() {
     setStatus(STRINGS.en.regenDone);
   }
 
-  function regenerateTrees() {
+  function regenerateTrees(params:RngParams) {
     const snap = lastHeightMapRef.current;
     if (!snap || snap.width !== width || snap.depth !== depth || snap.totalHeight !== totalHeight) {
       setStatus(STRINGS.en.regenNeedsGenerate);
       return;
     }
-    if (!randTrees && !randBushes) {
+    if (!params.randTrees && !params.randBushes) {
       setStatus(STRINGS.en.regenNothingToDo);
       return;
     }
     const rand = mulberry32(Math.floor(Math.random() * 1e9));
-    const treeChance = clamp(randTreeDensity, 0, 100) / 100;
-    const treeMinH = clamp(randTreeMinHeight, 1, 20);
-    const treeMaxH = clamp(randTreeMaxHeight, treeMinH, 20);
-    const treeWood = clamp(randTreeWoodBlock, 1, 255);
-    const treeLeaves = clamp(randTreeLeavesBlock, 1, 255);
-    const treeSpacing = clamp(randTreeSpacing, 0, 20);
-    const forestDensity = clamp(randForestDensity, 0, 100) / 100;
-    const forestMask = randForests ? makeValueNoise(rand, width, depth, 20) : null;
-    const bushChance = clamp(randBushDensity, 0, 100) / 100;
-    const bushBlock = clamp(randBushBlock, 1, 255);
-    const bushSpacing = clamp(randBushSpacing, 0, 10);
+    const treeChance = clamp(params.randTreeDensity, 0, 100) / 100;
+    const treeMinH = clamp(params.randTreeMinHeight, 1, 20);
+    const treeMaxH = clamp(params.randTreeMaxHeight, treeMinH, 20);
+    const treeWood = clamp(params.randTreeWoodBlock, 1, 255);
+    const treeLeaves = clamp(params.randTreeLeavesBlock, 1, 255);
+    const treeSpacing = clamp(params.randTreeSpacing, 0, 20);
+    const forestDensity = clamp(params.randForestDensity, 0, 100) / 100;
+    const forestMask = params.randForests ? makeValueNoise(rand, width, depth, 20) : null;
+    const bushChance = clamp(params.randBushDensity, 0, 100) / 100;
+    const bushBlock = clamp(params.randBushBlock, 1, 255);
+    const bushSpacing = clamp(params.randBushSpacing, 0, 10);
     const idSet = new Set([treeWood, treeLeaves, bushBlock]);
     const plantedT:{x,z}[] = [];
     const plantedB:{x,z}[] = [];
@@ -2118,9 +2040,9 @@ export default function TerrainEditor() {
         if (h <= 0 || h >= totalHeight || snap.isWaterMap[idx]) continue;
 
         let treePlanted = false;
-        if (randTrees) {
+        if (params.randTrees) {
           let chance = treeChance;
-          if (randForests && forestMask) chance = forestMask(x, z) > 0.55 ? forestDensity : 0;
+          if (params.randForests && forestMask) chance = forestMask(x, z) > 0.55 ? forestDensity : 0;
           if (chance > 0 && rand() < chance && canPlant(plantedT, x, z, treeSpacing)) {
             plantTreeStandalone(rand, x, h, z, {
               treeWood,
@@ -2138,7 +2060,7 @@ export default function TerrainEditor() {
 
         if (
           !treePlanted &&
-          randBushes &&
+          params.randBushes &&
           bushChance > 0 &&
           rand() < bushChance &&
           canPlant(plantedB, x, z, bushSpacing)
@@ -2153,24 +2075,24 @@ export default function TerrainEditor() {
     setStatus(STRINGS.en.regenDone);
   }
 
-  function regenerateOre() {
+  function regenerateOre(params:RngParams) {
     const snap = lastHeightMapRef.current;
     if (!snap || snap.width !== width || snap.depth !== depth || snap.totalHeight !== totalHeight) {
       setStatus(STRINGS.en.regenNeedsGenerate);
       return;
     }
-    const oreBlockList = parseIdList(randOreBlocks);
+    const oreBlockList = parseIdList(params.randOreBlocks);
     const oreCountScaled = Math.round(
-      clamp(randOreCount, 0, 500) * ((width * depth) / (128 * 128))
+      clamp(params.randOreCount, 0, 500) * ((width * depth) / (128 * 128))
     );
     if (!oreBlockList.length || oreCountScaled <= 0) {
       setStatus(STRINGS.en.regenNothingToDo);
       return;
     }
-    const groundDepth = clamp(randGroundDepth, 0, totalHeight);
-    const oreVeinR = clamp(randOreVeinSize, 1, 5);
-    const oreBigChance = clamp(randOreBigChance, 0, 100) / 100;
-    const oreBigR = clamp(randOreBigSize, 1, 10);
+    const groundDepth = clamp(params.randGroundDepth, 0, totalHeight);
+    const oreVeinR = clamp(params.randOreVeinSize, 1, 5);
+    const oreBigChance = clamp(params.randOreBigChance, 0, 100) / 100;
+    const oreBigR = clamp(params.randOreBigSize, 1, 10);
     const rand = mulberry32(Math.floor(Math.random() * 1e9));
     const idSet = new Set(oreBlockList);
 
@@ -3627,158 +3549,6 @@ export default function TerrainEditor() {
   }
 
   // ---- generator presets (settings only, not the map itself) ----
-  function getGeneratorParams():RngParams {
-    return {
-      randMinH,
-      randMaxH,
-      randGroundDepth,
-      randBaseBlock,
-      randSurfaceBlock,
-      randDecoBlocks,
-      randDecoChance,
-      randIsland,
-      randIslandMode,
-      randIslandSize,
-      randIslandIrregularity,
-      randArchipelago,
-      randIslandCount,
-      randSeaLevel,
-      randSeaBlock,
-      randBottomRoughness,
-      randMaxThickness,
-      randHills,
-      randHillStrength,
-      randMountains,
-      randMountainHeight,
-      randPlateaus,
-      randPlateauHeight,
-      randValleys,
-      randValleyDepth,
-      randRivers,
-      randRiverBlock,
-      randRiverWidth,
-      randLakes,
-      randLakeBlock,
-      randLakeSize,
-      randCaves,
-      randCaveDensity,
-      randCaveGlow,
-      randCaveGlowChance,
-      randCaveGlowBlock,
-      randTrees,
-      randTreeDensity,
-      randTreeMinHeight,
-      randTreeMaxHeight,
-      randTreeWoodBlock,
-      randTreeLeavesBlock,
-      randTreeSpacing,
-      randBushes,
-      randBushDensity,
-      randBushBlock,
-      randBushSpacing,
-      randForests,
-      randForestDensity,
-      randAltitudeBlocks,
-      randBeachLevel,
-      randBeachBlock,
-      randSnowLevel,
-      randSnowBlock,
-      randSmoothShore,
-      randShoreRadius,
-      randShoreBlock,
-      randShoreCoverage,
-      randWaterfalls,
-      randWaterfallDrop,
-      randOres,
-      randOreBlocks,
-      randOreCount,
-      randOreVeinSize,
-      randOreBigChance,
-      randOreBigSize,
-      randErosion,
-      randErosionStrength,
-      randErosionIterations,
-    };
-  }
-
-  function applyGeneratorParams(p: RngParams) {
-    if (!p) return;
-    const setters = {
-      randMinH: setRandMinH,
-      randMaxH: setRandMaxH,
-      randGroundDepth: setRandGroundDepth,
-      randBaseBlock: setRandBaseBlock,
-      randSurfaceBlock: setRandSurfaceBlock,
-      randDecoBlocks: setRandDecoBlocks,
-      randDecoChance: setRandDecoChance,
-      randIsland: setRandIsland,
-      randIslandMode: setRandIslandMode,
-      randIslandSize: setRandIslandSize,
-      randIslandIrregularity: setRandIslandIrregularity,
-      randArchipelago: setRandArchipelago,
-      randIslandCount: setRandIslandCount,
-      randSeaLevel: setRandSeaLevel,
-      randSeaBlock: setRandSeaBlock,
-      randBottomRoughness: setRandBottomRoughness,
-      randMaxThickness: setRandMaxThickness,
-      randHills: setRandHills,
-      randHillStrength: setRandHillStrength,
-      randMountains: setRandMountains,
-      randMountainHeight: setRandMountainHeight,
-      randPlateaus: setRandPlateaus,
-      randPlateauHeight: setRandPlateauHeight,
-      randValleys: setRandValleys,
-      randValleyDepth: setRandValleyDepth,
-      randRivers: setRandRivers,
-      randRiverBlock: setRandRiverBlock,
-      randRiverWidth: setRandRiverWidth,
-      randLakes: setRandLakes,
-      randLakeBlock: setRandLakeBlock,
-      randLakeSize: setRandLakeSize,
-      randCaves: setRandCaves,
-      randCaveDensity: setRandCaveDensity,
-      randCaveGlow: setRandCaveGlow,
-      randCaveGlowChance: setRandCaveGlowChance,
-      randCaveGlowBlock: setRandCaveGlowBlock,
-      randTrees: setRandTrees,
-      randTreeDensity: setRandTreeDensity,
-      randTreeMinHeight: setRandTreeMinHeight,
-      randTreeMaxHeight: setRandTreeMaxHeight,
-      randTreeWoodBlock: setRandTreeWoodBlock,
-      randTreeLeavesBlock: setRandTreeLeavesBlock,
-      randTreeSpacing: setRandTreeSpacing,
-      randBushes: setRandBushes,
-      randBushDensity: setRandBushDensity,
-      randBushBlock: setRandBushBlock,
-      randBushSpacing: setRandBushSpacing,
-      randForests: setRandForests,
-      randForestDensity: setRandForestDensity,
-      randAltitudeBlocks: setRandAltitudeBlocks,
-      randBeachLevel: setRandBeachLevel,
-      randBeachBlock: setRandBeachBlock,
-      randSnowLevel: setRandSnowLevel,
-      randSnowBlock: setRandSnowBlock,
-      randSmoothShore: setRandSmoothShore,
-      randShoreRadius: setRandShoreRadius,
-      randShoreBlock: setRandShoreBlock,
-      randShoreCoverage: setRandShoreCoverage,
-      randWaterfalls: setRandWaterfalls,
-      randWaterfallDrop: setRandWaterfallDrop,
-      randOres: setRandOres,
-      randOreBlocks: setRandOreBlocks,
-      randOreCount: setRandOreCount,
-      randOreVeinSize: setRandOreVeinSize,
-      randOreBigChance: setRandOreBigChance,
-      randOreBigSize: setRandOreBigSize,
-      randErosion: setRandErosion,
-      randErosionStrength: setRandErosionStrength,
-      randErosionIterations: setRandErosionIterations,
-    };
-    for (const key of Object.keys(setters)) {
-      if (Object.prototype.hasOwnProperty.call(p, key)) setters[key](p[key]);
-    }
-  }
-
   const rngPresetPrefix = "terrain-editor-preset:";
   const rngPresetStorage = createNamedStore<RngParams>(rngPresetPrefix);
 
@@ -3789,15 +3559,18 @@ export default function TerrainEditor() {
   async function savePreset(name:string) {
     const normName = name.trim();
 
-    rngPresetStorage.save(normName, getGeneratorParams());
+    rngPresetStorage.save(normName, rngParameters);
     await refreshPresets();
     setStatus(STRINGS.en.presetSaved(normName));
   }
 
   async function loadPreset(name:string) {
-    const data = await rngPresetStorage.load(name);
-    if(data) {
-      applyGeneratorParams(data);
+    const preset = await rngPresetStorage.load(name);
+    if(preset !== null) {
+      setRngParameters(prev => ({
+        ...prev,
+        ...preset
+      }));
       setStatus(STRINGS.en.presetLoaded(name));
     }
   }
@@ -3868,7 +3641,13 @@ export default function TerrainEditor() {
     </button>
   );
 
-  const featureRow = (key, checked:boolean, onToggle:React.ChangeEventHandler, label:string, popoverBody) => {
+  const featureRow = (
+      key:string, 
+      checked:boolean, 
+      onToggle:React.ChangeEventHandler<HTMLInputElement>, 
+      label:string, 
+      popoverBody?: React.ReactNode
+    ) => {
     const isOpen = openPopover === key;
     return (
       <div
@@ -4028,150 +3807,14 @@ export default function TerrainEditor() {
 
           {showRandomPanel && (
             <RandomPanel
+              randSeed={randSeed}
+              setRandSeed={setRandSeed}
+              rngParams={rngParameters}
+              onParamChange={updateRngParameter}
+              totalHeight={totalHeight}
               featureRow={featureRow}
               generateRandomTerrain={generateRandomTerrain}
-              randAltitudeBlocks={randAltitudeBlocks}
-              randArchipelago={randArchipelago}
-              randBaseBlock={randBaseBlock}
-              randBeachBlock={randBeachBlock}
-              randBeachLevel={randBeachLevel}
-              randBottomRoughness={randBottomRoughness}
-              randBushBlock={randBushBlock}
-              randBushDensity={randBushDensity}
-              randBushSpacing={randBushSpacing}
-              randBushes={randBushes}
-              randCaveDensity={randCaveDensity}
-              randCaveGlow={randCaveGlow}
-              randCaveGlowBlock={randCaveGlowBlock}
-              randCaveGlowChance={randCaveGlowChance}
-              randCaves={randCaves}
-              randDecoBlocks={randDecoBlocks}
-              randDecoChance={randDecoChance}
-              randErosion={randErosion}
-              randErosionIterations={randErosionIterations}
-              randErosionStrength={randErosionStrength}
-              randForestDensity={randForestDensity}
-              randForests={randForests}
-              randGroundDepth={randGroundDepth}
-              randHillStrength={randHillStrength}
-              randHills={randHills}
-              randIsland={randIsland}
-              randIslandCount={randIslandCount}
-              randIslandIrregularity={randIslandIrregularity}
-              randIslandMode={randIslandMode}
-              randIslandSize={randIslandSize}
-              randLakeBlock={randLakeBlock}
-              randLakeSize={randLakeSize}
-              randLakes={randLakes}
-              randMaxH={randMaxH}
-              randMaxThickness={randMaxThickness}
-              randMinH={randMinH}
-              randMountainHeight={randMountainHeight}
-              randMountains={randMountains}
-              randOreBigChance={randOreBigChance}
-              randOreBigSize={randOreBigSize}
-              randOreBlocks={randOreBlocks}
-              randOreCount={randOreCount}
-              randOreVeinSize={randOreVeinSize}
-              randOres={randOres}
-              randPlateauHeight={randPlateauHeight}
-              randPlateaus={randPlateaus}
-              randRiverBlock={randRiverBlock}
-              randRiverWidth={randRiverWidth}
-              randRivers={randRivers}
-              randSeaBlock={randSeaBlock}
-              randSeaLevel={randSeaLevel}
-              randSeed={randSeed}
-              randShoreBlock={randShoreBlock}
-              randShoreCoverage={randShoreCoverage}
-              randShoreRadius={randShoreRadius}
-              randSmoothShore={randSmoothShore}
-              randSnowBlock={randSnowBlock}
-              randSnowLevel={randSnowLevel}
-              randSurfaceBlock={randSurfaceBlock}
-              randTreeDensity={randTreeDensity}
-              randTreeLeavesBlock={randTreeLeavesBlock}
-              randTreeMaxHeight={randTreeMaxHeight}
-              randTreeMinHeight={randTreeMinHeight}
-              randTreeSpacing={randTreeSpacing}
-              randTreeWoodBlock={randTreeWoodBlock}
-              randTrees={randTrees}
-              randValleyDepth={randValleyDepth}
-              randValleys={randValleys}
-              randWaterfallDrop={randWaterfallDrop}
-              randWaterfalls={randWaterfalls}
               randomizeAllParams={randomizeAllParams}
-              setRandAltitudeBlocks={setRandAltitudeBlocks}
-              setRandArchipelago={setRandArchipelago}
-              setRandBaseBlock={setRandBaseBlock}
-              setRandBeachBlock={setRandBeachBlock}
-              setRandBeachLevel={setRandBeachLevel}
-              setRandBottomRoughness={setRandBottomRoughness}
-              setRandBushBlock={setRandBushBlock}
-              setRandBushDensity={setRandBushDensity}
-              setRandBushSpacing={setRandBushSpacing}
-              setRandBushes={setRandBushes}
-              setRandCaveDensity={setRandCaveDensity}
-              setRandCaveGlow={setRandCaveGlow}
-              setRandCaveGlowBlock={setRandCaveGlowBlock}
-              setRandCaveGlowChance={setRandCaveGlowChance}
-              setRandCaves={setRandCaves}
-              setRandDecoBlocks={setRandDecoBlocks}
-              setRandDecoChance={setRandDecoChance}
-              setRandErosion={setRandErosion}
-              setRandErosionIterations={setRandErosionIterations}
-              setRandErosionStrength={setRandErosionStrength}
-              setRandForestDensity={setRandForestDensity}
-              setRandForests={setRandForests}
-              setRandGroundDepth={setRandGroundDepth}
-              setRandHillStrength={setRandHillStrength}
-              setRandHills={setRandHills}
-              setRandIsland={setRandIsland}
-              setRandIslandCount={setRandIslandCount}
-              setRandIslandIrregularity={setRandIslandIrregularity}
-              setRandIslandMode={setRandIslandMode}
-              setRandIslandSize={setRandIslandSize}
-              setRandLakeBlock={setRandLakeBlock}
-              setRandLakeSize={setRandLakeSize}
-              setRandLakes={setRandLakes}
-              setRandMaxH={setRandMaxH}
-              setRandMaxThickness={setRandMaxThickness}
-              setRandMinH={setRandMinH}
-              setRandMountainHeight={setRandMountainHeight}
-              setRandMountains={setRandMountains}
-              setRandOreBigChance={setRandOreBigChance}
-              setRandOreBigSize={setRandOreBigSize}
-              setRandOreBlocks={setRandOreBlocks}
-              setRandOreCount={setRandOreCount}
-              setRandOreVeinSize={setRandOreVeinSize}
-              setRandOres={setRandOres}
-              setRandPlateauHeight={setRandPlateauHeight}
-              setRandPlateaus={setRandPlateaus}
-              setRandRiverBlock={setRandRiverBlock}
-              setRandRiverWidth={setRandRiverWidth}
-              setRandRivers={setRandRivers}
-              setRandSeaBlock={setRandSeaBlock}
-              setRandSeaLevel={setRandSeaLevel}
-              setRandSeed={setRandSeed}
-              setRandShoreBlock={setRandShoreBlock}
-              setRandShoreCoverage={setRandShoreCoverage}
-              setRandShoreRadius={setRandShoreRadius}
-              setRandSmoothShore={setRandSmoothShore}
-              setRandSnowBlock={setRandSnowBlock}
-              setRandSnowLevel={setRandSnowLevel}
-              setRandSurfaceBlock={setRandSurfaceBlock}
-              setRandTreeDensity={setRandTreeDensity}
-              setRandTreeLeavesBlock={setRandTreeLeavesBlock}
-              setRandTreeMaxHeight={setRandTreeMaxHeight}
-              setRandTreeMinHeight={setRandTreeMinHeight}
-              setRandTreeSpacing={setRandTreeSpacing}
-              setRandTreeWoodBlock={setRandTreeWoodBlock}
-              setRandTrees={setRandTrees}
-              setRandValleyDepth={setRandValleyDepth}
-              setRandValleys={setRandValleys}
-              setRandWaterfallDrop={setRandWaterfallDrop}
-              setRandWaterfalls={setRandWaterfalls}
-              totalHeight={totalHeight}
             />
           )}
 

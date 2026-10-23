@@ -4,7 +4,7 @@ import { colorForId } from "../lib/colors";
 import { clamp } from "../lib/numbers";
 import { RoadParams } from "./TerrainEditor";
 
-interface props {
+interface Props {
   cameraMode,
   clearLayer,
   clipboardInfo,
@@ -106,7 +106,7 @@ export default function ToolbarRow({
   viewMode,
   zoom,
   zoomRef,
-}:props) {
+}:Props) {
   const t = STRINGS.en;
   return (
     <div

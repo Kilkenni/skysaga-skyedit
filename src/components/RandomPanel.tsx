@@ -2,154 +2,47 @@ import { STRINGS } from "../i18n/strings";
 import { inputStyle, actionBtn } from "../styles/inline";
 import { colorForId } from "../lib/colors";
 import { clamp, parseIdList } from "../lib/numbers";
+import { RngParams } from "./TerrainEditor";
+import React from "react";
 
-export default function RandomPanel({
-  featureRow,
-  generateRandomTerrain,
-  randAltitudeBlocks,
-  randArchipelago,
-  randBaseBlock,
-  randBeachBlock,
-  randBeachLevel,
-  randBottomRoughness,
-  randBushBlock,
-  randBushDensity,
-  randBushSpacing,
-  randBushes,
-  randCaveDensity,
-  randCaveGlow,
-  randCaveGlowBlock,
-  randCaveGlowChance,
-  randCaves,
-  randDecoBlocks,
-  randDecoChance,
-  randErosion,
-  randErosionIterations,
-  randErosionStrength,
-  randForestDensity,
-  randForests,
-  randGroundDepth,
-  randHillStrength,
-  randHills,
-  randIsland,
-  randIslandCount,
-  randIslandIrregularity,
-  randIslandMode,
-  randIslandSize,
-  randLakeBlock,
-  randLakeSize,
-  randLakes,
-  randMaxH,
-  randMaxThickness,
-  randMinH,
-  randMountainHeight,
-  randMountains,
-  randOreBigChance,
-  randOreBigSize,
-  randOreBlocks,
-  randOreCount,
-  randOreVeinSize,
-  randOres,
-  randPlateauHeight,
-  randPlateaus,
-  randRiverBlock,
-  randRiverWidth,
-  randRivers,
-  randSeaBlock,
-  randSeaLevel,
-  randSeed,
-  randShoreBlock,
-  randShoreCoverage,
-  randShoreRadius,
-  randSmoothShore,
-  randSnowBlock,
-  randSnowLevel,
-  randSurfaceBlock,
-  randTreeDensity,
-  randTreeLeavesBlock,
-  randTreeMaxHeight,
-  randTreeMinHeight,
-  randTreeSpacing,
-  randTreeWoodBlock,
-  randTrees,
-  randValleyDepth,
-  randValleys,
-  randWaterfallDrop,
-  randWaterfalls,
-  randomizeAllParams,
-  setRandAltitudeBlocks,
-  setRandArchipelago,
-  setRandBaseBlock,
-  setRandBeachBlock,
-  setRandBeachLevel,
-  setRandBottomRoughness,
-  setRandBushBlock,
-  setRandBushDensity,
-  setRandBushSpacing,
-  setRandBushes,
-  setRandCaveDensity,
-  setRandCaveGlow,
-  setRandCaveGlowBlock,
-  setRandCaveGlowChance,
-  setRandCaves,
-  setRandDecoBlocks,
-  setRandDecoChance,
-  setRandErosion,
-  setRandErosionIterations,
-  setRandErosionStrength,
-  setRandForestDensity,
-  setRandForests,
-  setRandGroundDepth,
-  setRandHillStrength,
-  setRandHills,
-  setRandIsland,
-  setRandIslandCount,
-  setRandIslandIrregularity,
-  setRandIslandMode,
-  setRandIslandSize,
-  setRandLakeBlock,
-  setRandLakeSize,
-  setRandLakes,
-  setRandMaxH,
-  setRandMaxThickness,
-  setRandMinH,
-  setRandMountainHeight,
-  setRandMountains,
-  setRandOreBigChance,
-  setRandOreBigSize,
-  setRandOreBlocks,
-  setRandOreCount,
-  setRandOreVeinSize,
-  setRandOres,
-  setRandPlateauHeight,
-  setRandPlateaus,
-  setRandRiverBlock,
-  setRandRiverWidth,
-  setRandRivers,
-  setRandSeaBlock,
-  setRandSeaLevel,
-  setRandSeed,
-  setRandShoreBlock,
-  setRandShoreCoverage,
-  setRandShoreRadius,
-  setRandSmoothShore,
-  setRandSnowBlock,
-  setRandSnowLevel,
-  setRandSurfaceBlock,
-  setRandTreeDensity,
-  setRandTreeLeavesBlock,
-  setRandTreeMaxHeight,
-  setRandTreeMinHeight,
-  setRandTreeSpacing,
-  setRandTreeWoodBlock,
-  setRandTrees,
-  setRandValleyDepth,
-  setRandValleys,
-  setRandWaterfallDrop,
-  setRandWaterfalls,
-  totalHeight,
-}) {
+interface Props {
+  randSeed: number,
+  setRandSeed: (newSeed:number)=>void,
+  rngParams: RngParams,
+  onParamChange: <K extends keyof RngParams>(paramName: K, value: RngParams[K])=> void,
+  totalHeight: number,
+  featureRow: (
+    key:string, 
+    checked:boolean, 
+    onToggle:React.ChangeEventHandler<HTMLInputElement>, 
+    label:string, 
+    popoverBody?: React.ReactNode
+  ) => React.JSX.Element,
+  generateRandomTerrain: (params: RngParams) => void,
+  randomizeAllParams: () => void,
+}
+
+export default function RandomPanel(props:Props) {
   const t = STRINGS.en;
+  // helper to write input-specific helpers using TS type safety. Yay!
+  type KeysOfType<T, V> = { [K in keyof T]: T[K] extends V ? K : never }[keyof T];
+
+  // helper, autoconverts string from text input to number
+  function setNum(key: KeysOfType<RngParams, number>){
+    return (event:React.ChangeEvent<HTMLInputElement, HTMLInputElement>) => 
+      props.onParamChange(key, Number(event.target.value));
+  }
+
+  function setStr(key: KeysOfType<RngParams, string>){
+    return (event:React.ChangeEvent<HTMLInputElement, HTMLInputElement>) => 
+      props.onParamChange(key, event.target.value);
+  }
+
+  function setBool(key: KeysOfType<RngParams, boolean>){
+    return (event:React.ChangeEvent<HTMLInputElement, HTMLInputElement>) => 
+      props.onParamChange(key, event.target.checked);
+  }
+
   return (
     <div
       style={{
@@ -166,21 +59,21 @@ export default function RandomPanel({
         {t.seed}
         <input
           type="number"
-          value={randSeed}
-          onChange={(e) => setRandSeed(e.target.value)}
+          value={props.randSeed}
+          onChange={(e) => props.setRandSeed(Number(e.target.value))}
           style={{ ...inputStyle, width: 80 }}
         />
       </label>
       <button
         style={actionBtn}
-        onClick={() => setRandSeed(Math.floor(Math.random() * 1000000))}
+        onClick={() => props.setRandSeed(Math.floor(Math.random() * 1000000))}
         title={t.seedTitle}
       >
         🎲
       </button>
       <button
         style={{ ...actionBtn, background: "#2a1b3a", borderColor: "#5b2f6b" }}
-        onClick={randomizeAllParams}
+        onClick={props.randomizeAllParams}
         title={t.randomizeAllTitle}
       >
         {t.randomizeAll}
@@ -191,8 +84,8 @@ export default function RandomPanel({
         <input
           type="number"
           min={0}
-          value={randMinH}
-          onChange={(e) => setRandMinH(e.target.value)}
+          value={props.rngParams.randMinH}
+          onChange={setNum("randMinH")}
           style={{ ...inputStyle, width: 46 }}
         />
       </label>
@@ -201,8 +94,8 @@ export default function RandomPanel({
         <input
           type="number"
           min={1}
-          value={randMaxH}
-          onChange={(e) => setRandMaxH(e.target.value)}
+          value={props.rngParams.randMaxH}
+          onChange={setNum("randMaxH")}
           style={{ ...inputStyle, width: 46 }}
         />
       </label>
@@ -213,8 +106,8 @@ export default function RandomPanel({
           type="number"
           min={0}
           max={64}
-          value={randGroundDepth}
-          onChange={(e) => setRandGroundDepth(e.target.value)}
+          value={props.rngParams.randGroundDepth}
+          onChange={setNum("randGroundDepth")}
           style={{ ...inputStyle, width: 46 }}
           title={t.groundDepthTitle}
         />
@@ -226,8 +119,8 @@ export default function RandomPanel({
           type="number"
           min={1}
           max={255}
-          value={randBaseBlock}
-          onChange={(e) => setRandBaseBlock(e.target.value)}
+          value={props.rngParams.randBaseBlock}
+          onChange={setNum("randBaseBlock")}
           style={{ ...inputStyle, width: 46 }}
         />
         <span
@@ -235,7 +128,7 @@ export default function RandomPanel({
             width: 12,
             height: 12,
             borderRadius: 3,
-            background: colorForId(clamp(randBaseBlock, 1, 255)),
+            background: colorForId(clamp(props.rngParams.randBaseBlock, 1, 255)),
           }}
         />
       </label>
@@ -245,8 +138,8 @@ export default function RandomPanel({
           type="number"
           min={1}
           max={255}
-          value={randSurfaceBlock}
-          onChange={(e) => setRandSurfaceBlock(e.target.value)}
+          value={props.rngParams.randSurfaceBlock}
+          onChange={setNum("randSurfaceBlock")}
           style={{ ...inputStyle, width: 46 }}
         />
         <span
@@ -254,7 +147,7 @@ export default function RandomPanel({
             width: 12,
             height: 12,
             borderRadius: 3,
-            background: colorForId(clamp(randSurfaceBlock, 1, 255)),
+            background: colorForId(clamp(props.rngParams.randSurfaceBlock, 1, 255)),
           }}
         />
       </label>
@@ -262,13 +155,13 @@ export default function RandomPanel({
         {t.decoId}
         <input
           type="text"
-          value={randDecoBlocks}
-          onChange={(e) => setRandDecoBlocks(e.target.value)}
+          value={props.rngParams.randDecoBlocks}
+          onChange={setStr("randDecoBlocks")}
           placeholder="20:5, 29:1, 35:1"
           style={{ ...inputStyle, width: 90 }}
         />
         <div style={{ display: "flex", gap: 2 }}>
-          {parseIdList(randDecoBlocks)
+          {parseIdList(props.rngParams.randDecoBlocks)
             .slice(0, 6)
             .map((id, i) => (
               <span
@@ -290,16 +183,16 @@ export default function RandomPanel({
           type="number"
           min={0}
           max={100}
-          value={randDecoChance}
-          onChange={(e) => setRandDecoChance(e.target.value)}
+          value={props.rngParams.randDecoChance}
+          onChange={setNum("randDecoChance")}
           style={{ ...inputStyle, width: 46 }}
         />
       </label>
 
-      {featureRow(
+      {props.featureRow(
         "island",
-        randIsland,
-        (e) => setRandIsland(e.target.checked),
+        props.rngParams.randIsland,
+        setBool("randIsland"),
         t.islandShape,
         <>
           <div style={{ fontSize: 11, color: "#8a91a3" }}>{t.islandMode}</div>
@@ -307,24 +200,24 @@ export default function RandomPanel({
             {["floating", "island"].map((mode) => (
               <button
                 key={mode}
-                onClick={() => setRandIslandMode(mode)}
+                onClick={() => props.onParamChange("randIslandMode", mode)}
                 style={{
                   ...actionBtn,
                   flex: 1,
                   padding: "4px 6px",
                   fontSize: 11,
                   border:
-                    randIslandMode === mode
+                    props.rngParams.randIslandMode === mode
                       ? "1px solid #6ea8fe"
                       : "1px solid #2a2f3a",
-                  background: randIslandMode === mode ? "#22314d" : "#1a1d24",
+                  background: props.rngParams.randIslandMode === mode ? "#22314d" : "#1a1d24",
                 }}
               >
                 {mode === "floating" ? t.islandModeFloating : t.islandModeSea}
               </button>
             ))}
           </div>
-          {randIslandMode === "island" && (
+          {props.rngParams.randIslandMode === "island" && (
             <>
               <label
                 style={{ fontSize: 12, display: "flex", gap: 4, alignItems: "center" }}
@@ -334,8 +227,8 @@ export default function RandomPanel({
                   type="number"
                   min={0}
                   max={64}
-                  value={randSeaLevel}
-                  onChange={(e) => setRandSeaLevel(e.target.value)}
+                  value={props.rngParams.randSeaLevel}
+                  onChange={setNum("randSeaLevel")}
                   style={{ ...inputStyle, width: 46 }}
                 />
               </label>
@@ -347,8 +240,8 @@ export default function RandomPanel({
                   type="number"
                   min={1}
                   max={255}
-                  value={randSeaBlock}
-                  onChange={(e) => setRandSeaBlock(e.target.value)}
+                  value={props.rngParams.randSeaBlock}
+                  onChange={setNum("randSeaBlock")}
                   style={{ ...inputStyle, width: 46 }}
                 />
                 <span
@@ -356,13 +249,13 @@ export default function RandomPanel({
                     width: 12,
                     height: 12,
                     borderRadius: 3,
-                    background: colorForId(clamp(randSeaBlock, 1, 255)),
+                    background: colorForId(clamp(props.rngParams.randSeaBlock, 1, 255)),
                   }}
                 />
               </label>
             </>
           )}
-          {randIslandMode === "floating" && (
+          {props.rngParams.randIslandMode === "floating" && (
             <>
               <label
                 style={{ fontSize: 12, display: "flex", gap: 4, alignItems: "center" }}
@@ -372,8 +265,8 @@ export default function RandomPanel({
                   type="number"
                   min={1}
                   max={64}
-                  value={randMaxThickness}
-                  onChange={(e) => setRandMaxThickness(e.target.value)}
+                  value={props.rngParams.randMaxThickness}
+                  onChange={setNum("randMaxThickness")}
                   style={{ ...inputStyle, width: 46 }}
                   title={t.maxThicknessTitle}
                 />
@@ -386,8 +279,8 @@ export default function RandomPanel({
                   type="number"
                   min={0}
                   max={64}
-                  value={randBottomRoughness}
-                  onChange={(e) => setRandBottomRoughness(e.target.value)}
+                  value={props.rngParams.randBottomRoughness}
+                  onChange={setNum("randBottomRoughness")}
                   style={{ ...inputStyle, width: 46 }}
                   title={t.bottomRoughnessTitle}
                 />
@@ -397,12 +290,12 @@ export default function RandomPanel({
           <label style={{ fontSize: 12, display: "flex", gap: 4, alignItems: "center" }}>
             <input
               type="checkbox"
-              checked={randArchipelago}
-              onChange={(e) => setRandArchipelago(e.target.checked)}
+              checked={props.rngParams.randArchipelago}
+              onChange={setBool("randArchipelago")}
             />
             {t.archipelago}
           </label>
-          {randArchipelago && (
+          {props.rngParams.randArchipelago && (
             <label
               style={{ fontSize: 12, display: "flex", gap: 4, alignItems: "center" }}
             >
@@ -411,8 +304,8 @@ export default function RandomPanel({
                 type="number"
                 min={1}
                 max={8}
-                value={randIslandCount}
-                onChange={(e) => setRandIslandCount(clamp(e.target.value, 1, 8))}
+                value={props.rngParams.randIslandCount}
+                onChange={(e) => props.onParamChange("randIslandCount", clamp(e.target.value, 1, 8))}
                 style={{ ...inputStyle, width: 40 }}
               />
             </label>
@@ -422,17 +315,17 @@ export default function RandomPanel({
             {["small", "medium", "large"].map((sz) => (
               <button
                 key={sz}
-                onClick={() => setRandIslandSize(sz)}
+                onClick={() => props.onParamChange("randIslandSize", sz)}
                 style={{
                   ...actionBtn,
                   flex: 1,
                   padding: "4px 6px",
                   fontSize: 11,
                   border:
-                    randIslandSize === sz
+                    props.rngParams.randIslandSize === sz
                       ? "1px solid #6ea8fe"
                       : "1px solid #2a2f3a",
-                  background: randIslandSize === sz ? "#22314d" : "#1a1d24",
+                  background: props.rngParams.randIslandSize === sz ? "#22314d" : "#1a1d24",
                 }}
               >
                 {t[sz]}
@@ -445,8 +338,8 @@ export default function RandomPanel({
               type="number"
               min={0}
               max={100}
-              value={randIslandIrregularity}
-              onChange={(e) => setRandIslandIrregularity(e.target.value)}
+              value={props.rngParams.randIslandIrregularity}
+              onChange={setNum("randIslandIrregularity")}
               style={{ ...inputStyle, width: 46 }}
             />
           </label>
@@ -455,10 +348,10 @@ export default function RandomPanel({
 
       <div style={{ width: 1, height: 20, background: "#2a2f3a", margin: "0 4px" }} />
 
-      {featureRow(
+      {props.featureRow(
         "hills",
-        randHills,
-        (e) => setRandHills(e.target.checked),
+        props.rngParams.randHills,
+        setBool("randHills"),
         t.hills,
         <label style={{ fontSize: 12, display: "flex", gap: 4, alignItems: "center" }}>
           {t.hillStrength}
@@ -466,17 +359,17 @@ export default function RandomPanel({
             type="number"
             min={0}
             max={100}
-            value={randHillStrength}
-            onChange={(e) => setRandHillStrength(e.target.value)}
+            value={props.rngParams.randHillStrength}
+            onChange={setNum("randHillStrength")}
             style={{ ...inputStyle, width: 46 }}
           />
         </label>
       )}
 
-      {featureRow(
+      {props.featureRow(
         "mountains",
-        randMountains,
-        (e) => setRandMountains(e.target.checked),
+        props.rngParams.randMountains,
+        setBool("randMountains"),
         t.mountains,
         <label style={{ fontSize: 12, display: "flex", gap: 4, alignItems: "center" }}>
           {t.mountainHeight}
@@ -484,17 +377,17 @@ export default function RandomPanel({
             type="number"
             min={1}
             max={64}
-            value={randMountainHeight}
-            onChange={(e) => setRandMountainHeight(e.target.value)}
+            value={props.rngParams.randMountainHeight}
+            onChange={setNum("randMountainHeight")}
             style={{ ...inputStyle, width: 46 }}
           />
         </label>
       )}
 
-      {featureRow(
+      {props.featureRow(
         "plateaus",
-        randPlateaus,
-        (e) => setRandPlateaus(e.target.checked),
+        props.rngParams.randPlateaus,
+        setBool("randPlateaus"),
         t.plateaus,
         <label style={{ fontSize: 12, display: "flex", gap: 4, alignItems: "center" }}>
           {t.plateauHeight}
@@ -502,17 +395,17 @@ export default function RandomPanel({
             type="number"
             min={1}
             max={64}
-            value={randPlateauHeight}
-            onChange={(e) => setRandPlateauHeight(e.target.value)}
+            value={props.rngParams.randPlateauHeight}
+            onChange={setNum("randPlateauHeight")}
             style={{ ...inputStyle, width: 46 }}
           />
         </label>
       )}
 
-      {featureRow(
+      {props.featureRow(
         "valleys",
-        randValleys,
-        (e) => setRandValleys(e.target.checked),
+        props.rngParams.randValleys,
+        setBool("randValleys"),
         t.valleys,
         <label style={{ fontSize: 12, display: "flex", gap: 4, alignItems: "center" }}>
           {t.valleyDepth}
@@ -520,17 +413,17 @@ export default function RandomPanel({
             type="number"
             min={1}
             max={32}
-            value={randValleyDepth}
-            onChange={(e) => setRandValleyDepth(e.target.value)}
+            value={props.rngParams.randValleyDepth}
+            onChange={setNum("randValleyDepth")}
             style={{ ...inputStyle, width: 46 }}
           />
         </label>
       )}
 
-      {featureRow(
+      {props.featureRow(
         "rivers",
-        randRivers,
-        (e) => setRandRivers(e.target.checked),
+        props.rngParams.randRivers,
+        setBool("randRivers"),
         t.rivers,
         <>
           <label style={{ fontSize: 12, display: "flex", gap: 4, alignItems: "center" }}>
@@ -539,8 +432,8 @@ export default function RandomPanel({
               type="number"
               min={1}
               max={255}
-              value={randRiverBlock}
-              onChange={(e) => setRandRiverBlock(e.target.value)}
+              value={props.rngParams.randRiverBlock}
+              onChange={setNum("randRiverBlock")}
               style={{ ...inputStyle, width: 46 }}
             />
             <span
@@ -548,7 +441,7 @@ export default function RandomPanel({
                 width: 12,
                 height: 12,
                 borderRadius: 3,
-                background: colorForId(clamp(randRiverBlock, 1, 255)),
+                background: colorForId(clamp(props.rngParams.randRiverBlock, 1, 255)),
               }}
             />
           </label>
@@ -558,20 +451,20 @@ export default function RandomPanel({
               type="number"
               min={1}
               max={40}
-              value={randRiverWidth}
-              onChange={(e) => setRandRiverWidth(e.target.value)}
+              value={props.rngParams.randRiverWidth}
+              onChange={setNum("randRiverWidth")}
               style={{ ...inputStyle, width: 46 }}
             />
           </label>
           <label style={{ fontSize: 12, display: "flex", gap: 4, alignItems: "center" }}>
             <input
               type="checkbox"
-              checked={randWaterfalls}
-              onChange={(e) => setRandWaterfalls(e.target.checked)}
+              checked={props.rngParams.randWaterfalls}
+              onChange={setBool("randWaterfalls")}
             />
             {t.waterfalls}
           </label>
-          {randWaterfalls && (
+          {props.rngParams.randWaterfalls && (
             <label
               style={{ fontSize: 12, display: "flex", gap: 4, alignItems: "center" }}
             >
@@ -580,8 +473,8 @@ export default function RandomPanel({
                 type="number"
                 min={2}
                 max={30}
-                value={randWaterfallDrop}
-                onChange={(e) => setRandWaterfallDrop(e.target.value)}
+                value={props.rngParams.randWaterfallDrop}
+                onChange={setNum("randWaterfallDrop")}
                 style={{ ...inputStyle, width: 40 }}
               />
             </label>
@@ -589,10 +482,10 @@ export default function RandomPanel({
         </>
       )}
 
-      {featureRow(
+      {props.featureRow(
         "lakes",
-        randLakes,
-        (e) => setRandLakes(e.target.checked),
+        props.rngParams.randLakes,
+        setBool("randLakes"),
         t.lakes,
         <>
           <label style={{ fontSize: 12, display: "flex", gap: 4, alignItems: "center" }}>
@@ -601,8 +494,8 @@ export default function RandomPanel({
               type="number"
               min={1}
               max={255}
-              value={randLakeBlock}
-              onChange={(e) => setRandLakeBlock(e.target.value)}
+              value={props.rngParams.randLakeBlock}
+              onChange={setNum("randLakeBlock")}
               style={{ ...inputStyle, width: 46 }}
             />
             <span
@@ -610,7 +503,7 @@ export default function RandomPanel({
                 width: 12,
                 height: 12,
                 borderRadius: 3,
-                background: colorForId(clamp(randLakeBlock, 1, 255)),
+                background: colorForId(clamp(props.rngParams.randLakeBlock, 1, 255)),
               }}
             />
           </label>
@@ -620,18 +513,18 @@ export default function RandomPanel({
               type="number"
               min={1}
               max={10}
-              value={randLakeSize}
-              onChange={(e) => setRandLakeSize(e.target.value)}
+              value={props.rngParams.randLakeSize}
+              onChange={setNum("randLakeSize")}
               style={{ ...inputStyle, width: 46 }}
             />
           </label>
         </>
       )}
 
-      {featureRow(
+      {props.featureRow(
         "caves",
-        randCaves,
-        (e) => setRandCaves(e.target.checked),
+        props.rngParams.randCaves,
+        setBool("randCaves"),
         t.caves,
         <>
           <label style={{ fontSize: 12, display: "flex", gap: 4, alignItems: "center" }}>
@@ -640,20 +533,20 @@ export default function RandomPanel({
               type="number"
               min={0}
               max={100}
-              value={randCaveDensity}
-              onChange={(e) => setRandCaveDensity(e.target.value)}
+              value={props.rngParams.randCaveDensity}
+              onChange={setNum("randCaveDensity")}
               style={{ ...inputStyle, width: 46 }}
             />
           </label>
           <label style={{ fontSize: 12, display: "flex", gap: 4, alignItems: "center" }}>
             <input
               type="checkbox"
-              checked={randCaveGlow}
-              onChange={(e) => setRandCaveGlow(e.target.checked)}
+              checked={props.rngParams.randCaveGlow}
+              onChange={setBool("randCaveGlow")}
             />
             {t.caveGlow}
           </label>
-          {randCaveGlow && (
+          {props.rngParams.randCaveGlow && (
             <>
               <label
                 style={{ fontSize: 12, display: "flex", gap: 4, alignItems: "center" }}
@@ -663,8 +556,8 @@ export default function RandomPanel({
                   type="number"
                   min={0}
                   max={100}
-                  value={randCaveGlowChance}
-                  onChange={(e) => setRandCaveGlowChance(e.target.value)}
+                  value={props.rngParams.randCaveGlowChance}
+                  onChange={setNum("randCaveGlowChance")}
                   style={{ ...inputStyle, width: 46 }}
                 />
               </label>
@@ -676,8 +569,8 @@ export default function RandomPanel({
                   type="number"
                   min={1}
                   max={255}
-                  value={randCaveGlowBlock}
-                  onChange={(e) => setRandCaveGlowBlock(e.target.value)}
+                  value={props.rngParams.randCaveGlowBlock}
+                  onChange={setNum("randCaveGlowBlock")}
                   style={{ ...inputStyle, width: 46 }}
                 />
                 <span
@@ -685,7 +578,7 @@ export default function RandomPanel({
                     width: 12,
                     height: 12,
                     borderRadius: 3,
-                    background: colorForId(clamp(randCaveGlowBlock, 1, 255)),
+                    background: colorForId(clamp(props.rngParams.randCaveGlowBlock, 1, 255)),
                   }}
                 />
               </label>
@@ -694,10 +587,10 @@ export default function RandomPanel({
         </>
       )}
 
-      {featureRow(
+      {props.featureRow(
         "trees",
-        randTrees,
-        (e) => setRandTrees(e.target.checked),
+        props.rngParams.randTrees,
+        setBool("randTrees"),
         t.trees,
         <>
           <label style={{ fontSize: 12, display: "flex", gap: 4, alignItems: "center" }}>
@@ -706,20 +599,20 @@ export default function RandomPanel({
               type="number"
               min={0}
               max={100}
-              value={randTreeDensity}
-              onChange={(e) => setRandTreeDensity(e.target.value)}
+              value={props.rngParams.randTreeDensity}
+              onChange={setNum("randTreeDensity")}
               style={{ ...inputStyle, width: 46 }}
             />
           </label>
           <label style={{ fontSize: 12, display: "flex", gap: 4, alignItems: "center" }}>
             <input
               type="checkbox"
-              checked={randForests}
-              onChange={(e) => setRandForests(e.target.checked)}
+              checked={props.rngParams.randForests}
+              onChange={setBool("randForests")}
             />
             {t.forests}
           </label>
-          {randForests && (
+          {props.rngParams.randForests && (
             <label
               style={{ fontSize: 12, display: "flex", gap: 4, alignItems: "center" }}
             >
@@ -728,8 +621,8 @@ export default function RandomPanel({
                 type="number"
                 min={0}
                 max={100}
-                value={randForestDensity}
-                onChange={(e) => setRandForestDensity(e.target.value)}
+                value={props.rngParams.randForestDensity}
+                onChange={setNum("randForestDensity")}
                 style={{ ...inputStyle, width: 46 }}
               />
             </label>
@@ -740,8 +633,8 @@ export default function RandomPanel({
               type="number"
               min={1}
               max={20}
-              value={randTreeMinHeight}
-              onChange={(e) => setRandTreeMinHeight(e.target.value)}
+              value={props.rngParams.randTreeMinHeight}
+              onChange={setNum("randTreeMinHeight")}
               style={{ ...inputStyle, width: 40 }}
             />
           </label>
@@ -751,8 +644,8 @@ export default function RandomPanel({
               type="number"
               min={1}
               max={20}
-              value={randTreeMaxHeight}
-              onChange={(e) => setRandTreeMaxHeight(e.target.value)}
+              value={props.rngParams.randTreeMaxHeight}
+              onChange={setNum("randTreeMaxHeight")}
               style={{ ...inputStyle, width: 40 }}
             />
           </label>
@@ -762,8 +655,8 @@ export default function RandomPanel({
               type="number"
               min={1}
               max={255}
-              value={randTreeWoodBlock}
-              onChange={(e) => setRandTreeWoodBlock(e.target.value)}
+              value={props.rngParams.randTreeWoodBlock}
+              onChange={setNum("randTreeWoodBlock")}
               style={{ ...inputStyle, width: 46 }}
             />
             <span
@@ -771,7 +664,7 @@ export default function RandomPanel({
                 width: 12,
                 height: 12,
                 borderRadius: 3,
-                background: colorForId(clamp(randTreeWoodBlock, 1, 255)),
+                background: colorForId(clamp(props.rngParams.randTreeWoodBlock, 1, 255)),
               }}
             />
           </label>
@@ -781,8 +674,8 @@ export default function RandomPanel({
               type="number"
               min={1}
               max={255}
-              value={randTreeLeavesBlock}
-              onChange={(e) => setRandTreeLeavesBlock(e.target.value)}
+              value={props.rngParams.randTreeLeavesBlock}
+              onChange={setNum("randTreeLeavesBlock")}
               style={{ ...inputStyle, width: 46 }}
             />
             <span
@@ -790,7 +683,7 @@ export default function RandomPanel({
                 width: 12,
                 height: 12,
                 borderRadius: 3,
-                background: colorForId(clamp(randTreeLeavesBlock, 1, 255)),
+                background: colorForId(clamp(props.rngParams.randTreeLeavesBlock, 1, 255)),
               }}
             />
           </label>
@@ -800,18 +693,18 @@ export default function RandomPanel({
               type="number"
               min={0}
               max={20}
-              value={randTreeSpacing}
-              onChange={(e) => setRandTreeSpacing(e.target.value)}
+              value={props.rngParams.randTreeSpacing}
+              onChange={setNum("randTreeSpacing")}
               style={{ ...inputStyle, width: 40 }}
             />
           </label>
         </>
       )}
 
-      {featureRow(
+      {props.featureRow(
         "bushes",
-        randBushes,
-        (e) => setRandBushes(e.target.checked),
+        props.rngParams.randBushes,
+        setBool("randBushes"),
         t.bushes,
         <>
           <label style={{ fontSize: 12, display: "flex", gap: 4, alignItems: "center" }}>
@@ -820,8 +713,8 @@ export default function RandomPanel({
               type="number"
               min={0}
               max={100}
-              value={randBushDensity}
-              onChange={(e) => setRandBushDensity(e.target.value)}
+              value={props.rngParams.randBushDensity}
+              onChange={setNum("randBushDensity")}
               style={{ ...inputStyle, width: 46 }}
             />
           </label>
@@ -831,8 +724,8 @@ export default function RandomPanel({
               type="number"
               min={1}
               max={255}
-              value={randBushBlock}
-              onChange={(e) => setRandBushBlock(e.target.value)}
+              value={props.rngParams.randBushBlock}
+              onChange={setNum("randBushBlock")}
               style={{ ...inputStyle, width: 46 }}
             />
             <span
@@ -840,7 +733,7 @@ export default function RandomPanel({
                 width: 12,
                 height: 12,
                 borderRadius: 3,
-                background: colorForId(clamp(randBushBlock, 1, 255)),
+                background: colorForId(clamp(props.rngParams.randBushBlock, 1, 255)),
               }}
             />
           </label>
@@ -850,18 +743,18 @@ export default function RandomPanel({
               type="number"
               min={0}
               max={10}
-              value={randBushSpacing}
-              onChange={(e) => setRandBushSpacing(e.target.value)}
+              value={props.rngParams.randBushSpacing}
+              onChange={setNum("randBushSpacing")}
               style={{ ...inputStyle, width: 40 }}
             />
           </label>
         </>
       )}
 
-      {featureRow(
+      {props.featureRow(
         "altitude",
-        randAltitudeBlocks,
-        (e) => setRandAltitudeBlocks(e.target.checked),
+        props.rngParams.randAltitudeBlocks,
+        setBool("randAltitudeBlocks"),
         t.altitudeBlocks,
         <>
           <label style={{ fontSize: 12, display: "flex", gap: 4, alignItems: "center" }}>
@@ -869,9 +762,9 @@ export default function RandomPanel({
             <input
               type="number"
               min={0}
-              max={totalHeight}
-              value={randBeachLevel}
-              onChange={(e) => setRandBeachLevel(e.target.value)}
+              max={props.totalHeight}
+              value={props.rngParams.randBeachLevel}
+              onChange={setNum("randBeachLevel")}
               style={{ ...inputStyle, width: 46 }}
             />
           </label>
@@ -881,8 +774,8 @@ export default function RandomPanel({
               type="number"
               min={1}
               max={255}
-              value={randBeachBlock}
-              onChange={(e) => setRandBeachBlock(e.target.value)}
+              value={props.rngParams.randBeachBlock}
+              onChange={setNum("randBeachBlock")}
               style={{ ...inputStyle, width: 46 }}
             />
             <span
@@ -890,7 +783,7 @@ export default function RandomPanel({
                 width: 12,
                 height: 12,
                 borderRadius: 3,
-                background: colorForId(clamp(randBeachBlock, 1, 255)),
+                background: colorForId(clamp(props.rngParams.randBeachBlock, 1, 255)),
               }}
             />
           </label>
@@ -899,9 +792,9 @@ export default function RandomPanel({
             <input
               type="number"
               min={0}
-              max={totalHeight}
-              value={randSnowLevel}
-              onChange={(e) => setRandSnowLevel(e.target.value)}
+              max={props.totalHeight}
+              value={props.rngParams.randSnowLevel}
+              onChange={setNum("randSnowLevel")}
               style={{ ...inputStyle, width: 46 }}
             />
           </label>
@@ -911,8 +804,8 @@ export default function RandomPanel({
               type="number"
               min={1}
               max={255}
-              value={randSnowBlock}
-              onChange={(e) => setRandSnowBlock(e.target.value)}
+              value={props.rngParams.randSnowBlock}
+              onChange={setNum("randSnowBlock")}
               style={{ ...inputStyle, width: 46 }}
             />
             <span
@@ -920,17 +813,17 @@ export default function RandomPanel({
                 width: 12,
                 height: 12,
                 borderRadius: 3,
-                background: colorForId(clamp(randSnowBlock, 1, 255)),
+                background: colorForId(clamp(props.rngParams.randSnowBlock, 1, 255)),
               }}
             />
           </label>
         </>
       )}
 
-      {featureRow(
+      {props.featureRow(
         "shore",
-        randSmoothShore,
-        (e) => setRandSmoothShore(e.target.checked),
+        props.rngParams.randSmoothShore,
+        setBool("randSmoothShore"),
         t.smoothShore,
         <>
           <label style={{ fontSize: 12, display: "flex", gap: 4, alignItems: "center" }}>
@@ -939,8 +832,8 @@ export default function RandomPanel({
               type="number"
               min={1}
               max={5}
-              value={randShoreRadius}
-              onChange={(e) => setRandShoreRadius(e.target.value)}
+              value={props.rngParams.randShoreRadius}
+              onChange={setNum("randShoreRadius")}
               style={{ ...inputStyle, width: 40 }}
             />
           </label>
@@ -950,8 +843,8 @@ export default function RandomPanel({
               type="number"
               min={1}
               max={255}
-              value={randShoreBlock}
-              onChange={(e) => setRandShoreBlock(e.target.value)}
+              value={props.rngParams.randShoreBlock}
+              onChange={setNum("randShoreBlock")}
               style={{ ...inputStyle, width: 46 }}
             />
             <span
@@ -959,7 +852,7 @@ export default function RandomPanel({
                 width: 12,
                 height: 12,
                 borderRadius: 3,
-                background: colorForId(clamp(randShoreBlock, 1, 255)),
+                background: colorForId(clamp(props.rngParams.randShoreBlock, 1, 255)),
               }}
             />
           </label>
@@ -969,8 +862,8 @@ export default function RandomPanel({
               type="number"
               min={0}
               max={100}
-              value={randShoreCoverage}
-              onChange={(e) => setRandShoreCoverage(e.target.value)}
+              value={props.rngParams.randShoreCoverage}
+              onChange={setNum("randShoreCoverage")}
               style={{ ...inputStyle, width: 46 }}
               title={t.shoreCoverageTitle}
             />
@@ -978,18 +871,18 @@ export default function RandomPanel({
         </>
       )}
 
-      {featureRow(
+      {props.featureRow(
         "ores",
-        randOres,
-        (e) => setRandOres(e.target.checked),
+        props.rngParams.randOres,
+        setBool("randOres"),
         t.ores,
         <>
           <label style={{ fontSize: 12, display: "flex", gap: 4, alignItems: "center" }}>
             {t.oreIds}
             <input
               type="text"
-              value={randOreBlocks}
-              onChange={(e) => setRandOreBlocks(e.target.value)}
+              value={props.rngParams.randOreBlocks}
+              onChange={setStr("randOreBlocks")}
               placeholder="25, 26, 42"
               style={{ ...inputStyle, width: 90 }}
             />
@@ -1000,8 +893,8 @@ export default function RandomPanel({
               type="number"
               min={0}
               max={500}
-              value={randOreCount}
-              onChange={(e) => setRandOreCount(e.target.value)}
+              value={props.rngParams.randOreCount}
+              onChange={setNum("randOreCount")}
               style={{ ...inputStyle, width: 46 }}
             />
           </label>
@@ -1011,8 +904,8 @@ export default function RandomPanel({
               type="number"
               min={1}
               max={5}
-              value={randOreVeinSize}
-              onChange={(e) => setRandOreVeinSize(e.target.value)}
+              value={props.rngParams.randOreVeinSize}
+              onChange={setNum("randOreVeinSize")}
               style={{ ...inputStyle, width: 40 }}
             />
           </label>
@@ -1022,8 +915,8 @@ export default function RandomPanel({
               type="number"
               min={0}
               max={100}
-              value={randOreBigChance}
-              onChange={(e) => setRandOreBigChance(e.target.value)}
+              value={props.rngParams.randOreBigChance}
+              onChange={setNum("randOreBigChance")}
               style={{ ...inputStyle, width: 46 }}
             />
           </label>
@@ -1033,18 +926,18 @@ export default function RandomPanel({
               type="number"
               min={1}
               max={10}
-              value={randOreBigSize}
-              onChange={(e) => setRandOreBigSize(e.target.value)}
+              value={props.rngParams.randOreBigSize}
+              onChange={setNum("randOreBigSize")}
               style={{ ...inputStyle, width: 40 }}
             />
           </label>
         </>
       )}
 
-      {featureRow(
+      {props.featureRow(
         "erosion",
-        randErosion,
-        (e) => setRandErosion(e.target.checked),
+        props.rngParams.randErosion,
+        setBool("randErosion"),
         t.erosion,
         <>
           <label style={{ fontSize: 12, display: "flex", gap: 4, alignItems: "center" }}>
@@ -1053,8 +946,8 @@ export default function RandomPanel({
               type="number"
               min={0}
               max={100}
-              value={randErosionStrength}
-              onChange={(e) => setRandErosionStrength(e.target.value)}
+              value={props.rngParams.randErosionStrength}
+              onChange={setNum("randErosionStrength")}
               style={{ ...inputStyle, width: 46 }}
             />
           </label>
@@ -1064,8 +957,8 @@ export default function RandomPanel({
               type="number"
               min={1}
               max={5}
-              value={randErosionIterations}
-              onChange={(e) => setRandErosionIterations(e.target.value)}
+              value={props.rngParams.randErosionIterations}
+              onChange={setNum("randErosionIterations")}
               style={{ ...inputStyle, width: 40 }}
             />
           </label>
@@ -1073,7 +966,7 @@ export default function RandomPanel({
       )}
 
       <button
-        onClick={generateRandomTerrain}
+        onClick={()=>props.generateRandomTerrain(props.rngParams)}
         style={{ ...actionBtn, background: "#3a2a1b", borderColor: "#6b4f2f" }}
       >
         {t.generate}
