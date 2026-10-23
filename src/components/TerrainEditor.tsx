@@ -25,7 +25,7 @@ import PaletteSidebar from "./PaletteSidebar";
 import ToolbarRow from "./ToolbarRow";
 import LayerNav from "./LayerNav";
 import { VoxelCell, VoxelStore, VoxelStoreEvent } from "../VoxelStore";
-import {storage, createNamedStore } from "../lib/persistence.ts";
+import {storage, createNamedStore, writeJson, readJson } from "../lib/persistence.ts";
 import {Hotbar, PaletteEntry, usePalette} from "../hooks/usePalette.ts"
 import PaletteHotbar from "./PaletteHotbar.tsx";
 
@@ -38,7 +38,7 @@ interface MapData {
   gameMode: number
 }
 
-const DEFAULT_MAP_DATA:MapData = {
+const DEFAULT_MAP_DATA:Readonly<MapData> = {
   gridX: 6,
   gridY: 4,
   gridZ: 6,
@@ -69,7 +69,13 @@ export interface LevelData {
   cameraMode?: "orbit" | "fly",
 }
 
-const DEFAULT_LEVEL_DATA:LevelData = {
+type DeepReadonly<T> =
+  T extends (infer U)[] ? ReadonlyArray<DeepReadonly<U>> :
+  T extends object ? { readonly [K in keyof T]: DeepReadonly<T[K]> } :
+  T;
+
+//explicitly exclude optionals from default to avoid making them readonly
+const DEFAULT_LEVEL_DATA:DeepReadonly< Pick<LevelData, "mapSizeChunks" | "biomeName" | "gameMode" | "voxels" | "entities"> > = {
   mapSizeChunks: {
     x: DEFAULT_MAP_DATA.gridX,
     y: DEFAULT_MAP_DATA.gridY,
@@ -81,6 +87,15 @@ const DEFAULT_LEVEL_DATA:LevelData = {
   entities: [],
 }
 
+function getDefaultLevelData():LevelData {
+  return {
+    ...DEFAULT_LEVEL_DATA,
+    mapSizeChunks: { ...DEFAULT_LEVEL_DATA.mapSizeChunks },
+    voxels: [],
+    entities: [],
+  }
+}
+
 export default function TerrainEditor() {
   // FIXED (2026-08-21): "Sky_Island" does not exist in Alpha v10 36731's
   // GeoData.json (confirmed via direct search - zero matches). Real biomes
@@ -89,6 +104,21 @@ export default function TerrainEditor() {
   // but this is just a free-text field - change it to whichever real biome
   // name you want per-map.
   const [mapData, setMapData] = useState<MapData>(DEFAULT_MAP_DATA);
+  const paletteObj = usePalette({ onChange: scheduleSave })
+  const { selectedBlock,
+    selectedBlockRef,
+    hotbar,
+    setHotbar,
+    hotbarRef,
+    palette,
+    setPalette,
+    assignHotbarSlot,
+    selectHotbarSlot,
+  } = paletteObj;
+  const [cameraMode, setCameraMode] = useState<"orbit"|"fly">("orbit");
+
+  const latestRef = useRef({ mapData, palette, cameraMode });
+  latestRef.current = { mapData, palette, cameraMode };   // refreshed on every render
 
   const [currentLayer, setCurrentLayer] = useState(0);
   const [zoom, setZoom] = useState(1);
@@ -107,17 +137,7 @@ export default function TerrainEditor() {
   const [onionRange, setOnionRange] = useState(1);
   const [mirrorZ, setMirrorZ] = useState(false);
 
-  const paletteObj = usePalette({ onChange: scheduleSave })
-  const { selectedBlock,
-    selectedBlockRef,
-    hotbar,
-    setHotbar,
-    hotbarRef,
-    palette,
-    setPalette,
-    assignHotbarSlot,
-    selectHotbarSlot,
-  } = paletteObj;
+  
   
   const [hoverCell, setHoverCell] = useState<any>(null);
   const [voxelCount, setVoxelCount] = useState(0);
@@ -421,7 +441,7 @@ export default function TerrainEditor() {
   const entityMarkersGroupRef = useRef<any>(null);
 
   const [viewMode, setViewMode] = useState<"2d"|"3d">("3d");
-  const [cameraMode, setCameraMode] = useState<"orbit"|"fly">("orbit");
+  
   const [isLocked, setIsLocked] = useState(false);
   const [pointerLockFailed, setPointerLockFailed] = useState(false);
   const [moveSpeed, setMoveSpeed] = useState(16);
@@ -603,9 +623,10 @@ export default function TerrainEditor() {
   useEffect(() => {
     (async () => {
       try {
-        const result = await storage.get(STORAGE_KEY);
+        //const result = await storage.get(STORAGE_KEY);
+        const result = { STORAGE_KEY, value: await readJson<LevelData>(STORAGE_KEY)};
         if (result && result.value) {
-          const data = JSON.parse(result.value);
+          const data = result.value;
           applyLoadedData(data);
           if (data.cameraMode === "orbit" || data.cameraMode === "fly")
             setCameraMode(data.cameraMode);
@@ -673,7 +694,7 @@ export default function TerrainEditor() {
       return (typeof something === "number" && Number.isFinite(something));
     }
 
-    const data:LevelData = {...DEFAULT_LEVEL_DATA};
+    const data:LevelData = getDefaultLevelData();
     if(raw === null || typeof raw === "string")
       return data; // shouldn't we throw here instead?
     const dataPart = raw as Partial<LevelData>;
@@ -742,14 +763,16 @@ export default function TerrainEditor() {
   }
 
   function scheduleSave() {
-    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    if (saveTimerRef.current) 
+      clearTimeout(saveTimerRef.current);
     saveTimerRef.current = setTimeout(async () => {
       try {
-        const data = buildExportData(Array.from(terrain.cells()), entityInstancesRef.current, mapData);
-        data.paletteLabels = palette;
+        const data = buildExportData(Array.from(terrain.cells()), entityInstancesRef.current, latestRef.current.mapData);
+        data.paletteLabels = latestRef.current.palette;
         data.hotbar = hotbarRef.current;
-        data.cameraMode = cameraMode;
-        await storage.set(STORAGE_KEY, JSON.stringify(data));
+        data.cameraMode = latestRef.current.cameraMode;
+        await writeJson(STORAGE_KEY, data);
+        //await storage.set(STORAGE_KEY, JSON.stringify(data));
         setStatus(STRINGS.en.savedAt(new Date().toLocaleTimeString()));
       } catch (error) {
         setStatus(STRINGS.en.saveError);
@@ -762,7 +785,8 @@ export default function TerrainEditor() {
     try {
       const obj = {};
       for (const [id, url] of texturesRef.current) obj[id] = url;
-      await storage.set(TEXTURES_STORAGE_KEY, JSON.stringify(obj));
+      await writeJson(TEXTURES_STORAGE_KEY, obj);
+      //await storage.set(TEXTURES_STORAGE_KEY, JSON.stringify(obj));
     } catch (e) {
       // ignore, non-critical
     }
@@ -882,7 +906,8 @@ export default function TerrainEditor() {
   // ---- structures library ----
   async function saveStructures(list) {
     try {
-      await storage.set(STRUCTURES_STORAGE_KEY, JSON.stringify(list));
+      await writeJson(STRUCTURES_STORAGE_KEY, list);
+      //await storage.set(STRUCTURES_STORAGE_KEY, JSON.stringify(list));
     } catch (e) {
       // ignore, non-critical
     }
@@ -3446,7 +3471,7 @@ export default function TerrainEditor() {
   }, []);
 
   // ---- grid size changes: clip out-of-bounds voxels ----
-  function applyGridResize(nx, ny, nz) {
+  function applyGridResize(nx:number, ny:number, nz:number) {
     const newW = nx * CHUNK;
     const newD = nz * CHUNK;
     const newH = ny * CHUNK;
@@ -3465,6 +3490,8 @@ export default function TerrainEditor() {
     })
     if (currentLayer >= newH) 
       setCurrentLayer(newH - 1);
+    setVoxelCount(terrain.size);
+    scheduleSave();
   }
 
   function ensureAirship() {
@@ -3537,8 +3564,8 @@ export default function TerrainEditor() {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    const pct = json.length > 0 ? Math.round((1 - compressedBlob.size / json.length) * 100) : 0;
-    setStatus(STRINGS.en.exportedCompressed(json.length, compressedBlob.size, pct));
+    const efficiency = json.length > 0 ? Math.round((1 - compressedBlob.size / json.length) * 100) : 0;
+    setStatus(STRINGS.en.exportedCompressed(json.length, compressedBlob.size, efficiency));
   }
 
   // ---- named save slots for the MAP (terrain) in storage ----
@@ -3551,11 +3578,18 @@ export default function TerrainEditor() {
 
   async function saveNamedSlot(name:string) {
     const normName = name.trim();
-    const data = buildExportData(Array.from(terrain.cells()), entityInstancesRef.current, mapData);
-    data.paletteLabels = palette;
-    mapStorage.save(normName, data);
-    await refreshSaveSlots();
-    setStatus(STRINGS.en.slotSaved(normName));
+    if (!normName) 
+      return; //do not save with an empty name
+    try {
+      const data = buildExportData(Array.from(terrain.cells()), entityInstancesRef.current, mapData);
+      data.paletteLabels = palette;
+      await mapStorage.save(normName, data);
+      await refreshSaveSlots();
+      setStatus(STRINGS.en.slotSaved(normName));
+    }
+    catch(error) {
+      setStatus(STRINGS.en.slotSaveError);
+    }
   }
 
   async function loadNamedSlot(name:string) {

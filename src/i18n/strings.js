@@ -145,6 +145,7 @@ export const STRINGS = {
     slotDelete: "Delete",
     slotSaved: (name) => `Saved slot "${name}"`,
     slotLoaded: (name) => `Loaded slot "${name}"`,
+    slotSaveError: "Failed to save!",
     statsBtn: "📊 Stats",
     statsTitle: "Map Statistics",
     statsTotal: (n) => `Total voxels: ${n}`,
