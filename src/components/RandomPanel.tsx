@@ -4,6 +4,7 @@ import { colorForId } from "../lib/colors";
 import { clamp, parseIdList } from "../lib/numbers";
 import { RngParams } from "../lib/mapGenerator";
 import React from "react";
+import CollapsibleOptionsBlock from "./CollapsibleOptionsBlock";
 
 interface Props {
   randSeed: number,
@@ -11,13 +12,6 @@ interface Props {
   rngParams: RngParams,
   onParamChange: <K extends keyof RngParams>(paramName: K, value: RngParams[K])=> void,
   totalHeight: number,
-  featureRow: (
-    key:string, 
-    checked:boolean, 
-    onToggle:React.ChangeEventHandler<HTMLInputElement>, 
-    label:string, 
-    popoverBody?: React.ReactNode
-  ) => React.JSX.Element,
   generateRandomTerrain: (params: RngParams) => void,
   randomizeAllParams: () => void,
 }
@@ -189,12 +183,12 @@ export default function RandomPanel(props:Props) {
         />
       </label>
 
-      {props.featureRow(
-        "island",
-        props.rngParams.randIsland,
-        setBool("randIsland"),
-        t.islandShape,
-        <>
+      {CollapsibleOptionsBlock({
+        key: "island",
+        enabled: props.rngParams.randIsland,
+        onToggle: setBool("randIsland"),
+        label: t.islandShape,
+        optionsBody: <>
           <div style={{ fontSize: 11, color: "#8a91a3" }}>{t.islandMode}</div>
           <div style={{ display: "flex", gap: 2 }}>
             {["floating", "island"].map((mode) => (
@@ -344,15 +338,16 @@ export default function RandomPanel(props:Props) {
             />
           </label>
         </>
-      )}
+      })}
 
       <div style={{ width: 1, height: 20, background: "#2a2f3a", margin: "0 4px" }} />
 
-      {props.featureRow(
-        "hills",
-        props.rngParams.randHills,
-        setBool("randHills"),
-        t.hills,
+      {CollapsibleOptionsBlock({
+        key: "hills",
+        enabled: props.rngParams.randHills,
+        onToggle: setBool("randHills"),
+        label: t.hills,
+        optionsBody:(
         <label style={{ fontSize: 12, display: "flex", gap: 4, alignItems: "center" }}>
           {t.hillStrength}
           <input
@@ -364,68 +359,75 @@ export default function RandomPanel(props:Props) {
             style={{ ...inputStyle, width: 46 }}
           />
         </label>
-      )}
+        )
+      })}
 
-      {props.featureRow(
-        "mountains",
-        props.rngParams.randMountains,
-        setBool("randMountains"),
-        t.mountains,
-        <label style={{ fontSize: 12, display: "flex", gap: 4, alignItems: "center" }}>
-          {t.mountainHeight}
-          <input
-            type="number"
-            min={1}
-            max={64}
-            value={props.rngParams.randMountainHeight}
-            onChange={setNum("randMountainHeight")}
-            style={{ ...inputStyle, width: 46 }}
-          />
-        </label>
-      )}
+      {CollapsibleOptionsBlock({
+        key: "mountains",
+        enabled: props.rngParams.randMountains,
+        onToggle: setBool("randMountains"),
+        label: t.mountains,
+        optionsBody: (
+          <label style={{ fontSize: 12, display: "flex", gap: 4, alignItems: "center" }}>
+            {t.mountainHeight}
+            <input
+              type="number"
+              min={1}
+              max={64}
+              value={props.rngParams.randMountainHeight}
+              onChange={setNum("randMountainHeight")}
+              style={{ ...inputStyle, width: 46 }}
+            />
+          </label>
+        )
+      })}
 
-      {props.featureRow(
-        "plateaus",
-        props.rngParams.randPlateaus,
-        setBool("randPlateaus"),
-        t.plateaus,
-        <label style={{ fontSize: 12, display: "flex", gap: 4, alignItems: "center" }}>
-          {t.plateauHeight}
-          <input
-            type="number"
-            min={1}
-            max={64}
-            value={props.rngParams.randPlateauHeight}
-            onChange={setNum("randPlateauHeight")}
-            style={{ ...inputStyle, width: 46 }}
-          />
-        </label>
-      )}
+      {CollapsibleOptionsBlock({
+        key: "plateaus",
+        enabled: props.rngParams.randPlateaus,
+        onToggle: setBool("randPlateaus"),
+        label: t.plateaus,
+        optionsBody: (
+          <label style={{ fontSize: 12, display: "flex", gap: 4, alignItems: "center" }}>
+            {t.plateauHeight}
+            <input
+              type="number"
+              min={1}
+              max={64}
+              value={props.rngParams.randPlateauHeight}
+              onChange={setNum("randPlateauHeight")}
+              style={{ ...inputStyle, width: 46 }}
+            />
+          </label>
+        )
+      })}
 
-      {props.featureRow(
-        "valleys",
-        props.rngParams.randValleys,
-        setBool("randValleys"),
-        t.valleys,
-        <label style={{ fontSize: 12, display: "flex", gap: 4, alignItems: "center" }}>
-          {t.valleyDepth}
-          <input
-            type="number"
-            min={1}
-            max={32}
-            value={props.rngParams.randValleyDepth}
-            onChange={setNum("randValleyDepth")}
-            style={{ ...inputStyle, width: 46 }}
-          />
-        </label>
-      )}
+      {CollapsibleOptionsBlock({
+        key: "valleys",
+        enabled: props.rngParams.randValleys,
+        onToggle: setBool("randValleys"),
+        label: t.valleys,
+        optionsBody: (
+          <label style={{ fontSize: 12, display: "flex", gap: 4, alignItems: "center" }}>
+            {t.valleyDepth}
+            <input
+              type="number"
+              min={1}
+              max={32}
+              value={props.rngParams.randValleyDepth}
+              onChange={setNum("randValleyDepth")}
+              style={{ ...inputStyle, width: 46 }}
+            />
+          </label>
+        )
+      })}
 
-      {props.featureRow(
-        "rivers",
-        props.rngParams.randRivers,
-        setBool("randRivers"),
-        t.rivers,
-        <>
+      {CollapsibleOptionsBlock({
+        key: "rivers",
+        enabled: props.rngParams.randRivers,
+        onToggle: setBool("randRivers"),
+        label: t.rivers,
+        optionsBody: <>
           <label style={{ fontSize: 12, display: "flex", gap: 4, alignItems: "center" }}>
             {t.riverBlock}
             <input
@@ -480,14 +482,14 @@ export default function RandomPanel(props:Props) {
             </label>
           )}
         </>
-      )}
+      })}
 
-      {props.featureRow(
-        "lakes",
-        props.rngParams.randLakes,
-        setBool("randLakes"),
-        t.lakes,
-        <>
+      {CollapsibleOptionsBlock({
+        key: "lakes",
+        enabled: props.rngParams.randLakes,
+        onToggle: setBool("randLakes"),
+        label: t.lakes,
+        optionsBody: <>
           <label style={{ fontSize: 12, display: "flex", gap: 4, alignItems: "center" }}>
             {t.lakeBlock}
             <input
@@ -519,14 +521,14 @@ export default function RandomPanel(props:Props) {
             />
           </label>
         </>
-      )}
+      })}
 
-      {props.featureRow(
-        "caves",
-        props.rngParams.randCaves,
-        setBool("randCaves"),
-        t.caves,
-        <>
+      {CollapsibleOptionsBlock({
+        key: "caves",
+        enabled: props.rngParams.randCaves,
+        onToggle: setBool("randCaves"),
+        label: t.caves,
+        optionsBody: <>
           <label style={{ fontSize: 12, display: "flex", gap: 4, alignItems: "center" }}>
             {t.caveDensity}
             <input
@@ -585,14 +587,14 @@ export default function RandomPanel(props:Props) {
             </>
           )}
         </>
-      )}
+      })}
 
-      {props.featureRow(
-        "trees",
-        props.rngParams.randTrees,
-        setBool("randTrees"),
-        t.trees,
-        <>
+      {CollapsibleOptionsBlock({
+        key: "trees",
+        enabled: props.rngParams.randTrees,
+        onToggle: setBool("randTrees"),
+        label: t.trees,
+        optionsBody: <>
           <label style={{ fontSize: 12, display: "flex", gap: 4, alignItems: "center" }}>
             {t.treeDensity}
             <input
@@ -699,14 +701,14 @@ export default function RandomPanel(props:Props) {
             />
           </label>
         </>
-      )}
+      })}
 
-      {props.featureRow(
-        "bushes",
-        props.rngParams.randBushes,
-        setBool("randBushes"),
-        t.bushes,
-        <>
+      {CollapsibleOptionsBlock({
+        key: "bushes",
+        enabled: props.rngParams.randBushes,
+        onToggle: setBool("randBushes"),
+        label: t.bushes,
+        optionsBody: <>
           <label style={{ fontSize: 12, display: "flex", gap: 4, alignItems: "center" }}>
             {t.bushDensity}
             <input
@@ -749,14 +751,14 @@ export default function RandomPanel(props:Props) {
             />
           </label>
         </>
-      )}
+      })}
 
-      {props.featureRow(
-        "altitude",
-        props.rngParams.randAltitudeBlocks,
-        setBool("randAltitudeBlocks"),
-        t.altitudeBlocks,
-        <>
+      {CollapsibleOptionsBlock({
+        key: "altitude",
+        enabled: props.rngParams.randAltitudeBlocks,
+        onToggle: setBool("randAltitudeBlocks"),
+        label: t.altitudeBlocks,
+        optionsBody: <>
           <label style={{ fontSize: 12, display: "flex", gap: 4, alignItems: "center" }}>
             {t.beachLevel}
             <input
@@ -818,14 +820,14 @@ export default function RandomPanel(props:Props) {
             />
           </label>
         </>
-      )}
+      })}
 
-      {props.featureRow(
-        "shore",
-        props.rngParams.randSmoothShore,
-        setBool("randSmoothShore"),
-        t.smoothShore,
-        <>
+      {CollapsibleOptionsBlock({
+        key: "shore",
+        enabled: props.rngParams.randSmoothShore,
+        onToggle: setBool("randSmoothShore"),
+        label: t.smoothShore,
+        optionsBody: <>
           <label style={{ fontSize: 12, display: "flex", gap: 4, alignItems: "center" }}>
             {t.shoreRadius}
             <input
@@ -869,14 +871,14 @@ export default function RandomPanel(props:Props) {
             />
           </label>
         </>
-      )}
+      })}
 
-      {props.featureRow(
-        "ores",
-        props.rngParams.randOres,
-        setBool("randOres"),
-        t.ores,
-        <>
+      {CollapsibleOptionsBlock({
+        key: "ores",
+        enabled: props.rngParams.randOres,
+        onToggle: setBool("randOres"),
+        label: t.ores,
+        optionsBody: <>
           <label style={{ fontSize: 12, display: "flex", gap: 4, alignItems: "center" }}>
             {t.oreIds}
             <input
@@ -932,14 +934,14 @@ export default function RandomPanel(props:Props) {
             />
           </label>
         </>
-      )}
+      })}
 
-      {props.featureRow(
-        "erosion",
-        props.rngParams.randErosion,
-        setBool("randErosion"),
-        t.erosion,
-        <>
+      {CollapsibleOptionsBlock({
+        key: "erosion",
+        enabled: props.rngParams.randErosion,
+        onToggle: setBool("randErosion"),
+        label: t.erosion,
+        optionsBody: <>
           <label style={{ fontSize: 12, display: "flex", gap: 4, alignItems: "center" }}>
             {t.erosionStrength}
             <input
@@ -963,7 +965,7 @@ export default function RandomPanel(props:Props) {
             />
           </label>
         </>
-      )}
+      })}
 
       <button
         onClick={()=>props.generateRandomTerrain(props.rngParams)}
