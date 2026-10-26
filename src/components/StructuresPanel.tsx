@@ -1,6 +1,7 @@
 import { STRINGS } from "../i18n/strings";
 import { inputStyle, actionBtn } from "../styles/inline";
 import { clamp } from "../lib/numbers";
+import { useRef, useState } from "react";
 
 function exportStructure(entry) {
     const data = {
@@ -39,7 +40,6 @@ export default function StructuresPanel({
   setPlacingRotation,
   setPlacingStructureId,
   setStructureCount,
-  structureFileInputRef,
   structures,
   thumbVersion,
   toggleStructure,
@@ -48,6 +48,8 @@ export default function StructuresPanel({
   const [structureCategoryFilter, setStructureCategoryFilter] = useState("all");
   const [newStructureName, setNewStructureName] = useState("Structure");
   const [newStructureCategory, setNewStructureCategory] = useState("other");
+
+  const structureFileInputRef = useRef<HTMLInputElement>(null);
   const t = STRINGS.en;
 
   return (
@@ -64,7 +66,7 @@ export default function StructuresPanel({
       <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
         <button
           style={actionBtn}
-          onClick={() => structureFileInputRef.current.click()}
+          onClick={() => structureFileInputRef.current?.click()}
         >
           {t.importStructures}
         </button>

@@ -282,8 +282,6 @@ export default function TerrainEditor() {
   const [showStructuresPanel, setShowStructuresPanel] = useState(false);
   const [structures, setStructures] = useState<Structure[]>([]);
 
-  
-  const structureFileInputRef = useRef(null);
   const structuresRef = useRef<typeof structures>([]);
   const viewModeRef = useRef<typeof viewMode>("3d");
 
@@ -3678,7 +3676,6 @@ export default function TerrainEditor() {
               setPlacingRotation={setPlacingRotation}
               setPlacingStructureId={setPlacingStructureId}
               setStructureCount={setStructureCount}
-              structureFileInputRef={structureFileInputRef}
               structures={structures}
               thumbVersion={thumbVersion}
               toggleStructure={toggleStructure}
