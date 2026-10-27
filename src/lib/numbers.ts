@@ -7,6 +7,10 @@ function clamp(v:string|number, min:number, max:number):number {
   return Math.max(min, Math.min(max, v));
 }
 
+function clampBlockId(blockId: string|number) {
+  return clamp(blockId, 1, 255);
+}
+
 function parseIdList(str: string):number[] {
   if (!str)
     return [];
@@ -50,6 +54,7 @@ function pickWeighted(list: WeightedList, randFn:()=> number) {
 
 export {
   clamp,
+  clampBlockId,
   WeightedList,
   parseIdList,
   parseWeightedIdList,
