@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { STRINGS } from "../i18n/strings";
 import { inputStyle, actionBtn } from "../styles/inline";
 
