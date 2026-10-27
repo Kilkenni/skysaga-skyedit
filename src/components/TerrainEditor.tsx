@@ -28,7 +28,7 @@ import { VoxelCell, VoxelStore, VoxelStoreEvent } from "../VoxelStore";
 import {storage, createNamedStore, writeJson, readJson } from "../lib/storage.ts";
 import {Hotbar, PaletteEntry, usePalette} from "../hooks/usePalette.ts"
 import PaletteHotbar from "./PaletteHotbar.tsx";
-import { RngParams } from "../lib/mapGenerator.ts";
+import { RngParams, NormalizedParams, normalizeRngParameters } from "../lib/mapGenerator.ts";
 
 
 interface MapData {
@@ -1175,305 +1175,406 @@ export default function TerrainEditor() {
     setStatus(STRINGS.en.randomizedAll);
   }
 
-  function generateRandomTerrain(params:RngParams) {
+  function generateRandomTerrain(/*params:RngParams*/) {
+    const normParams: NormalizedParams = normalizeRngParameters(rngParameters, width, depth, totalHeight);
+
     const seedVal = Number(randSeed) || Math.floor(Math.random() * 1e9);
     const rand = mulberry32(seedVal);
     const noiseCoarse = makeValueNoise(rand, width, depth, 18);
     const noiseFine = makeValueNoise(rand, width, depth, 6);
     const mountainMask = makeValueNoise(rand, width, depth, 40);
     const mountainDetail = makeValueNoise(rand, width, depth, 10);
-    const plateauMask = params.randPlateaus ? makeValueNoise(rand, width, depth, 34) : null;
-    const valleyMask = params.randValleys ? makeValueNoise(rand, width, depth, 30) : null;
-    const valleyDetail = params.randValleys ? makeValueNoise(rand, width, depth, 9) : null;
-    const riverNoise = params.randRivers ? makeValueNoise(rand, width, depth, 24) : null;
-    const lakeNoise = params.randLakes ? makeValueNoise(rand, width, depth, 30) : null;
-    const forestMask = params.randForests ? makeValueNoise(rand, width, depth, 20) : null;
-    const islandShapeNoise = params.randIsland ? 
+    const plateauMask = normParams.landscape.plateaus.isEnabled ? makeValueNoise(rand, width, depth, 34) : null;
+    const valleyMask = normParams.landscape.valleys.isEnabled ? makeValueNoise(rand, width, depth, 30) : null;
+    const valleyDetail = normParams.landscape.valleys.isEnabled ? makeValueNoise(rand, width, depth, 9) : null;
+    const riverNoise = normParams.river.isEnabled ? makeValueNoise(rand, width, depth, 24) : null;
+    const lakeNoise = normParams.lake.isEnabled ? makeValueNoise(rand, width, depth, 30) : null;
+    const forestMask = normParams.vegetation.trees.isForests ? makeValueNoise(rand, width, depth, 20) : null;
+    const islandShapeNoise = normParams.island.isEnabled ? 
       makeValueNoise(rand, width, depth, Math.max(8, Math.max(width, depth) / 3.2)) : null;
-    const raggedBottom = params.randIsland && params.randIslandMode !== "island";
+    const raggedBottom = normParams.island.isEnabled && rngParameters.randIslandMode !== "island";
     const bottomNoiseCoarse = raggedBottom
       ? makeValueNoise(rand, width, depth, Math.max(8, Math.max(width, depth) / 4))
       : null;
     const bottomNoiseFine = raggedBottom ? makeValueNoise(rand, width, depth, 6) : null;
-    const caveNoise = params.randCaves ? 
+    const caveNoise = normParams.cave.isEnabled ? 
       makeValueNoise3D(rand, width, totalHeight, depth, 8) : null;
-
-    const minH = clamp(params.randMinH, 0, totalHeight);
-    const maxH = clamp(params.randMaxH, minH, totalHeight);
-    const groundDepth = clamp(params.randGroundDepth, 0, totalHeight);
-    const bottomRoughness = clamp(params.randBottomRoughness, 0, totalHeight);
-    const maxThickness = clamp(params.randMaxThickness, 1, totalHeight);
-    const baseBlock = clamp(params.randBaseBlock, 1, 255);
-    const surfaceBlock = clamp(params.randSurfaceBlock, 1, 255);
-    const decoWeightedList = parseWeightedIdList(params.randDecoBlocks);
-    const decoChance = clamp(params.randDecoChance, 0, 100) / 100;
-    const hillStrength = clamp(params.randHillStrength, 0, 100) / 100;
-    const mountainBoost = clamp(params.randMountainHeight, 0, totalHeight);
-    const plateauHeight = clamp(params.randPlateauHeight, 1, totalHeight);
-    const valleyDepth = clamp(params.randValleyDepth, 1, totalHeight);
-    const riverBlock = clamp(params.randRiverBlock, 1, 255);
-    const riverThreshold = clamp(params.randRiverWidth, 1, 40) / 100;
-    const lakeBlock = clamp(params.randLakeBlock, 1, 255);
-    const lakeThreshold = 1 - clamp(params.randLakeSize, 1, 10) / 12;
-    const caveThreshold = 1 - clamp(params.randCaveDensity, 0, 100) / 100;
-    const forestDensity = clamp(params.randForestDensity, 0, 100) / 100;
-    const islandIrregularity = clamp(params.randIslandIrregularity, 0, 100) / 100;
-    const islandMarginFactor =
-      { small: 0.42, medium: 0.7, large: 0.96 }[params.randIslandSize] || 0.96;
-    const isFloatingIsland = params.randIslandMode !== "island";
-    const seaLevel = clamp(params.randSeaLevel, 0, totalHeight);
-    const seaBlock = clamp(params.randSeaBlock, 1, 255);
-    const riverLakeSurfaceH = isFloatingIsland
-      ? groundDepth + Math.max(1, Math.round(minH * 0.6))
-      : seaLevel;
-
-    const islandCenters:{
-      x:number,
-      z:number,
-      radius:number
-    }[] = [];
-    if (params.randIsland) {
-      if (params.randArchipelago) {
-        const count = clamp(params.randIslandCount, 1, 8);
-        const baseRadius =
-          (Math.min(width, depth) / 2) * islandMarginFactor / Math.sqrt(count);
-        for (let i = 0; i < count; i++) {
-          const r = baseRadius * (0.7 + rand() * 0.6);
-          const cx = Math.min(width - r, Math.max(r, r + rand() * (width - 2 * r)));
-          const cz = Math.min(depth - r, Math.max(r, r + rand() * (depth - 2 * r)));
-          islandCenters.push({ x: cx, z: cz, radius: Math.max(r, 1) });
-        }
-      } else {
-        islandCenters.push({
-          x: width / 2,
-          z: depth / 2,
-          radius: Math.max((Math.min(width, depth) / 2) * islandMarginFactor, 1),
-        });
-      }
-    }
-
-    const altitudeOn = params.randAltitudeBlocks;
-    const beachLevel = clamp(params.randBeachLevel, 0, totalHeight);
-    const beachBlock = clamp(params.randBeachBlock, 1, 255);
-    const snowLevel = clamp(params.randSnowLevel, 0, totalHeight);
-    const snowBlock = clamp(params.randSnowBlock, 1, 255);
-
-    const oresOn = params.randOres;
-    const oreBlockList = parseIdList(params.randOreBlocks);
-    const oreCountScaled = Math.round(
-      clamp(params.randOreCount, 0, 500) * ((width * depth) / (128 * 128))
-    );
-    const oreVeinR = clamp(params.randOreVeinSize, 1, 5);
-
-    const caveGlowOn = params.randCaveGlow && params.randCaves;
-    const caveGlowChance = clamp(params.randCaveGlowChance, 0, 100) / 100;
-    const caveGlowBlock = clamp(params.randCaveGlowBlock, 1, 255);
-
-    const shoreBlock = clamp(params.randShoreBlock, 1, 255);
-    const shoreRadius = clamp(params.randShoreRadius, 1, 5);
-
-    const treeChance = clamp(params.randTreeDensity, 0, 100) / 100;
-    const treeMinH = clamp(params.randTreeMinHeight, 1, 20);
-    const treeMaxH = clamp(params.randTreeMaxHeight, treeMinH, 20);
-    const treeWood = clamp(params.randTreeWoodBlock, 1, 255);
-    const treeLeaves = clamp(params.randTreeLeavesBlock, 1, 255);
-    const treeSpacing = clamp(params.randTreeSpacing, 0, 20);
-    
-    const plantedTrees:{x,z}[] = [];
-
-    function canPlantTree(tx: number, tz: number) {
-      const spacing2 = treeSpacing * treeSpacing;
-      for (const p of plantedTrees) {
-        const dx = tx - p.x;
-        const dz = tz - p.z;
-        if (dx * dx + dz * dz < spacing2) return false;
-      }
-      return true;
-    }
-
-    function plantTree(tx: number, groundY: number, tz: number) {
-      const trunkHeight = treeMinH + Math.floor(rand() * (treeMaxH - treeMinH + 1));
-      const trunkTop = groundY + trunkHeight - 1;
-      if (trunkTop + 3 >= totalHeight) return;
-
-      for (let ty = 0; ty < trunkHeight; ty++) {
-        setVoxel(tx, groundY + ty, tz, treeWood, 0, true);
-      }
-
-      const layers = [
-        { dy: -1, radius: 2 },
-        { dy: 0, radius: 2 },
-        { dy: 1, radius: 1 },
-        { dy: 2, radius: 0 },
-      ];
-      for (const layer of layers) {
-        const ly = trunkTop + layer.dy;
-        if (ly < 0 || ly >= totalHeight) continue;
-        const r = layer.radius;
-        for (let dx = -r; dx <= r; dx++) {
-          for (let dz = -r; dz <= r; dz++) {
-            const dist = Math.sqrt(dx * dx + dz * dz);
-            if (dist > r + 0.4) continue;
-            if (Math.abs(dx) === r && Math.abs(dz) === r && rand() < 0.5) continue;
-            const lx = tx + dx;
-            const lz = tz + dz;
-            if (lx < 0 || lx >= width || lz < 0 || lz >= depth) continue;
-            if (dx === 0 && dz === 0 && ly <= trunkTop) continue;
-            setVoxel(lx, ly, lz, treeLeaves, 0, true);
+  
+      const islandCenters:{
+        x: number,
+        z: number,
+        radius: number
+      }[] = [];
+      if (normParams.island.isEnabled) {
+        if (normParams.island.isArchipelago) {
+          const baseRadius =
+            (Math.min(width, depth) / 2) * normParams.island.marginFactor / Math.sqrt(normParams.island.islandCount);
+          for (let i = 0; i < normParams.island.islandCount; i++) {
+            const r = baseRadius * (0.7 + rand() * 0.6);
+            const cx = Math.min(width - r, Math.max(r, r + rand() * (width - 2 * r)));
+            const cz = Math.min(depth - r, Math.max(r, r + rand() * (depth - 2 * r)));
+            islandCenters.push({ x: cx, z: cz, radius: Math.max(r, 1) });
           }
+        } else {
+          islandCenters.push({
+            x: width / 2,
+            z: depth / 2,
+            radius: Math.max((Math.min(width, depth) / 2) * normParams.island.marginFactor, 1),
+          });
         }
       }
-      plantedTrees.push({ x: tx, z: tz });
-    }
-
-    const bushChance = clamp(params.randBushDensity, 0, 100) / 100;
-    const bushBlock = clamp(params.randBushBlock, 1, 255);
-    const bushSpacing = clamp(params.randBushSpacing, 0, 10);
-    const plantedBushes:{
-      x: number,
-      z: number
-    }[] = [];
-
-    function canPlantBush(tx: number, tz: number) {
-      const spacing2 = bushSpacing * bushSpacing;
-      for (const p of plantedBushes) {
-        const dx = tx - p.x;
-        const dz = tz - p.z;
-        if (dx * dx + dz * dz < spacing2) return false;
+      
+      const plantedTrees:{x: number, z: number}[] = [];
+  
+      function canPlantTree(tx: number, tz: number) {
+        const spacing2 = normParams.vegetation.trees.spacing * normParams.vegetation.trees.spacing;
+        for (const p of plantedTrees) {
+          const dx = tx - p.x;
+          const dz = tz - p.z;
+          if (dx * dx + dz * dz < spacing2) return false;
+        }
+        return true;
       }
-      return true;
-    }
-
-    function plantBush(tx: number, groundY: number, tz: number) {
-      const layers = [
-        { dy: 0, radius: 1 },
-        { dy: 1, radius: 1 },
-      ];
-      for (const layer of layers) {
-        const ly = groundY + layer.dy;
-        if (ly < 0 || ly >= totalHeight) continue;
-        const r = layer.radius;
-        for (let dx = -r; dx <= r; dx++) {
-          for (let dz = -r; dz <= r; dz++) {
-            const dist = Math.sqrt(dx * dx + dz * dz);
-            if (dist > r + 0.3) continue;
-            if (Math.abs(dx) === r && Math.abs(dz) === r && rand() < 0.5) continue;
-            const lx = tx + dx;
-            const lz = tz + dz;
-            if (lx < 0 || lx >= width || lz < 0 || lz >= depth) continue;
-            setVoxel(lx, ly, lz, bushBlock, 0, true);
+  
+      function plantTree(tx: number, groundY: number, tz: number) {
+        const trunkHeight = normParams.vegetation.trees.minH + Math.floor(rand() * (normParams.vegetation.trees.maxH - normParams.vegetation.trees.minH + 1));
+        const trunkTop = groundY + trunkHeight - 1;
+        if (trunkTop + 3 >= totalHeight) return;
+  
+        for (let ty = 0; ty < trunkHeight; ty++) {
+          setVoxel(tx, groundY + ty, tz, normParams.vegetation.trees.woodBlock, 0, true);
+        }
+  
+        const layers = [
+          { dy: -1, radius: 2 },
+          { dy: 0, radius: 2 },
+          { dy: 1, radius: 1 },
+          { dy: 2, radius: 0 },
+        ];
+        for (const layer of layers) {
+          const ly = trunkTop + layer.dy;
+          if (ly < 0 || ly >= totalHeight) continue;
+          const r = layer.radius;
+          for (let dx = -r; dx <= r; dx++) {
+            for (let dz = -r; dz <= r; dz++) {
+              const dist = Math.sqrt(dx * dx + dz * dz);
+              if (dist > r + 0.4) continue;
+              if (Math.abs(dx) === r && Math.abs(dz) === r && rand() < 0.5) continue;
+              const lx = tx + dx;
+              const lz = tz + dz;
+              if (lx < 0 || lx >= width || lz < 0 || lz >= depth) continue;
+              if (dx === 0 && dz === 0 && ly <= trunkTop) continue;
+              setVoxel(lx, ly, lz, normParams.vegetation.trees.leavesBlock, 0, true);
+            }
           }
+        }
+        plantedTrees.push({ x: tx, z: tz });
+      }
+  
+      const plantedBushes:{
+        x: number,
+        z: number
+      }[] = [];
+  
+      function canPlantBush(tx: number, tz: number) {
+        const spacing2 = normParams.vegetation.bushes.spacing * normParams.vegetation.bushes.spacing;
+        for (const p of plantedBushes) {
+          const dx = tx - p.x;
+          const dz = tz - p.z;
+          if (dx * dx + dz * dz < spacing2) return false;
+        }
+        return true;
+      }
+  
+      function plantBush(tx: number, groundY: number, tz: number) {
+        const layers = [
+          { dy: 0, radius: 1 },
+          { dy: 1, radius: 1 },
+        ];
+        for (const layer of layers) {
+          const ly = groundY + layer.dy;
+          if (ly < 0 || ly >= totalHeight) continue;
+          const r = layer.radius;
+          for (let dx = -r; dx <= r; dx++) {
+            for (let dz = -r; dz <= r; dz++) {
+              const dist = Math.sqrt(dx * dx + dz * dz);
+              if (dist > r + 0.3) continue;
+              if (Math.abs(dx) === r && Math.abs(dz) === r && rand() < 0.5) continue;
+              const lx = tx + dx;
+              const lz = tz + dz;
+              if (lx < 0 || lx >= width || lz < 0 || lz >= depth) continue;
+              setVoxel(lx, ly, lz, normParams.vegetation.bushes.block, 0, true);
+            }
+          }
+        }
+        plantedBushes.push({ x: tx, z: tz });
+      }
+  
+      beginStroke();
+  
+      for (const voxel of Array.from(terrain.cells())) {
+        setVoxel(voxel.x, voxel.y, voxel.z, AIR, 0, true);
+      }
+  
+      const heightMap = new Array(width * depth).fill(0);
+      const isWaterMap = new Uint8Array(width * depth);
+      const waterBlockMap = new Array(width * depth).fill(0);
+      const falloffMap = raggedBottom ? new Array(width * depth).fill(0) : null;
+  
+      for (let x = 0; x < width; x++) {
+        for (let z = 0; z < depth; z++) {
+          let n = normParams.landscape.hills.isEnabled
+            ? noiseCoarse(x, z) * (1 - normParams.landscape.hills.strength * 0.5) + noiseFine(x, z) * normParams.landscape.hills.strength
+            : noiseCoarse(x, z);
+  
+          if (normParams.island.isEnabled) {
+            let shapeVar = 1;
+            if (islandShapeNoise) {
+              shapeVar = 1 + islandShapeNoise(x, z) * normParams.island.irregularity * 1.6;
+            }
+            let falloff = 0;
+            for (const center of islandCenters) {
+              const nx = x - center.x + 0.5;
+              const nz = z - center.z + 0.5;
+              const dist = Math.sqrt(nx * nx + nz * nz) / center.radius;
+              const f = Math.max(0, 1 - dist * shapeVar);
+              if (f > falloff) falloff = f;
+            }
+            n *= falloff;
+            if (falloffMap) falloffMap[x * depth + z] = falloff;
+          }
+  
+          let h = Math.floor(normParams.height.min + n * (normParams.height.max - normParams.height.min));
+  
+          if (normParams.landscape.mountains.isEnabled) {
+            const mask = mountainMask(x, z);
+            if (mask > 0.6) {
+              const ridged = 1 - Math.abs(mountainDetail(x, z) * 2 - 1);
+              const strength = (mask - 0.6) / 0.4;
+              h += Math.round(ridged * normParams.landscape.mountains.mountainBoost * strength);
+            }
+          }
+  
+          if (normParams.landscape.plateaus.isEnabled && plateauMask) {
+            const mask = plateauMask(x, z);
+            if (mask > 0.62) {
+              const strength = (mask - 0.62) / 0.38;
+              h = Math.round(h * (1 - strength) + normParams.landscape.plateaus.height * strength);
+            }
+          }
+  
+          if (normParams.landscape.valleys.isEnabled && valleyMask) {
+            const mask = valleyMask(x, z);
+            if (mask > 0.6 && valleyDetail) {
+              const ridged = 1 - Math.abs(valleyDetail(x, z) * 2 - 1);
+              const strength = (mask - 0.6) / 0.4;
+              h -= Math.round(ridged * normParams.landscape.valleys.depth * strength);
+            }
+          }
+  
+          if (h > 0) h += normParams.island.groundDepth;
+  
+          let isWater = false;
+          let waterBlock = normParams.block.surface;
+          if (normParams.river.isEnabled && riverNoise) {
+            const rv = Math.abs(riverNoise(x, z) * 2 - 1);
+            if (rv < normParams.river.threshold) {
+              isWater = true;
+              waterBlock = normParams.river.block;
+              h = Math.min(h, normParams.water.riverLakeSurfaceH);
+            }
+          }
+          if (!isWater && normParams.lake.isEnabled && lakeNoise) {
+            const lk = lakeNoise(x, z);
+            if (lk > normParams.river.threshold) {
+              isWater = true;
+              waterBlock = normParams.lake.block;
+              h = Math.min(h, normParams.water.riverLakeSurfaceH);
+            }
+          }
+  
+          const idx = x * depth + z;
+          if (h <= 0) {
+            heightMap[idx] = 0;
+            continue;
+          }
+          heightMap[idx] = Math.min(h, totalHeight);
+          isWaterMap[idx] = isWater ? 1 : 0;
+          waterBlockMap[idx] = waterBlock;
         }
       }
-      plantedBushes.push({ x: tx, z: tz });
-    }
-
-    beginStroke();
-
-    for (const voxel of Array.from(terrain.cells())) {
-      setVoxel(voxel.x, voxel.y, voxel.z, AIR, 0, true);
-    }
-
-    const heightMap = new Array(width * depth).fill(0);
-    const isWaterMap = new Uint8Array(width * depth);
-    const waterBlockMap = new Array(width * depth).fill(0);
-    const falloffMap = raggedBottom ? new Array(width * depth).fill(0) : null;
-
-    for (let x = 0; x < width; x++) {
-      for (let z = 0; z < depth; z++) {
-        let n = params.randHills
-          ? noiseCoarse(x, z) * (1 - hillStrength * 0.5) + noiseFine(x, z) * hillStrength
-          : noiseCoarse(x, z);
-
-        if (params.randIsland) {
-          let shapeVar = 1;
-          if (islandShapeNoise) {
-            shapeVar = 1 + islandShapeNoise(x, z) * islandIrregularity * 1.6;
+  
+      if (normParams.erosion.isEnabled) {
+        for (let iter = 0; iter < normParams.erosion.iterations; iter++) {
+          const next = heightMap.slice();
+          for (let x = 0; x < width; x++) {
+            for (let z = 0; z < depth; z++) {
+              const idx = x * depth + z;
+              const h0 = heightMap[idx];
+              if (h0 <= 0 || isWaterMap[idx]) continue;
+              let sum = h0;
+              let count = 1;
+              const nbrs = [
+                [x - 1, z],
+                [x + 1, z],
+                [x, z - 1],
+                [x, z + 1],
+              ];
+              for (const [nx, nz] of nbrs) {
+                if (nx < 0 || nx >= width || nz < 0 || nz >= depth) continue;
+                const nIdx = nx * depth + nz;
+                const nh = heightMap[nIdx];
+                if (nh <= 0 || isWaterMap[nIdx]) continue;
+                sum += nh;
+                count++;
+              }
+              const avg = sum / count;
+              next[idx] = Math.max(1, Math.round(h0 + (avg - h0) * normParams.erosion.strength));
+            }
           }
-          let falloff = 0;
-          for (const center of islandCenters) {
-            const nx = x - center.x + 0.5;
-            const nz = z - center.z + 0.5;
-            const dist = Math.sqrt(nx * nx + nz * nz) / center.radius;
-            const f = Math.max(0, 1 - dist * shapeVar);
-            if (f > falloff) falloff = f;
-          }
-          n *= falloff;
-          if (falloffMap) falloffMap[x * depth + z] = falloff;
+          for (let i = 0; i < next.length; i++) heightMap[i] = next[i];
         }
-
-        let h = Math.floor(minH + n * (maxH - minH));
-
-        if (params.randMountains) {
-          const mask = mountainMask(x, z);
-          if (mask > 0.6) {
-            const ridged = 1 - Math.abs(mountainDetail(x, z) * 2 - 1);
-            const strength = (mask - 0.6) / 0.4;
-            h += Math.round(ridged * mountainBoost * strength);
-          }
-        }
-
-        if (params.randPlateaus && plateauMask) {
-          const mask = plateauMask(x, z);
-          if (mask > 0.62) {
-            const strength = (mask - 0.62) / 0.38;
-            h = Math.round(h * (1 - strength) + plateauHeight * strength);
-          }
-        }
-
-        if (params.randValleys && valleyMask) {
-          const mask = valleyMask(x, z);
-          if (mask > 0.6 && valleyDetail) {
-            const ridged = 1 - Math.abs(valleyDetail(x, z) * 2 - 1);
-            const strength = (mask - 0.6) / 0.4;
-            h -= Math.round(ridged * valleyDepth * strength);
-          }
-        }
-
-        if (h > 0) h += groundDepth;
-
-        let isWater = false;
-        let waterBlock = surfaceBlock;
-        if (params.randRivers && riverNoise) {
-          const rv = Math.abs(riverNoise(x, z) * 2 - 1);
-          if (rv < riverThreshold) {
-            isWater = true;
-            waterBlock = riverBlock;
-            h = Math.min(h, riverLakeSurfaceH);
-          }
-        }
-        if (!isWater && params.randLakes && lakeNoise) {
-          const lk = lakeNoise(x, z);
-          if (lk > lakeThreshold) {
-            isWater = true;
-            waterBlock = lakeBlock;
-            h = Math.min(h, riverLakeSurfaceH);
-          }
-        }
-
-        const idx = x * depth + z;
-        if (h <= 0) {
-          heightMap[idx] = 0;
-          continue;
-        }
-        heightMap[idx] = Math.min(h, totalHeight);
-        isWaterMap[idx] = isWater ? 1 : 0;
-        waterBlockMap[idx] = waterBlock;
       }
-    }
-
-    if (params.randErosion) {
-      const erosionStrength = clamp(params.randErosionStrength, 0, 100) / 100;
-      const erosionIterations = clamp(params.randErosionIterations, 1, 5);
-      for (let iter = 0; iter < erosionIterations; iter++) {
-        const next = heightMap.slice();
+  
+      let shoreMap:Uint8Array|null = null;
+      if (normParams.shore.isEnabled) {
+        shoreMap = new Uint8Array(width * depth);
+        const r2 = normParams.shore.radius * normParams.shore.radius;
+        const shoreNoise = makeValueNoise(rand, width, depth, Math.max(6, normParams.shore.radius * 4));
+  
         for (let x = 0; x < width; x++) {
           for (let z = 0; z < depth; z++) {
             const idx = x * depth + z;
-            const h0 = heightMap[idx];
-            if (h0 <= 0 || isWaterMap[idx]) continue;
-            let sum = h0;
-            let count = 1;
+            if (heightMap[idx] <= 0 || isWaterMap[idx]) continue;
+            let nearWater = false;
+            for (let dx = -normParams.shore.radius; dx <= normParams.shore.radius && !nearWater; dx++) {
+              for (let dz = -normParams.shore.radius; dz <= normParams.shore.radius && !nearWater; dz++) {
+                if (dx * dx + dz * dz > r2) continue;
+                const nx = x + dx;
+                const nz = z + dz;
+                if (nx < 0 || nx >= width || nz < 0 || nz >= depth) continue;
+                const nIdx = nx * depth + nz;
+                if (isWaterMap[nIdx] || heightMap[nIdx] <= 0) nearWater = true;
+              }
+            }
+            if (nearWater && shoreNoise(x, z) > normParams.shore.threshold) shoreMap[idx] = 1;
+          }
+        }
+      }
+  
+      for (let x = 0; x < width; x++) {
+        for (let z = 0; z < depth; z++) {
+          const idx = x * depth + z;
+          const height = heightMap[idx];
+  
+          if (height <= 0) {
+            if ( normParams.island.isFloating )
+              continue;
+            for (let y = 0; y < normParams.water.seaBlock && y < totalHeight; y++) {
+              setVoxel(x, y, z, normParams.water.seaBlock, 0, true);
+            }
+            continue;
+          }
+  
+          const isWater = !!isWaterMap[idx];
+          const waterBlock = waterBlockMap[idx];
+  
+          let columnSurfaceBlock = normParams.block.surface;
+          if (normParams.altitude.isEnabled) {
+            if (height >= normParams.altitude.snowLevel)
+              columnSurfaceBlock = normParams.altitude.snowBlock;
+            else if (height <= normParams.altitude.beachLevel) 
+              columnSurfaceBlock = normParams.altitude.beachBlock;
+          }
+          if (shoreMap && shoreMap[idx] && !isWater) {
+            columnSurfaceBlock = normParams.shore.block;
+          }
+  
+          let bottomY = 0;
+          if (raggedBottom && !isWater) {
+            if (normParams.island.bottomRoughness > 0 && falloffMap && bottomNoiseCoarse && bottomNoiseFine) {
+              const f = falloffMap[idx];
+              const bn = bottomNoiseCoarse(x, z) * 0.6 + bottomNoiseFine(x, z) * 0.4;
+              bottomY = Math.round(bn * normParams.island.bottomRoughness * f);
+            }
+            const minBottomForCap = height - normParams.island.maxThickness;
+            if (bottomY < minBottomForCap) bottomY = minBottomForCap;
+            bottomY = Math.max(0, Math.min(bottomY, height - 2));
+          }
+  
+          for (let y = bottomY; y < height; y++) {
+            if (
+              caveNoise &&
+              y < height - 1 &&
+              y > bottomY &&
+              caveNoise(x, y, z) > normParams.cave.threshold
+            ) {
+              if (normParams.cave.isGlow && normParams.cave.glowChance > 0 && rand() < normParams.cave.glowChance) {
+                setVoxel(x, y, z, normParams.cave.glowBlock, 0, true);
+              }
+              continue;
+            }
+            const isSurface = y === height - 1;
+            const block = isSurface ? (isWater ? waterBlock : columnSurfaceBlock) : normParams.block.base;
+            setVoxel(x, y, z, block, 0, true);
+          }
+  
+          const isSubmerged = !normParams.island.isFloating && height < normParams.water.seaLevel;
+          if (isSubmerged) {
+            for (let y = height; y < normParams.water.seaLevel && y < totalHeight; y++) {
+              setVoxel(x, y, z, normParams.water.seaBlock, 0, true);
+            }
+          }
+  
+          let treePlanted = false;
+          if (!isWater && !isSubmerged && height < totalHeight && normParams.vegetation.trees.isEnabled) {
+            let effectiveTreeChance = normParams.vegetation.trees.treeChance;
+            if (normParams.vegetation.trees.isForests && forestMask) {
+              effectiveTreeChance = forestMask(x, z) > 0.55 ? normParams.vegetation.trees.forestDensity : 0;
+            }
+            if (effectiveTreeChance > 0 && rand() < effectiveTreeChance && canPlantTree(x, z)) {
+              plantTree(x, height, z);
+              treePlanted = true;
+            }
+          }
+  
+          let bushPlanted = false;
+          if (
+            !treePlanted &&
+            !isWater &&
+            !isSubmerged &&
+            height < totalHeight &&
+            normParams.vegetation.bushes.isEnabled &&
+            normParams.vegetation.bushes.bushChance > 0 &&
+            rand() < normParams.vegetation.bushes.bushChance &&
+            canPlantBush(x, z)
+          ) {
+            plantBush(x, height, z);
+            bushPlanted = true;
+          }
+  
+          if (
+            !treePlanted &&
+            !bushPlanted &&
+            !isWater &&
+            !isSubmerged &&
+            height < totalHeight &&
+            normParams.deco.weightedList.length
+          ) {
+            if (normParams.deco.chance > 0 && rand() < normParams.deco.chance) {
+              const pick = pickWeighted(normParams.deco.weightedList, rand);
+              setVoxel(x, height, z, pick, 0, true);
+            }
+          }
+        }
+      }
+  
+      if (normParams.river.isEnabled && normParams.river.isWaterfallEnabled) {
+        for (let x = 0; x < width; x++) {
+          for (let z = 0; z < depth; z++) {
+            const idx = x * depth + z;
+            if (!isWaterMap[idx] || waterBlockMap[idx] !== normParams.river.block) continue;
+            const riverH = heightMap[idx];
             const nbrs = [
               [x - 1, z],
               [x + 1, z],
@@ -1483,325 +1584,163 @@ export default function TerrainEditor() {
             for (const [nx, nz] of nbrs) {
               if (nx < 0 || nx >= width || nz < 0 || nz >= depth) continue;
               const nIdx = nx * depth + nz;
-              const nh = heightMap[nIdx];
-              if (nh <= 0 || isWaterMap[nIdx]) continue;
-              sum += nh;
-              count++;
-            }
-            const avg = sum / count;
-            next[idx] = Math.max(1, Math.round(h0 + (avg - h0) * erosionStrength));
-          }
-        }
-        for (let i = 0; i < next.length; i++) heightMap[i] = next[i];
-      }
-    }
-
-    let shoreMap:Uint8Array|null = null;
-    if (params.randSmoothShore) {
-      shoreMap = new Uint8Array(width * depth);
-      const r2 = shoreRadius * shoreRadius;
-      const shoreNoise = makeValueNoise(rand, width, depth, Math.max(6, shoreRadius * 4));
-      const shoreThreshold = 1 - clamp(params.randShoreCoverage, 0, 100) / 100;
-      for (let x = 0; x < width; x++) {
-        for (let z = 0; z < depth; z++) {
-          const idx = x * depth + z;
-          if (heightMap[idx] <= 0 || isWaterMap[idx]) continue;
-          let nearWater = false;
-          for (let dx = -shoreRadius; dx <= shoreRadius && !nearWater; dx++) {
-            for (let dz = -shoreRadius; dz <= shoreRadius && !nearWater; dz++) {
-              if (dx * dx + dz * dz > r2) continue;
-              const nx = x + dx;
-              const nz = z + dz;
-              if (nx < 0 || nx >= width || nz < 0 || nz >= depth) continue;
-              const nIdx = nx * depth + nz;
-              if (isWaterMap[nIdx] || heightMap[nIdx] <= 0) nearWater = true;
-            }
-          }
-          if (nearWater && shoreNoise(x, z) > shoreThreshold) shoreMap[idx] = 1;
-        }
-      }
-    }
-
-    for (let x = 0; x < width; x++) {
-      for (let z = 0; z < depth; z++) {
-        const idx = x * depth + z;
-        const height = heightMap[idx];
-
-        if (height <= 0) {
-          if (isFloatingIsland) continue;
-          for (let y = 0; y < seaLevel && y < totalHeight; y++) {
-            setVoxel(x, y, z, seaBlock, 0, true);
-          }
-          continue;
-        }
-
-        const isWater = !!isWaterMap[idx];
-        const waterBlock = waterBlockMap[idx];
-
-        let columnSurfaceBlock = surfaceBlock;
-        if (altitudeOn) {
-          if (height >= snowLevel) columnSurfaceBlock = snowBlock;
-          else if (height <= beachLevel) columnSurfaceBlock = beachBlock;
-        }
-        if (shoreMap && shoreMap[idx] && !isWater) {
-          columnSurfaceBlock = shoreBlock;
-        }
-
-        let bottomY = 0;
-        if (raggedBottom && !isWater) {
-          if (bottomRoughness > 0 && falloffMap && bottomNoiseCoarse && bottomNoiseFine) {
-            const f = falloffMap[idx];
-            const bn = bottomNoiseCoarse(x, z) * 0.6 + bottomNoiseFine(x, z) * 0.4;
-            bottomY = Math.round(bn * bottomRoughness * f);
-          }
-          const minBottomForCap = height - maxThickness;
-          if (bottomY < minBottomForCap) bottomY = minBottomForCap;
-          bottomY = Math.max(0, Math.min(bottomY, height - 2));
-        }
-
-        for (let y = bottomY; y < height; y++) {
-          if (
-            caveNoise &&
-            y < height - 1 &&
-            y > bottomY &&
-            caveNoise(x, y, z) > caveThreshold
-          ) {
-            if (caveGlowOn && caveGlowChance > 0 && rand() < caveGlowChance) {
-              setVoxel(x, y, z, caveGlowBlock, 0, true);
-            }
-            continue;
-          }
-          const isSurface = y === height - 1;
-          const block = isSurface ? (isWater ? waterBlock : columnSurfaceBlock) : baseBlock;
-          setVoxel(x, y, z, block, 0, true);
-        }
-
-        const isSubmerged = !isFloatingIsland && height < seaLevel;
-        if (isSubmerged) {
-          for (let y = height; y < seaLevel && y < totalHeight; y++) {
-            setVoxel(x, y, z, seaBlock, 0, true);
-          }
-        }
-
-        let treePlanted = false;
-        if (!isWater && !isSubmerged && height < totalHeight && params.randTrees) {
-          let effectiveTreeChance = treeChance;
-          if (params.randForests && forestMask) {
-            effectiveTreeChance = forestMask(x, z) > 0.55 ? forestDensity : 0;
-          }
-          if (effectiveTreeChance > 0 && rand() < effectiveTreeChance && canPlantTree(x, z)) {
-            plantTree(x, height, z);
-            treePlanted = true;
-          }
-        }
-
-        let bushPlanted = false;
-        if (
-          !treePlanted &&
-          !isWater &&
-          !isSubmerged &&
-          height < totalHeight &&
-          params.randBushes &&
-          bushChance > 0 &&
-          rand() < bushChance &&
-          canPlantBush(x, z)
-        ) {
-          plantBush(x, height, z);
-          bushPlanted = true;
-        }
-
-        if (
-          !treePlanted &&
-          !bushPlanted &&
-          !isWater &&
-          !isSubmerged &&
-          height < totalHeight &&
-          decoWeightedList.length
-        ) {
-          if (decoChance > 0 && rand() < decoChance) {
-            const pick = pickWeighted(decoWeightedList, rand);
-            setVoxel(x, height, z, pick, 0, true);
-          }
-        }
-      }
-    }
-
-    if (params.randWaterfalls && params.randRivers) {
-      const dropThreshold = clamp(params.randWaterfallDrop, 2, 30);
-      for (let x = 0; x < width; x++) {
-        for (let z = 0; z < depth; z++) {
-          const idx = x * depth + z;
-          if (!isWaterMap[idx] || waterBlockMap[idx] !== riverBlock) continue;
-          const riverH = heightMap[idx];
-          const nbrs = [
-            [x - 1, z],
-            [x + 1, z],
-            [x, z - 1],
-            [x, z + 1],
-          ];
-          for (const [nx, nz] of nbrs) {
-            if (nx < 0 || nx >= width || nz < 0 || nz >= depth) continue;
-            const nIdx = nx * depth + nz;
-            if (isWaterMap[nIdx]) continue;
-            const nH = heightMap[nIdx];
-            if (nH <= 0) continue;
-            if (riverH - nH >= dropThreshold) {
-              for (let y = nH; y < riverH && y < totalHeight; y++) {
-                setVoxel(nx, y, nz, riverBlock, 0, true);
-              }
-            }
-          }
-        }
-      }
-    }
-
-    if (oresOn && oreBlockList.length && oreCountScaled > 0) {
-      const oreBigChance = clamp(params.randOreBigChance, 0, 100) / 100;
-      const oreBigR = clamp(params.randOreBigSize, 1, 10);
-
-      function placeOreBlob(cx: number, cy: number, cz: number, oreBlock, r) {
-        for (let dx = -r; dx <= r; dx++) {
-          for (let dy = -r; dy <= r; dy++) {
-            for (let dz = -r; dz <= r; dz++) {
-              const d2 = dx * dx + dy * dy + dz * dz;
-              if (d2 > r * r + rand() * 1.5) continue;
-              if (rand() < 0.3) continue;
-              const wx = cx + dx;
-              const wy = cy + dy;
-              const wz = cz + dz;
-              if (wx < 0 || wx >= width || wy < 0 || wy >= totalHeight || wz < 0 || wz >= depth)
-                continue;
-
-              const existing = terrain.get(wx, wy, wz);
-              if (!existing || existing.block === AIR) continue;
-              setVoxel(wx, wy, wz, oreBlock, 0, true);
-            }
-          }
-        }
-      }
-
-      for (let i = 0; i < oreCountScaled; i++) {
-        const ox = Math.floor(rand() * width);
-        const oz = Math.floor(rand() * depth);
-        const colH = heightMap[ox * depth + oz];
-        if (colH < 3) continue;
-        const maxY = Math.min(colH - 2, groundDepth - 1);
-        if (maxY < 1) continue;
-        const oy = 1 + Math.floor(rand() * maxY);
-        const oreBlock = oreBlockList[Math.floor(rand() * oreBlockList.length)];
-
-        if (rand() < oreBigChance) {
-          // rare jackpot: a chain of overlapping blobs forming one large,
-          // irregular deposit instead of a single small vein
-          const blobCount = 3 + Math.floor(rand() * 4);
-          let cx = ox;
-          let cy = oy;
-          let cz = oz;
-          for (let b = 0; b < blobCount; b++) {
-            placeOreBlob(cx, cy, cz, oreBlock, oreBigR);
-            cx = Math.max(
-              0,
-              Math.min(width - 1, cx + Math.round((rand() - 0.5) * oreBigR))
-            );
-            cy = Math.max(
-              1,
-              Math.min(maxY, cy + Math.round((rand() - 0.5) * oreBigR * 0.6))
-            );
-            cz = Math.max(
-              0,
-              Math.min(depth - 1, cz + Math.round((rand() - 0.5) * oreBigR))
-            );
-          }
-        } else {
-          placeOreBlob(ox, oy, oz, oreBlock, oreVeinR);
-        }
-      }
-    }
-
-    const enabledStructures = structures.filter((s) => s.enabled && s.count > 0);
-    if (enabledStructures.length) {
-      const placedBoxes:{x0, x1, z0, z1}[] = [];
-      for (const st of enabledStructures) {
-        const spacing = Math.max(0, Number(st.minSpacing) || 0);
-        for (let attempt = 0; attempt < st.count; attempt++) {
-          let placed = false;
-          for (let retry = 0; retry < 25 && !placed; retry++) {
-            const rotSteps = st.rotate ? Math.floor(rand() * 4) : 0;
-            const rotated = getRotatedStructure(st, rotSteps);
-            const sx = rotated.sizeX;
-            const sz = rotated.sizeZ;
-            const ax = Math.floor(rand() * Math.max(1, width - sx));
-            const az = Math.floor(rand() * Math.max(1, depth - sz));
-            const surfaceH = heightMap[ax * depth + az];
-            if (surfaceH <= 0) continue;
-
-            if (st.requireFlat) {
-              let minH2 = surfaceH;
-              let maxH2 = surfaceH;
-              const step = Math.max(1, Math.floor(Math.min(sx, sz) / 4));
-              let flatOk = true;
-              for (let cx = 0; cx < sx && flatOk; cx += step) {
-                for (let cz = 0; cz < sz && flatOk; cz += step) {
-                  const hh =
-                    heightMap[
-                      Math.min(width - 1, ax + cx) * depth + Math.min(depth - 1, az + cz)
-                    ];
-                  if (hh <= 0) {
-                    flatOk = false;
-                    break;
-                  }
-                  if (hh < minH2) minH2 = hh;
-                  if (hh > maxH2) maxH2 = hh;
-                  if (maxH2 - minH2 > 2) {
-                    flatOk = false;
-                    break;
-                  }
+              if (isWaterMap[nIdx]) continue;
+              const nH = heightMap[nIdx];
+              if (nH <= 0) continue;
+              if (riverH - nH >= normParams.river.waterfallDropThreshold) {
+                for (let y = nH; y < riverH && y < totalHeight; y++) {
+                  setVoxel(nx, y, nz, normParams.river.block, 0, true);
                 }
               }
-              if (!flatOk) continue;
             }
-
-            const ay = surfaceH;
-            if (ay + rotated.sizeY > totalHeight) continue;
-
-            const box = {
-              x0: ax - spacing,
-              x1: ax + sx + spacing,
-              z0: az - spacing,
-              z1: az + sz + spacing,
-            };
-            const overlaps = placedBoxes.some(
-              (b) => !(box.x1 <= b.x0 || box.x0 >= b.x1 || box.z1 <= b.z0 || box.z0 >= b.z1)
-            );
-            if (overlaps) continue;
-
-            for (const v of rotated.voxels) {
-              const wx = ax + v.x;
-              const wy = ay + v.y;
-              const wz = az + v.z;
-              if (wx < 0 || wx >= width || wy < 0 || wy >= totalHeight || wz < 0 || wz >= depth)
-                continue;
-              setVoxel(wx, wy, wz, v.block, v.meta || 0, true);
-            }
-            placedBoxes.push({ x0: ax, x1: ax + sx, z0: az, z1: az + sz });
-            placed = true;
           }
         }
       }
+  
+      if (normParams.ore.isEnabled && normParams.ore.blockList.length && normParams.ore.countScaled > 0) {
+        function placeOreBlob(cx: number, cy: number, cz: number, oreBlock: number, r: number) {
+          for (let dx = -r; dx <= r; dx++) {
+            for (let dy = -r; dy <= r; dy++) {
+              for (let dz = -r; dz <= r; dz++) {
+                const d2 = dx * dx + dy * dy + dz * dz;
+                if (d2 > r * r + rand() * 1.5) continue;
+                if (rand() < 0.3) continue;
+                const wx = cx + dx;
+                const wy = cy + dy;
+                const wz = cz + dz;
+                if (wx < 0 || wx >= width || wy < 0 || wy >= totalHeight || wz < 0 || wz >= depth)
+                  continue;
+  
+                const existing = terrain.get(wx, wy, wz);
+                if (!existing || existing.block === AIR) continue;
+                setVoxel(wx, wy, wz, oreBlock, 0, true);
+              }
+            }
+          }
+        }
+  
+        for (let i = 0; i < normParams.ore.countScaled; i++) {
+          const ox = Math.floor(rand() * width);
+          const oz = Math.floor(rand() * depth);
+          const colH = heightMap[ox * depth + oz];
+          if (colH < 3) continue;
+          const maxY = Math.min(colH - 2, normParams.island.groundDepth - 1);
+          if (maxY < 1) continue;
+          const oy = 1 + Math.floor(rand() * maxY);
+          const oreBlock = normParams.ore.blockList[Math.floor(rand() * normParams.ore.blockList.length)];
+  
+          if (rand() < normParams.ore.bigChance) {
+            // rare jackpot: a chain of overlapping blobs forming one large,
+            // irregular deposit instead of a single small vein
+            const blobCount = 3 + Math.floor(rand() * 4);
+            let cx = ox;
+            let cy = oy;
+            let cz = oz;
+            for (let b = 0; b < blobCount; b++) {
+              placeOreBlob(cx, cy, cz, oreBlock, normParams.ore.bigVeinR);
+              cx = Math.max(
+                0,
+                Math.min(width - 1, cx + Math.round((rand() - 0.5) * normParams.ore.bigVeinR))
+              );
+              cy = Math.max(
+                1,
+                Math.min(maxY, cy + Math.round((rand() - 0.5) * normParams.ore.bigVeinR * 0.6))
+              );
+              cz = Math.max(
+                0,
+                Math.min(depth - 1, cz + Math.round((rand() - 0.5) * normParams.ore.bigVeinR))
+              );
+            }
+          } else {
+            placeOreBlob(ox, oy, oz, oreBlock, normParams.ore.veinR);
+          }
+        }
+      }
+  
+      const enabledStructures = structures.filter((s) => s.enabled && s.count > 0);
+      if (enabledStructures.length) {
+        const placedBoxes:{x0: number, x1: number, z0:number, z1: number}[] = [];
+        for (const st of enabledStructures) {
+          const spacing = Math.max(0, Number(st.minSpacing) || 0);
+          for (let attempt = 0; attempt < st.count; attempt++) {
+            let placed = false;
+            for (let retry = 0; retry < 25 && !placed; retry++) {
+              const rotSteps = st.rotate ? Math.floor(rand() * 4) : 0;
+              const rotated = getRotatedStructure(st, rotSteps);
+              const sx = rotated.sizeX;
+              const sz = rotated.sizeZ;
+              const ax = Math.floor(rand() * Math.max(1, width - sx));
+              const az = Math.floor(rand() * Math.max(1, depth - sz));
+              const surfaceH = heightMap[ax * depth + az];
+              if (surfaceH <= 0) continue;
+  
+              if (st.requireFlat) {
+                let minH2 = surfaceH;
+                let maxH2 = surfaceH;
+                const step = Math.max(1, Math.floor(Math.min(sx, sz) / 4));
+                let flatOk = true;
+                for (let cx = 0; cx < sx && flatOk; cx += step) {
+                  for (let cz = 0; cz < sz && flatOk; cz += step) {
+                    const hh =
+                      heightMap[
+                        Math.min(width - 1, ax + cx) * depth + Math.min(depth - 1, az + cz)
+                      ];
+                    if (hh <= 0) {
+                      flatOk = false;
+                      break;
+                    }
+                    if (hh < minH2) minH2 = hh;
+                    if (hh > maxH2) maxH2 = hh;
+                    if (maxH2 - minH2 > 2) {
+                      flatOk = false;
+                      break;
+                    }
+                  }
+                }
+                if (!flatOk) continue;
+              }
+  
+              const ay = surfaceH;
+              if (ay + rotated.sizeY > totalHeight) continue;
+  
+              const box = {
+                x0: ax - spacing,
+                x1: ax + sx + spacing,
+                z0: az - spacing,
+                z1: az + sz + spacing,
+              };
+              const overlaps = placedBoxes.some(
+                (b) => !(box.x1 <= b.x0 || box.x0 >= b.x1 || box.z1 <= b.z0 || box.z0 >= b.z1)
+              );
+              if (overlaps) continue;
+  
+              for (const v of rotated.voxels) {
+                const wx = ax + v.x;
+                const wy = ay + v.y;
+                const wz = az + v.z;
+                if (wx < 0 || wx >= width || wy < 0 || wy >= totalHeight || wz < 0 || wz >= depth)
+                  continue;
+                setVoxel(wx, wy, wz, v.block, v.meta || 0, true);
+              }
+              placedBoxes.push({ x0: ax, x1: ax + sx, z0: az, z1: az + sz });
+              placed = true;
+            }
+          }
+        }
+      }
+  
+      commitStroke();
+  
+      setStatus(STRINGS.en.generatedSeed(seedVal));
+  
+      lastHeightMapRef.current = {
+        width,
+        depth,
+        totalHeight,
+        heightMap: heightMap.slice(),
+        isWaterMap: Array.from(isWaterMap),
+      };
     }
-
-    commitStroke();
-
-    setStatus(STRINGS.en.generatedSeed(seedVal));
-
-    lastHeightMapRef.current = {
-      width,
-      depth,
-      totalHeight,
-      heightMap: heightMap.slice(),
-      isWaterMap: Array.from(isWaterMap),
-    };
-  }
 
   // ---- targeted regeneration (decor / trees / ore only, reuses last heightMap) ----
   function clearVoxelsByBlockIds(idSet: Set<number>) {

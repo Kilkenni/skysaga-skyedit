@@ -324,6 +324,7 @@ function normalizeRngParameters(params:RngParams, width: number, depth: number, 
   return normalizedParams;
 }
 
+/*
 function generateRandomTerrain(params:RngParams) {
     const seedVal = Number(randSeed) || Math.floor(Math.random() * 1e9);
     const rand = mulberry32(seedVal);
@@ -885,7 +886,10 @@ function generateRandomTerrain(params:RngParams) {
       isWaterMap: Array.from(isWaterMap),
     };
   }
+*/
 
 export {
-  RngParams
+  RngParams,
+  NormalizedParams,
+  normalizeRngParameters
 }
