@@ -59,7 +59,7 @@ interface Stroke {
  *   setVoxelCount / scheduleSave   -> subscribers (see subscribe())
  *   draw() / syncVoxel3D() calls   -> subscribers
  */
-export class VoxelStore {
+class VoxelStore {
   #map = new Map<string, Voxel>(); // AIR is never stored
   #undo: VoxelChange[][] = []; // oldest first
   #redo: VoxelChange[][] = [];
@@ -88,7 +88,9 @@ export class VoxelStore {
   get(x: number, y: number, z: number): Voxel | undefined {
     return this.#map.get(keyOf(x, y, z));
   }
-
+/**
+ * @todo delete this method
+ * */
   getAllRaw() {
     return this.#map.entries();
   }
@@ -303,6 +305,7 @@ function invert(c: VoxelChange): VoxelChange {
 
 export {
   Voxel, VoxelCell, VoxelChange, VoxelWriter,
+  VoxelStore,
   VoxelStoreEvent,
   VoxelStoreListener
 };
