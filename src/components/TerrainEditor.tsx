@@ -1278,6 +1278,7 @@ export default function TerrainEditor() {
     const treeWood = clamp(params.randTreeWoodBlock, 1, 255);
     const treeLeaves = clamp(params.randTreeLeavesBlock, 1, 255);
     const treeSpacing = clamp(params.randTreeSpacing, 0, 20);
+    
     const plantedTrees:{x,z}[] = [];
 
     function canPlantTree(tx: number, tz: number) {
