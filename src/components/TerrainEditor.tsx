@@ -31,7 +31,7 @@ import PaletteHotbar from "./PaletteHotbar.tsx";
 import { RngParams } from "../lib/mapGenerator.ts";
 
 
-interface MapData {
+export interface MapData {
   gridX: number,
   gridY: number,
   gridZ: number,
@@ -3684,10 +3684,11 @@ export default function TerrainEditor() {
         applyServerEdits={applyServerEdits}
         cameraMode={cameraMode}
         entityInstances={entityInstances}
+        newMap={newMap}
+        importJson={importJson}
         exportJson={exportJson}
         exportJsonCompressed={exportJsonCompressed}
         mapData={mapData}
-        importJson={importJson}
         scheduleSave={scheduleSave}
         setMapData={setMapData}
         setCameraMode={setCameraMode}
@@ -3843,114 +3844,114 @@ export default function TerrainEditor() {
               setPlacingEntityName={setPlacingEntityName}
             />
           )}
-
-          <div
-            ref={containerRef}
-            style={{
-              flex: 1,
-              minHeight: 0,
-              overflow: viewMode === "2d" ? "auto" : "hidden",
-              padding: viewMode === "2d" ? 16 : 0,
-              background: "#08090c",
-              position: "relative",
-            }}
-          >
-            <canvas
-              ref={canvasRef}
-              onMouseDown={handleMouseDown}
-              onMouseMove={handleMouseMove}
-              //onMouseUp={handleMouseUp}
-              onMouseLeave={handleMouseLeave}
+          <div style={{ flex: 1, minHeight: 0, position: "relative" }}>
+            <div
+              ref={containerRef}
               style={{
-                display: viewMode === "2d" ? "block" : "none",
-                cursor: "crosshair",
-                imageRendering: "pixelated",
-                boxShadow: "0 0 0 1px #2a2f3a",
+                position: "absolute",
+                inset: 0,
+                overflow: viewMode === "2d" ? "auto" : "hidden",
+                padding: viewMode === "2d" ? 16 : 0,
+                background: "#08090c",
               }}
-            />
-            <canvas
-              ref={canvas3dRef}
-              style={{
-                display: viewMode === "3d" ? "block" : "none",
-                width: "100%",
-                height: "100%",
-                cursor: "crosshair",
-              }}
-            />
-            {viewMode === "3d" && cameraMode === "fly" && (
-              <>
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "50%",
-                    left: "50%",
-                    width: 18,
-                    height: 18,
-                    marginLeft: -9,
-                    marginTop: -9,
-                    pointerEvents: "none",
-                  }}
-                >
+            >
+              <canvas
+                ref={canvasRef}
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                //onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseLeave}
+                style={{
+                  display: viewMode === "2d" ? "block" : "none",
+                  cursor: "crosshair",
+                  imageRendering: "pixelated",
+                  boxShadow: "0 0 0 1px #2a2f3a",
+                }}
+              />
+              <canvas
+                ref={canvas3dRef}
+                style={{
+                  display: viewMode === "3d" ? "block" : "none",
+                  width: "100%",
+                  height: "100%",
+                  cursor: "crosshair",
+                }}
+              />
+              {viewMode === "3d" && cameraMode === "fly" && (
+                <>
                   <div
                     style={{
                       position: "absolute",
-                      left: 8,
-                      top: 0,
-                      width: 2,
-                      height: 18,
-                      background: "rgba(255,255,255,0.85)",
-                      boxShadow: "0 0 2px rgba(0,0,0,0.8)",
-                    }}
-                  />
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: 8,
-                      left: 0,
+                      top: "50%",
+                      left: "50%",
                       width: 18,
-                      height: 2,
-                      background: "rgba(255,255,255,0.85)",
-                      boxShadow: "0 0 2px rgba(0,0,0,0.8)",
-                    }}
-                  />
-                </div>
-                {!isLocked && (
-                  <div
-                    style={{
-                      position: "absolute",
-                      inset: 0,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      background: "rgba(8,9,12,0.6)",
+                      height: 18,
+                      marginLeft: -9,
+                      marginTop: -9,
                       pointerEvents: "none",
-                      textAlign: "center",
                     }}
                   >
-                    <div>
-                      <div style={{ fontSize: 16, color: "#e6e8ee", marginBottom: 8 }}>
-                        {t.clickToPlay}
-                      </div>
-                      <div
-                        style={{
-                          fontSize: 12,
-                          color: "#8a91a3",
-                          lineHeight: 1.6,
-                          whiteSpace: "pre-line",
-                        }}
-                      >
-                        {t.controlsFly}
-                      </div>
-                      {pointerLockFailed && (
-                        <div style={{ fontSize: 11, color: "#ff9e9e", marginTop: 10 }}>
-                          {t.pointerLockFailedMsg}
-                        </div>
-                      )}
-                    </div>
+                    <div
+                      style={{
+                        position: "absolute",
+                        left: 8,
+                        top: 0,
+                        width: 2,
+                        height: 18,
+                        background: "rgba(255,255,255,0.85)",
+                        boxShadow: "0 0 2px rgba(0,0,0,0.8)",
+                      }}
+                    />
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: 8,
+                        left: 0,
+                        width: 18,
+                        height: 2,
+                        background: "rgba(255,255,255,0.85)",
+                        boxShadow: "0 0 2px rgba(0,0,0,0.8)",
+                      }}
+                    />
                   </div>
-                )}
-              </>
-            )}
+                  {!isLocked && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        inset: 0,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        background: "rgba(8,9,12,0.6)",
+                        pointerEvents: "none",
+                        textAlign: "center",
+                      }}
+                    >
+                      <div>
+                        <div style={{ fontSize: 16, color: "#e6e8ee", marginBottom: 8 }}>
+                          {t.clickToPlay}
+                        </div>
+                        <div
+                          style={{
+                            fontSize: 12,
+                            color: "#8a91a3",
+                            lineHeight: 1.6,
+                            whiteSpace: "pre-line",
+                          }}
+                        >
+                          {t.controlsFly}
+                        </div>
+                        {pointerLockFailed && (
+                          <div style={{ fontSize: 11, color: "#ff9e9e", marginTop: 10 }}>
+                            {t.pointerLockFailedMsg}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
 
             <PaletteHotbar
               slots={hotbar}
@@ -3962,7 +3963,7 @@ export default function TerrainEditor() {
               onAssign={assignHotbarSlot}
             />
           </div>
-
+          
           <div
             style={{
               display: "flex",

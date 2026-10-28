@@ -19,6 +19,8 @@ export const STRINGS = {
     z: "Z",
     biome: "Biome",
     gameMode: "GameMode",
+    newMap: "New map",
+    newMapTitle: "Clear the map and start over",
     importJson: "Import JSON",
     exportJson: "Export JSON",
     exportJsonGz: "Export JSON (.gz)",
