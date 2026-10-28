@@ -130,6 +130,7 @@ export default function TerrainEditor() {
   const [mapData, setMapData] = useState<MapData>(DEFAULT_MAP_DATA);
   const paletteObj = usePalette({ onChange: scheduleSave })
   const { selectedBlock,
+    setSelectedBlock,
     selectedBlockRef,
     hotbar,
     setHotbar,
@@ -2972,7 +2973,7 @@ export default function TerrainEditor() {
     // draw();
   }
 
-  function fillRect(x0, z0, x1, z1, block) {
+  function fillRect(x0: number, z0: number, x1: number, z1: number, block: number, hollow = false) {
     beginStroke();
     const minX = Math.max(0, Math.min(x0, x1));
     const maxX = Math.min(width - 1, Math.max(x0, x1));
@@ -2980,6 +2981,8 @@ export default function TerrainEditor() {
     const maxZ = Math.min(depth - 1, Math.max(z0, z1));
     for (let x = minX; x <= maxX; x++) {
       for (let z = minZ; z <= maxZ; z++) {
+        if (hollow && x > minX && x < maxX && z > minZ && z < maxZ)
+          continue; // skip fill if disabled
         setVoxelMirrored(x, currentLayer, z, block, 0, true);
       }
     }
@@ -3212,12 +3215,18 @@ export default function TerrainEditor() {
       }
       return;
     }
+    if (tool === "eyedropper") {
+      const v = terrain.get(x, currentLayer, z);
+      if (v && v.block !== AIR) 
+        setSelectedBlock(v.block);
+      return;
+    }
     isDrawingRef.current = true;
     if (tool === "pencil" || tool === "eraser") {
       beginStroke();
       setVoxelMirrored(x, currentLayer, z, tool === "eraser" ? AIR : selectedBlock, 0, true);
       draw();
-    } else if (tool === "rect-fill" || tool === "rect-erase" || tool === "copy") {
+    } else if (tool === "rect-fill" || tool === "rect-hollow" || tool === "rect-erase" || tool === "copy") {
       rectStartRef.current = { x, z };
       previewRectRef.current = { x0: x, z0: z, x1: x, z1: z };
       draw();
@@ -3234,7 +3243,7 @@ export default function TerrainEditor() {
     if (tool === "pencil" || tool === "eraser") {
       setVoxelMirrored(x, currentLayer, z, tool === "eraser" ? AIR : selectedBlock, 0, true);
       draw();
-    } else if (tool === "rect-fill" || tool === "rect-erase" || tool === "copy") {
+    } else if (tool === "rect-fill" || tool === "rect-hollow" || tool === "rect-erase" || tool === "copy") {
       if (rectStartRef.current) {
         previewRectRef.current = {
           x0: rectStartRef.current.x,
@@ -3252,10 +3261,10 @@ export default function TerrainEditor() {
     isDrawingRef.current = false;
     if (tool === "pencil" || tool === "eraser") {
       commitStroke();
-    } else if (tool === "rect-fill" || tool === "rect-erase") {
+    } else if (tool === "rect-fill" || tool === "rect-hollow" || tool === "rect-erase") {
       if (previewRectRef.current) {
         const { x0, z0, x1, z1 } = previewRectRef.current;
-        fillRect(x0, z0, x1, z1, tool === "rect-erase" ? AIR : selectedBlock);
+        fillRect(x0, z0, x1, z1, tool === "rect-erase" ? AIR : selectedBlock, tool === "rect-hollow");
       }
       rectStartRef.current = null;
       previewRectRef.current = null;

@@ -48,7 +48,7 @@ interface Props {
   showSaves,
   showStructuresPanel,
   tool,
-  toolBtn,
+  toolBtn: (id:string, label:string, title:string)=>React.JSX.Element,
   totalHeight,
   undo,
   viewMode,
@@ -128,7 +128,9 @@ export default function ToolbarRow({
       {viewMode === "2d" && (
         <>
           {toolBtn("rect-fill", t.rectFill, t.rectFillTitle)}
+          {toolBtn("rect-hollow", t.rectHollow, t.rectHollowTitle)}
           {toolBtn("rect-erase", t.rectErase, t.rectEraseTitle)}
+          {toolBtn("eyedropper", t.eyedropper, t.eyedropperTitle)}
           {toolBtn("bucket", t.bucket, t.bucketTitle)}
           {toolBtn("copy", t.copyArea, t.copyAreaTitle)}
           {tool === "copy" && (
