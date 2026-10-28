@@ -151,12 +151,6 @@ export default function TerrainEditor() {
   const [tool, setTool] = useState("pencil");
   const clipboardRef = useRef<any>(null);
 
-  /*
-  const [roadPending, setRoadPending] = useState<{x: number, z: number}|null>(null);
-  const [roadWidth, setRoadWidth] = useState(2);
-  const [roadBlock, setRoadBlock] = useState(18);
-  */
-
   // Road Tool
   const [roadParams, setRoadParams] = useState<RoadParams>({roadPending:null, roadWidth: 2, roadBlock: 18});
   function updateRoadParams<K extends keyof RoadParams>(paramName: K, value: RoadParams[K]) {
@@ -343,7 +337,8 @@ export default function TerrainEditor() {
   const containerRef = useRef<HTMLDivElement>(null);
   const isDrawingRef = useRef(false);
   const rectStartRef = useRef<{x:number, z:number}>(null);
-  const previewRectRef = useRef<{ x0:number, z0:number, x1:number, z1:number}>(null);
+  const previewRectRef = useRef<{ x0:number, z0:number, x1:number, z1:number}>(null); // for preview on Rectangle tools
+  const roadHoverRef = useRef<{ x: number; z: number } | null>(null); // for preview on Road tool
   // const strokeChangesRef = useRef<any[]>([]);
   // const touchedInStrokeRef = useRef(new Map());
   const saveTimerRef = useRef<number>(null);
@@ -945,7 +940,7 @@ export default function TerrainEditor() {
 
   }
 
-  function saveCurrentMapAsStructure(name, category) {
+  function saveCurrentMapAsStructure(name: string, category: string) {
     // const entries = Array.from(voxelsRef.current.entries());
     const entries = Array.from(terrain.getAllRaw());
     if (!entries.length) return;
@@ -1121,7 +1116,7 @@ export default function TerrainEditor() {
     return -1;
   }
 
-  function drawRoad(x0: number, z0: number, x1: number, z1: number, widthBlocks: number, pathBlock: number) {
+  function drawRoad(x0: number, z0: number, x1: number, z1: number, widthBlocks: number, pathBlock: number, followSurface = false) {
     const steps = Math.max(Math.abs(x1 - x0), Math.abs(z1 - z0), 1);
     const r = Math.max(0, Math.floor(widthBlocks / 2));
     beginStroke();
@@ -1135,12 +1130,10 @@ export default function TerrainEditor() {
           const wx = cx + dx;
           const wz = cz + dz;
           if (wx < 0 || wx >= width || wz < 0 || wz >= depth) continue;
-          const sy = findSurfaceY(wx, wz);
-          if (sy < 0) continue;
-          // const oldEntry = voxelsRef.current.get(keyOf(wx, sy, wz));
-          const oldEntry = terrain.get(wx, sy, wz);
-          const oldBlock = oldEntry ? oldEntry.block : AIR;
-          setVoxel(wx, sy, wz, pathBlock, 0, true);
+          const wy = followSurface ? findSurfaceY(wx, wz) : currentLayer;
+          if (wy < 0)
+            continue;
+          setVoxelMirrored(wx, wy, wz, pathBlock, 0, true);
         }
       }
     }
@@ -2382,7 +2375,7 @@ export default function TerrainEditor() {
       addInstance(newBlock, x, y, z);
   }
 
-  function panOrbit(dx, dy) {
+  function panOrbit(dx: number, dy: number) {
     const st = threeRef.current;
     const cam = st.camera;
     if (!cam) return;
@@ -2490,6 +2483,8 @@ export default function TerrainEditor() {
       return;
     }
 
+    if (toolRef.current !== "pencil" && toolRef.current !== "eraser")
+      return; // early exit if no tool is selected
     const oldEntry = terrain.get(cx,cy,cz);
     const oldBlock = oldEntry ? oldEntry.block : AIR;
     const newBlock = isErase ? AIR : selectedBlockRef.current;
@@ -2651,7 +2646,7 @@ export default function TerrainEditor() {
     };
   }
 
-  function attachFlyListeners(canvas) {
+  function attachFlyListeners(canvas: HTMLCanvasElement) {
     const st = threeRef.current;
 
     function onCanvasClick() {
@@ -2741,7 +2736,7 @@ export default function TerrainEditor() {
       else if (e.code === "ShiftLeft" || e.code === "ShiftRight")
         st.keys.down = false;
     }
-    function onWheel(e) {
+    function onWheel(e:WheelEvent) {
       e.preventDefault();
       if (!st.camera) return;
       st.camera.fov = Math.max(15, Math.min(100, st.camera.fov * (1 + e.deltaY * 0.001)));
@@ -2826,8 +2821,9 @@ export default function TerrainEditor() {
     window.addEventListener("resize", resize);
 
     const mode = cameraModeRef.current;
-    const detach =
-      mode === "orbit" ? attachOrbitListeners(canvas) : attachFlyListeners(canvas);
+      const detach = canvas? (
+        mode === "orbit" ? attachOrbitListeners(canvas) : attachFlyListeners(canvas)
+      ) : undefined;
 
     let raf;
     let lastTime = performance.now();
@@ -2923,7 +2919,8 @@ export default function TerrainEditor() {
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener("resize", resize);
-      if (detach) detach();
+      if (detach) 
+        detach();
     };
     // eslint-disable-next-line
   }, [viewMode, cameraMode]);
@@ -3015,6 +3012,8 @@ export default function TerrainEditor() {
 
   // ---- canvas drawing (2D) ----
   const draw = useCallback(() => {
+    // const t0 = performance.now();
+
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
@@ -3033,9 +3032,9 @@ export default function TerrainEditor() {
         if (ly < 0 || ly >= totalHeight) continue;
         const alpha = 0.32 / Math.abs(off);
         ctx.globalAlpha = alpha;
-        for (const voxel of Array.from(terrain.cells())) {
+        for (const voxel of terrain.layerCells(currentLayer)) {
           const {x, y, z} = voxel;
-          if (y !== ly) continue;
+          //if (y !== ly) continue;
           if (x < 0 || x >= width || z < 0 || z >= depth) continue;
           ctx.fillStyle = off < 0 ? "#4a90d9" : "#e0954a";
           ctx.fillRect(x * cell, z * cell, cell, cell);
@@ -3044,9 +3043,9 @@ export default function TerrainEditor() {
       ctx.globalAlpha = 1;
     }
 
-    for (const voxel of Array.from(terrain.cells())) {
+    for (const voxel of terrain.layerCells(currentLayer)) {
       const {x, y, z} = voxel;
-      if (y !== currentLayer) continue;
+      //if (y !== currentLayer) continue;
       if (x < 0 || x >= width || z < 0 || z >= depth) continue;
       const img = textureImg2DRef.current.get(voxel.block);
       if (img && img.complete && img.naturalWidth > 0) {
@@ -3128,19 +3127,38 @@ export default function TerrainEditor() {
     }
 
     if (roadParams.roadPending !== null) {
+      const a = roadParams.roadPending;
+      const r = Math.max(0, Math.floor(roadParams.roadWidth / 2));
       ctx.strokeStyle = "#ffd166";
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.arc(
-        roadParams.roadPending.x * cell + cell / 2,
-        roadParams.roadPending.z * cell + cell / 2,
+        a.x * cell + cell / 2,
+        a.z * cell + cell / 2,
         cell * 0.6,
         0,
         Math.PI * 2
-      );
+      ); // starting marker, a thick circle
       ctx.stroke();
+   
+      if(roadHoverRef.current !== null) {
+        const b = roadHoverRef.current;
+        ctx.save();
+        ctx.lineCap = "round";
+        ctx.beginPath(); // approx road footprint
+        ctx.moveTo((a.x + 0.5) * cell, (a.z + 0.5) * cell);
+        ctx.lineTo((b.x + 0.5) * cell, (b.z + 0.5) * cell);
+        ctx.strokeStyle = "rgba(255, 209, 102, 0.3)";
+        ctx.lineWidth = (2 * r + 1) * cell; // footprint of the road
+        ctx.stroke();
+        ctx.strokeStyle = "#ffd166";
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+        ctx.restore();
+      }
     }
 
+    // Drawing entities
     for (const inst of entityInstancesRef.current) {
       if (inst.x < 0 || inst.x >= width || inst.z < 0 || inst.z >= depth) continue;
       const onLayer = inst.y === currentLayer;
@@ -3168,21 +3186,43 @@ export default function TerrainEditor() {
       }
       ctx.globalAlpha = 1;
     }
-  }, [width, depth, cell, currentLayer, mirrorX, mirrorZ, roadParams.roadPending, onionSkin, onionRange, totalHeight, entityInstances]);
+
+    // const ms = performance.now() - t0;
+    // if (ms > 8) console.log(`draw ${ms.toFixed(1)} ms, voxels: ${terrain.size}`);
+  }, [width, depth, cell, currentLayer, mirrorX, mirrorZ, roadParams.roadPending, roadParams.roadWidth, onionSkin, onionRange, totalHeight, entityInstances]);
 
   useEffect(() => {
     draw();
   }, [draw]);
 
-  function cellFromEvent(event:React.MouseEvent<HTMLCanvasElement>) {
-    if(!canvasRef.current)
-      throw new Error("canvasRef is undefined!")
+  function cellFromPoint(clientX: number, clientY: number) {
+    if (!canvasRef.current) 
+      throw new Error("canvasRef is undefined!");
     const rect = canvasRef.current.getBoundingClientRect();
-    const px = event.clientX - rect.left;
-    const py = event.clientY - rect.top;
-    const x = Math.floor(px / cell);
-    const z = Math.floor(py / cell);
-    return { x, z };
+    return {
+      x: Math.floor((clientX - rect.left) / cell),
+      z: Math.floor((clientY - rect.top) / cell),
+    };
+  }
+  function cellFromEvent(event: React.MouseEvent<HTMLCanvasElement>) {
+    return cellFromPoint(event.clientX, event.clientY);
+  }
+
+  function cancelDrag(): boolean {
+    if (roadStartRef.current) {            // a pending road start counts as "in progress"
+      roadStartRef.current = null;
+      updateRoadParams("roadPending", null);
+      return true;
+    }
+    if (!isDrawingRef.current)
+      return false;
+    isDrawingRef.current = false;
+    if (tool === "pencil" || tool === "eraser")
+      commitStroke(); // keeps what was painted, one undo step
+    rectStartRef.current = null;
+    previewRectRef.current = null;
+    draw();
+    return true;
   }
 
   function handleMouseDown(event:React.MouseEvent<HTMLCanvasElement>) {
@@ -3206,6 +3246,7 @@ export default function TerrainEditor() {
     if (tool === "road") {
       if (!roadStartRef.current) {
         roadStartRef.current = { x, z };
+        roadHoverRef.current = { x, z };   // new: start of the preview line, not the previous road's end
         updateRoadParams("roadPending", { x, z });
       } else {
         const start = roadStartRef.current;
@@ -3221,6 +3262,8 @@ export default function TerrainEditor() {
         setSelectedBlock(v.block);
       return;
     }
+    if (tool === "none")
+      return; // early exit if no tool is selected
     isDrawingRef.current = true;
     if (tool === "pencil" || tool === "eraser") {
       beginStroke();
@@ -3236,28 +3279,36 @@ export default function TerrainEditor() {
   }
 
   function handleMouseMove(event:React.MouseEvent<HTMLCanvasElement>) {
-    const { x, z } = cellFromEvent(event);
-    setHoverCell({ x, z });
-    if (!isDrawingRef.current) return;
-    if (x < 0 || x >= width || z < 0 || z >= depth) return;
+    const pos = cellFromEvent(event);
+    setHoverCell(pos);
+    if (tool === "road" && roadStartRef.current) {
+      roadHoverRef.current = pos;
+      draw(); // road preview
+    }
+  }
+
+  function handleDragMove(e: MouseEvent) {
+    if (!isDrawingRef.current) 
+      return;
+    const raw = cellFromPoint(e.clientX, e.clientY);
+    const x = clamp(raw.x, 0, width - 1);
+    const z = clamp(raw.z, 0, depth - 1);
     if (tool === "pencil" || tool === "eraser") {
+      if (x !== raw.x || z !== raw.z) 
+        return; // freehand only paints inside the grid
       setVoxelMirrored(x, currentLayer, z, tool === "eraser" ? AIR : selectedBlock, 0, true);
       draw();
     } else if (tool === "rect-fill" || tool === "rect-hollow" || tool === "rect-erase" || tool === "copy") {
       if (rectStartRef.current) {
-        previewRectRef.current = {
-          x0: rectStartRef.current.x,
-          z0: rectStartRef.current.z,
-          x1: x,
-          z1: z,
-        };
+        previewRectRef.current = { x0: rectStartRef.current.x, z0: rectStartRef.current.z, x1: x, z1: z };
         draw();
       }
     }
   }
 
   function handleMouseUp() {
-    if (!isDrawingRef.current) return;
+    if (!isDrawingRef.current)
+      return; // early exit if cancelled
     isDrawingRef.current = false;
     if (tool === "pencil" || tool === "eraser") {
       commitStroke();
@@ -3281,19 +3332,36 @@ export default function TerrainEditor() {
   }
 
   function handleMouseLeave() {
-    if (isDrawingRef.current && (tool === "pencil" || tool === "eraser")) {
-      commitStroke();
-    }
-    isDrawingRef.current = false;
-    rectStartRef.current = null;
-    previewRectRef.current = null;
     setHoverCell(null);
+    roadHoverRef.current = null;
     draw();
   }
 
+  const dragHandlersRef = useRef({ 
+    move: (event: MouseEvent) => {}, 
+    up: () => {} ,
+    cancel: () => false as boolean,
+  });
+  dragHandlersRef.current = { 
+    move: handleDragMove, 
+    up: handleMouseUp,
+    cancel: cancelDrag,
+  };
+
   useEffect(() => {
-    function onKey(event) {
-      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "z") {
+    const move = (event: MouseEvent) => dragHandlersRef.current.move(event);
+    const up = () => dragHandlersRef.current.up();
+    window.addEventListener("mousemove", move);
+    window.addEventListener("mouseup", up);
+    return () => {
+      window.removeEventListener("mousemove", move);
+      window.removeEventListener("mouseup", up);
+    };
+  }, []);
+
+  useEffect(() => {
+    function onKey(event: KeyboardEvent) {
+      if ((event.ctrlKey || event.metaKey) && event.code === "KeyZ") {
         event.preventDefault();
         if (event.shiftKey) 
           terrain.redo();
@@ -3301,7 +3369,7 @@ export default function TerrainEditor() {
           terrain.undo();
         return;
       }
-      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "y") {
+      if ((event.ctrlKey || event.metaKey) && event.code === "KeyZ") {
         event.preventDefault();
         terrain.redo();
         return;
@@ -3314,9 +3382,10 @@ export default function TerrainEditor() {
         return;
       }
       if (placingStructureRef.current) {
-        const tag = event.target && event.target.tagName;
-        if (tag === "INPUT" || tag === "TEXTAREA") return;
-        if (event.key.toLowerCase() === "r") {
+        const tag = (event.target && event.target instanceof HTMLElement) && event.target.tagName;
+        if (tag === "INPUT" || tag === "TEXTAREA")
+          return;
+        if (event.code === "KeyR") {
           event.preventDefault();
           setPlacingRotation((r) => (r + 1) % 4);
         } else if (event.key === "Escape") {
@@ -3325,9 +3394,31 @@ export default function TerrainEditor() {
         }
         return;
       }
+      if (viewModeRef.current === "2d" || cameraModeRef.current === "orbit") {
+        if(!event.ctrlKey && !event.metaKey && !event.altKey) {
+          const tag = (event.target as HTMLElement | null)?.tagName;
+          if (tag !== "INPUT" && tag !== "TEXTAREA") {
+            // deselect tool if Esc in 2D and 3D-orbit
+            if (event.key === "Escape") {
+              event.preventDefault();
+              if (!dragHandlersRef.current.cancel())
+                setTool("none");
+              return;
+            }
+            // Eyedropper hotkey - only in 2D for now
+            if (event.code === "KeyI" && viewModeRef.current === "2d") {
+              event.preventDefault();
+              setTool("eyedropper");
+              return;
+            }
+          }
+        }
+        
+      }
       if (/^[0-9]$/.test(event.key)) {
-        const tag = event.target && event.target.tagName;
-        if (tag === "INPUT" || tag === "TEXTAREA") return;
+        const tag = (event.target && event.target instanceof HTMLElement) && event.target.tagName;
+        if (tag === "INPUT" || tag === "TEXTAREA")
+          return;
         const slot = event.key === "0" ? 9 : Number(event.key) - 1;
         event.preventDefault();
         selectHotbarSlot(slot);
@@ -3525,6 +3616,17 @@ export default function TerrainEditor() {
     setShowStats(true);
   }
 
+  function newMap():void {
+    if (!window.confirm("Start a new empty map? The current map and its autosave will be replaced."))
+      return;
+    terrain.replaceAll([]);
+    entityInstancesRef.current = [];      // debounced autosave doesn't see the old entities
+    setEntityInstances([]);
+    lastHeightMapRef.current = null;      // otherwise regenerate* would run on the old map's heightmap
+    setCurrentLayer(0);
+    setStatus("New map");
+  }
+
   function importJson(event:React.ChangeEvent<HTMLInputElement, HTMLInputElement> ) {
     const file = event.target.files && event.target.files[0];
     if (!file)
@@ -3625,10 +3727,7 @@ export default function TerrainEditor() {
 
             roadParams={roadParams}
             updateRoadParams={updateRoadParams}
-            // roadBlock={roadParams.roadBlock}
-            // roadWidth={roadParams.roadWidth}
-            // setRoadBlock={setRoadBlock}
-            // setRoadWidth={setRoadWidth}
+
             setCopyYFrom={setCopyYFrom}
             setCopyYTo={setCopyYTo}
             setMirrorX={setMirrorX}
@@ -3760,7 +3859,7 @@ export default function TerrainEditor() {
               ref={canvasRef}
               onMouseDown={handleMouseDown}
               onMouseMove={handleMouseMove}
-              onMouseUp={handleMouseUp}
+              //onMouseUp={handleMouseUp}
               onMouseLeave={handleMouseLeave}
               style={{
                 display: viewMode === "2d" ? "block" : "none",
