@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback, KeyboardEvent } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import * as THREE from "three";
 import {
   CHUNK, CELL_BASE, REAL_BIOMES, MAX_CHUNKS, MAP_SIZES, mapSizeKey, ENTITIES, ENTITY_CATEGORY,
@@ -29,7 +29,7 @@ import {storage, createNamedStore, writeJson, readJson } from "../lib/storage.ts
 import {Hotbar, PaletteEntry, usePalette} from "../hooks/usePalette.ts"
 import PaletteHotbar from "./PaletteHotbar.tsx";
 import { RngParams } from "../lib/mapGenerator.ts";
-import { hotkeyLabel, isFreehand, TOOL_BY_CODE, TOOL_BY_ID } from "../lib/tools.ts";
+import { hotkeyLabel, isFreehand, PAN_KEYS, TOOL_BY_CODE, TOOL_BY_ID } from "../lib/tools.ts";
 
 
 export interface MapData {
@@ -2390,13 +2390,23 @@ export default function TerrainEditor() {
     g.mesh.instanceMatrix.needsUpdate = true;
   }
 
-  function syncVoxel3D(x, y, z, oldBlock, newBlock) {
+  function syncVoxel3D(x: number, y: number, z: number, oldBlock: number, newBlock: number) {
     if (oldBlock === newBlock)
       return;
     if (oldBlock !== AIR)
       removeInstanceAtCoord(oldBlock, x, y, z);
     if (newBlock !== AIR)
       addInstance(newBlock, x, y, z);
+  }
+
+  function panOrbitByUnits(right: number, forward: number, up: number) {
+    const o = threeRef.current.orbit;
+    const s = Math.sin(o.theta);
+    const c = Math.cos(o.theta);
+    // ground-plane basis from the camera heading (theta)
+    o.targetGoal.x += right * c - forward * s;
+    o.targetGoal.z += -right * s - forward * c;
+    o.targetGoal.y += up;
   }
 
   function panOrbit(dx: number, dy: number) {
@@ -2705,7 +2715,7 @@ export default function TerrainEditor() {
     function onPointerLockError() {
       setPointerLockFailed(true);
     }
-    function onMouseMove(e) {
+    function onMouseMove(e: MouseEvent) {
       if (!st.locked) return;
       const sens = 0.0022;
       st.fly.yaw -= e.movementX * sens;
@@ -2713,7 +2723,7 @@ export default function TerrainEditor() {
       const lim = Math.PI / 2 - 0.02;
       st.fly.pitch = Math.max(-lim, Math.min(lim, st.fly.pitch));
     }
-    function onMouseDown(e) {
+    function onMouseDown(e: MouseEvent) {
       if (!st.locked) return;
       if (e.button === 1) {
         e.preventDefault();
@@ -2730,7 +2740,7 @@ export default function TerrainEditor() {
         commitStroke();
       }
     }
-    function onMouseUp(e) {
+    function onMouseUp(e: MouseEvent) {
       if (e.button === 0 && st.leftDown) {
         st.leftDown = false;
         commitStroke();
@@ -2739,7 +2749,7 @@ export default function TerrainEditor() {
     function onContextMenu(e) {
       e.preventDefault();
     }
-    function onKeyDown(e) {
+    function onKeyDown(e: KeyboardEvent) {
       if (!st.locked) return;
       if (e.code === "KeyW") {
         st.keys.forward = true;
@@ -2761,7 +2771,7 @@ export default function TerrainEditor() {
         e.preventDefault();
       }
     }
-    function onKeyUp(event) {
+    function onKeyUp(event: KeyboardEvent) {
       if (event.code === "KeyW") 
         st.keys.forward = false;
       else if (event.code === "KeyS") 
@@ -2775,7 +2785,7 @@ export default function TerrainEditor() {
       else if (event.code === "ShiftLeft" || event.code === "ShiftRight")
         st.keys.down = false;
     }
-    function onWheel(event:WheelEvent) {
+    function onWheel(event: WheelEvent) {
       event.preventDefault();
       if (!st.camera)
         return;
@@ -3407,7 +3417,7 @@ export default function TerrainEditor() {
   }, []);
 
   useEffect(() => {
-    function onKey(event) {
+    function onKey(event: KeyboardEvent) {
       if ((event.ctrlKey || event.metaKey) && event.code === "KeyZ") {
         event.preventDefault();
         if (event.shiftKey) 
@@ -3428,6 +3438,40 @@ export default function TerrainEditor() {
         }
         return;
       }
+      const view = viewModeRef.current;
+      const orbit3d = view === "3d" && cameraModeRef.current === "orbit";
+
+      // Panning via hotkeys
+      if ((view === "2d" || orbit3d) && !event.ctrlKey && !event.metaKey && !event.altKey) {
+        const tag = (event.target as HTMLElement | null)?.tagName;
+        if (tag !== "INPUT" && tag !== "TEXTAREA") {
+          const n = event.shiftKey ? 10 : 1;
+          const pan = PAN_KEYS[event.code];
+          if (pan) {
+            event.preventDefault();
+            if (view === "2d") {
+              if (containerRef.current) {
+                const step = n * CELL_BASE * zoomRef.current;
+                containerRef.current.scrollBy({ left: pan[0] * step, top: pan[1] * step, behavior: "instant" });
+              }
+            } else {
+              panOrbitByUnits(pan[0] * n, -pan[1] * n, 0); // W/ArrowUp = forward
+            }
+            return;
+          }
+          if (event.code === "PageUp" || event.code === "PageDown") {
+            event.preventDefault();
+            const dir = event.code === "PageUp" ? 1 : -1;
+            if (orbit3d) {
+              panOrbitByUnits(0, 0, dir * n); // In 3D, pan the camera up/down
+            } else if (!isDrawingRef.current) {
+              setCurrentLayer((prevLayer) => clamp(prevLayer + dir * n, 0, dimsRef.current.totalHeight - 1)); // In 2D, switch layers up/down
+            }
+            return;
+          }
+        }
+      }
+
       if (placingStructureRef.current) {
         const tag = (event.target && event.target instanceof HTMLElement) && event.target.tagName;
         if (tag === "INPUT" || tag === "TEXTAREA")
@@ -3441,7 +3485,8 @@ export default function TerrainEditor() {
         }
         return;
       }
-      if (viewModeRef.current === "2d" || cameraModeRef.current === "orbit") {
+      
+      if (viewModeRef.current === "2d" || orbit3d) {
         if(!event.ctrlKey && !event.metaKey && !event.altKey) {
           const tag = (event.target as HTMLElement | null)?.tagName;
           if (tag !== "INPUT" && tag !== "TEXTAREA") {
