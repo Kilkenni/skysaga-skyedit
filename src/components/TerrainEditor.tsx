@@ -106,7 +106,9 @@ const DEFAULT_LEVEL_DATA:DeepReadonly< Pick<LevelData, "mapSizeChunks" | "biomeN
 
 const DEFAULT_SETTINGS = {
   ZOOM_WHEEL_STEP: 1.05,
-  ZOOM_ORBIT_STEP: 1.02,
+  ZOOM_ORBIT_STEP: 1.05,
+  ZOOM_SHIFT_MULT: 3,         // Shift + wheel zoom multiplier per notch
+  ZOOM_GESTURE_MS: 500,       // wheel events closer together than this belong to one gesture, i.e. a throttle on recalc zoom parameters
 }
 
 function getDefaultLevelData():LevelData {
@@ -154,6 +156,7 @@ export default function TerrainEditor() {
   const [currentLayer, setCurrentLayer] = useState(0);
   const [zoom, setZoom] = useState(1);
   const zoomRef = useRef(1);
+  const zoomAnchorRef = useRef<{ pivot: THREE.Vector3 | null; x: number; y: number; t: number } | null>(null); // Center of zooming
   const [tool, setTool] = useState("none");
   const clipboardRef = useRef<any>(null);
 
@@ -2468,6 +2471,18 @@ export default function TerrainEditor() {
     return pickWorldPoint(mx, my) ?? pickWorldPoint(0, 0);
   }
 
+  function zoomAnchor(clientX: number, clientY: number): THREE.Vector3 | null {
+    const now = performance.now();
+    const a = zoomAnchorRef.current;
+    if (a && now - a.t < DEFAULT_SETTINGS.ZOOM_GESTURE_MS && Math.abs(clientX - a.x) < 4 && Math.abs(clientY - a.y) < 4) {
+      a.t = now; // the gesture continues, so reuse the anchor (a null result is cached too)
+      return a.pivot;
+    }
+    const pivot = pickPivot(clientX, clientY);
+    zoomAnchorRef.current = { pivot, x: clientX, y: clientY, t: now };
+    return pivot;
+  }
+
   function coordFromHit(hit) {
     const st = threeRef.current;
     if (hit.object === st.planeMesh) return null;
@@ -2660,6 +2675,7 @@ export default function TerrainEditor() {
       }
       // rotating on RMB
       if (event.button === 2 && !event.shiftKey) {
+        zoomAnchorRef.current = null; // reset previous zoom anchor ref if we rotate the camera
         const pivot = pickPivot(event.clientX, event.clientY);
         if (pivot)
           setOrbitPivot(pivot);
@@ -2689,6 +2705,25 @@ export default function TerrainEditor() {
     }
     function onWheel(event: WheelEvent) {
       event.preventDefault();
+      const delta = event.deltaY || event.deltaX; // some browsers report Shift+wheel as horizontal
+        if (delta === 0) return;
+      const dims = dimsRef.current;
+      const maxR = Math.max(dims.width, dims.depth, dims.totalHeight, 4) * 4 + 20;
+      const oldR = st.orbit.targetRadius;
+      const step = Math.pow(DEFAULT_SETTINGS.ZOOM_ORBIT_STEP, event.shiftKey ? DEFAULT_SETTINGS.ZOOM_SHIFT_MULT : 1);
+      const newR = Math.max(1, Math.min(maxR, oldR * (delta > 0 ? step : 1 / step)));
+      const factor = newR / oldR; // the real ratio after clamping, so hitting a limit doesn't drift the view
+      if (factor === 1)
+        return;
+      const pivot = zoomAnchor(event.clientX, event.clientY);   // cursor, then view center, else null
+      if (pivot) {
+        const g: THREE.Vector3 = st.orbit.targetGoal;
+        g.x = pivot.x + (g.x - pivot.x) * factor;
+        g.y = pivot.y + (g.y - pivot.y) * factor;
+        g.z = pivot.z + (g.z - pivot.z) * factor;
+      }
+      st.orbit.targetRadius = newR;
+      /*
       const canvas2 = canvas3dRef.current;
       if (!canvas2 || !st.camera || !st.raycaster)
         return;
@@ -2712,6 +2747,7 @@ export default function TerrainEditor() {
       st.orbit.targetGoal.y += dir.y * -delta;
       st.orbit.targetGoal.z += dir.z * -delta;
       st.orbit.targetRadius = newTarget;
+      */
     }
     function onContextMenu(event) {
       event.preventDefault();
@@ -2871,13 +2907,16 @@ export default function TerrainEditor() {
       if (viewModeRef.current !== "2d" || el === null)
         return;
       event.preventDefault();
+      const delta = event.deltaY || event.deltaX;
+        if (delta === 0) return;
       const rect = el.getBoundingClientRect();
       const ox = event.clientX - rect.left;
       const oy = event.clientY - rect.top;
       const px = ox + el.scrollLeft;
       const py = oy + el.scrollTop;
       const old = zoomRef.current;
-      const next = Math.round(clamp(old * (event.deltaY > 0 ? 1/DEFAULT_SETTINGS.ZOOM_WHEEL_STEP : DEFAULT_SETTINGS.ZOOM_WHEEL_STEP), 0.4, 3) * 100) / 100;
+      const step = Math.pow(DEFAULT_SETTINGS.ZOOM_WHEEL_STEP, event.shiftKey ? DEFAULT_SETTINGS.ZOOM_SHIFT_MULT : 1);
+      const next = Math.round(clamp(old * (delta > 0 ? 1/step : step), 0.4, 3) * 100) / 100;
       if (next === old)
         return;
       zoomRef.current = next;
@@ -2929,7 +2968,7 @@ export default function TerrainEditor() {
 
       if (mode === "orbit") {
         const rotFactor = 1 - Math.exp(-dt / 0.09);
-        const zoomFactor = 1 - Math.exp(-dt / 0.12);
+        const zoomFactor = 1 - Math.exp(-dt / 0.1);
         const panFactor = 1 - Math.exp(-dt / 0.1);
         const active =
           Math.abs(st.orbit.thetaDelta) > 0.00002 ||
