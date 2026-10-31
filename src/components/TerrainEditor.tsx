@@ -379,7 +379,16 @@ export default function TerrainEditor() {
   }[]>([]);
   const [bulkApplying, setBulkApplying] = useState(false);
 
-  const threeRef = useRef<any>({
+  const threeRef = useRef<any & {
+    scene: THREE.Scene | null,
+    camera: THREE.Camera | null,
+
+    gridHelper: THREE.GridHelper | null,
+    raycaster: THREE.Raycaster | null,
+
+    locked: boolean,
+    leftDown: boolean,
+  }>({
     renderer: null,
     scene: null,
     camera: null,
@@ -2106,7 +2115,7 @@ export default function TerrainEditor() {
     threeRef.current.raycaster = new THREE.Raycaster();
   }
 
-  function clampPhi(p) {
+  function clampPhi(p: number) {
     return Math.max(0.15, Math.min(Math.PI - 0.15, p));
   }
 
@@ -2438,6 +2447,27 @@ export default function TerrainEditor() {
     return targets;
   }
 
+  function pickWorldPoint(ndcX: number, ndcY: number): THREE.Vector3 | null {
+    const st = threeRef.current;
+    if (!st.camera || !st.raycaster)
+      return null;
+    st.raycaster.setFromCamera({ x: ndcX, y: ndcY }, st.camera);
+    const hits = st.raycaster.intersectObjects(raycastTargets(), false);
+    const hit = hits.find((h) => h.object !== st.planeMesh); // ignore the invisible ground plane
+    return hit ? hit.point.clone() : null;
+  }
+
+  // cursor first, then the center of the view, else null (= keep the current pivot)
+  function pickPivot(clientX: number, clientY: number): THREE.Vector3 | null {
+    const canvas = canvas3dRef.current;
+    if (!canvas)
+      return null;
+    const rect = canvas.getBoundingClientRect();
+    const mx = ((clientX - rect.left) / rect.width) * 2 - 1;
+    const my = -((clientY - rect.top) / rect.height) * 2 + 1;
+    return pickWorldPoint(mx, my) ?? pickWorldPoint(0, 0);
+  }
+
   function coordFromHit(hit) {
     const st = threeRef.current;
     if (hit.object === st.planeMesh) return null;
@@ -2571,7 +2601,7 @@ export default function TerrainEditor() {
     const hit = raycastFromCamera();
     if (!hit) return;
     const dims = dimsRef.current;
-    let cx, cy, cz;
+    let cx: number, cy: number, cz: number;
     const hitCoord = coordFromHit(hit);
     if (hitCoord) {
       const n = hit.face.normal;
@@ -2615,19 +2645,28 @@ export default function TerrainEditor() {
     setCurrentLayer(cy);
   }
 
-  function attachOrbitListeners(canvas) {
+  function attachOrbitListeners(canvas: HTMLCanvasElement) {
     const st = threeRef.current;
-    function onMouseDown(event) {
+    function onMouseDown(event: MouseEvent) {
       st.drag.isDown = true;
       st.drag.button = event.button;
       st.drag.lastX = event.clientX;
       st.drag.lastY = event.clientY;
+      // painting on LMB
       if (event.button === 0) {
         beginStroke();
         performMouseRaycastAction(event.clientX, event.clientY, false);
+        return;
+      }
+      // rotating on RMB
+      if (event.button === 2 && !event.shiftKey) {
+        const pivot = pickPivot(event.clientX, event.clientY);
+        if (pivot)
+          setOrbitPivot(pivot);
+        return;
       }
     }
-    function onMouseMove(event) {
+    function onMouseMove(event: MouseEvent) {
       if (!st.drag.isDown) return;
       const dx = event.clientX - st.drag.lastX;
       const dy = event.clientY - st.drag.lastY;
@@ -2642,16 +2681,17 @@ export default function TerrainEditor() {
       st.drag.lastX = event.clientX;
       st.drag.lastY = event.clientY;
     }
-    function onMouseUp(event) {
+    function onMouseUp(event: MouseEvent) {
       if (st.drag.isDown && event.button === st.drag.button) {
         if (event.button === 0) commitStroke();
         st.drag.isDown = false;
       }
     }
-    function onWheel(event) {
+    function onWheel(event: WheelEvent) {
       event.preventDefault();
       const canvas2 = canvas3dRef.current;
-      if (!canvas2 || !st.camera || !st.raycaster) return;
+      if (!canvas2 || !st.camera || !st.raycaster)
+        return;
       const rect = canvas2.getBoundingClientRect();
       const mx = ((event.clientX - rect.left) / rect.width) * 2 - 1;
       const my = -((event.clientY - rect.top) / rect.height) * 2 + 1;
@@ -2663,7 +2703,7 @@ export default function TerrainEditor() {
 
       const factor = event.deltaY > 0 ? DEFAULT_SETTINGS.ZOOM_ORBIT_STEP : 1 / DEFAULT_SETTINGS.ZOOM_ORBIT_STEP;
       const newTarget = Math.max(
-        4,
+        1,
         // Math.min(maxR, oldTarget * (1 + event.deltaY * 0.001))
         Math.min(maxR, oldTarget * factor)
       );
@@ -2673,8 +2713,8 @@ export default function TerrainEditor() {
       st.orbit.targetGoal.z += dir.z * -delta;
       st.orbit.targetRadius = newTarget;
     }
-    function onContextMenu(e) {
-      e.preventDefault();
+    function onContextMenu(event) {
+      event.preventDefault();
     }
     canvas.addEventListener("mousedown", onMouseDown);
     window.addEventListener("mousemove", onMouseMove);
@@ -2975,6 +3015,20 @@ export default function TerrainEditor() {
     };
     // eslint-disable-next-line
   }, [viewMode, cameraMode]);
+
+  function setOrbitPivot(p: THREE.Vector3):void {
+    const st = threeRef.current;
+    const o = st.orbit;
+    const off = st.camera.position.clone().sub(p);
+    const r = off.length();
+    if (r < 1e-3) return;
+    o.target = { x: p.x, y: p.y, z: p.z };
+    o.targetGoal = { x: p.x, y: p.y, z: p.z };
+    o.radius = r;
+    o.targetRadius = r;
+    o.phi = clampPhi(Math.acos(off.y / r));
+    o.theta = Math.atan2(off.x, off.z);
+  }
 
   function resetCameraView() {
     const st = threeRef.current;
