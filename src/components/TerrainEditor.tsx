@@ -383,16 +383,59 @@ export default function TerrainEditor() {
   }[]>([]);
   const [bulkApplying, setBulkApplying] = useState(false);
 
-  const threeRef = useRef<any & {
-    scene: THREE.Scene | null,
-    camera: THREE.Camera | null,
+  interface ThreeGroup {
+    mesh: THREE.InstancedMesh, 
+    coords: {x:number, y: number, z:number}[], // unused coords in the end are capped by count
+    indexMap: Map<string, number>, 
+    count: number, 
+    capacity: number,
+  }
 
+  interface ThreeInstance {
+    renderer: THREE.WebGLRenderer | null,
+    scene: THREE.Scene | null,
+    camera: THREE.PerspectiveCamera | null,
+    groups: Map<number, ThreeGroup>,
+    planeMesh: THREE.Mesh | null,
     gridHelper: THREE.GridHelper | null,
     raycaster: THREE.Raycaster | null,
-
+    orbit: {
+      theta: number,
+      phi: number,
+      radius: number,
+      targetRadius: number,
+      thetaDelta: number,
+      phiDelta: number,
+      target: THREE.Vector3,
+      targetGoal: THREE.Vector3,
+      initialized: boolean,
+    },
+    fly: {
+      position: THREE.Vector3,
+      yaw: number,
+      pitch: number,
+      velocity: THREE.Vector3,
+      initialized: boolean,
+    },
+    drag: {
+      isDown: boolean,
+      button: number,
+      lastX: number,
+      lastY: number,
+    },
+    keys: {
+      forward: boolean,
+      back: boolean,
+      left: boolean,
+      right: boolean,
+      up: boolean,
+      down: boolean,
+    },
     locked: boolean,
     leftDown: boolean,
-  }>({
+  }
+
+  const threeRef = useRef<ThreeInstance>({
     renderer: null,
     scene: null,
     camera: null,
@@ -407,15 +450,15 @@ export default function TerrainEditor() {
       targetRadius: 60,
       thetaDelta: 0,
       phiDelta: 0,
-      target: { x: 0, y: 0, z: 0 },
-      targetGoal: { x: 0, y: 0, z: 0 },
+      target: new THREE.Vector3(0, 0, 0),
+      targetGoal: new THREE.Vector3(0, 0, 0),
       initialized: false,
     },
     fly: {
-      position: { x: 0, y: 0, z: 0 },
+      position: new THREE.Vector3(0, 0, 0),
       yaw: 0,
       pitch: -0.5,
-      velocity: { x: 0, y: 0, z: 0 },
+      velocity:new THREE.Vector3(0, 0, 0),
       initialized: false,
     },
     drag: {
@@ -2143,6 +2186,12 @@ export default function TerrainEditor() {
   }
 
   function rebuildInstances() {
+    function disposeMesh(mesh: THREE.Mesh) {
+      mesh.geometry.dispose();
+      const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+      for (const mat of materials)
+        mat.dispose();
+    }
     const st = threeRef.current;
     const scene = st.scene;
     if (!scene) return;
@@ -2150,15 +2199,13 @@ export default function TerrainEditor() {
 
     for (const g of st.groups.values()) {
       scene.remove(g.mesh);
-      g.mesh.geometry.dispose();
-      g.mesh.material.dispose();
+      disposeMesh(g.mesh);
     }
     st.groups = new Map();
 
     if (st.planeMesh) {
       scene.remove(st.planeMesh);
-      st.planeMesh.geometry.dispose();
-      st.planeMesh.material.dispose();
+      disposeMesh(st.planeMesh);
       st.planeMesh = null;
     }
     if (st.gridHelper) {
@@ -2166,7 +2213,7 @@ export default function TerrainEditor() {
       st.gridHelper = null;
     }
 
-    const byBlock = new Map();
+    const byBlock = new Map<number, {x: number, y: number, z: number}[]>();
     for (const voxel of Array.from(terrain.cells())) {
       let arr = byBlock.get(voxel.block);
       if (!arr) {
@@ -2184,8 +2231,8 @@ export default function TerrainEditor() {
       const material = buildMaterialForBlock(blockId);
       const mesh = new THREE.InstancedMesh(geometry, material, capacity);
       mesh.userData.blockId = blockId;
-      const coords = new Array(capacity);
-      const indexMap = new Map();
+      const coords = new Array<{x: number, y: number, z: number}>(capacity);
+      const indexMap = new Map<string, number>();
       let i = 0;
       for (const c of list) {
         dummy.position.set(c.x + 0.5, c.y + 0.5, c.z + 0.5);
@@ -2200,7 +2247,6 @@ export default function TerrainEditor() {
       scene.add(mesh);
       st.groups.set(blockId, { mesh, coords, indexMap, count: i, capacity });
     }
-
     const planeGeo = new THREE.PlaneGeometry(
       Math.max(dims.width, 1),
       Math.max(dims.depth, 1)
@@ -2229,12 +2275,12 @@ export default function TerrainEditor() {
     st.planeMesh = planeMesh;
     st.gridHelper = gridHelper;
 
-    st.orbit.target = {
-      x: dims.width / 2,
-      y: Math.min(dims.totalHeight, 20) / 2,
-      z: dims.depth / 2,
-    };
-    st.orbit.targetGoal = { ...st.orbit.target };
+    st.orbit.target.set(
+      dims.width / 2,
+      Math.min(dims.totalHeight, 20) / 2,
+      dims.depth / 2,
+    );
+    st.orbit.targetGoal = st.orbit.target.clone();
     if (!st.orbit.initialized) {
       st.orbit.radius =
         Math.max(dims.width, dims.depth, dims.totalHeight, 4) * 1.3 + 10;
@@ -2251,14 +2297,14 @@ export default function TerrainEditor() {
       const px = cx;
       const py = cy + dist * 0.45;
       const pz = cz + dist;
-      st.fly.position = { x: px, y: py, z: pz };
+      st.fly.position.set(px, py, pz);
       const dx = cx - px;
       const dy = cy - py;
       const dz = cz - pz;
       const horiz = Math.sqrt(dx * dx + dz * dz) || 0.0001;
       st.fly.yaw = Math.atan2(-dx, -dz);
       st.fly.pitch = Math.atan2(dy, horiz);
-      st.fly.velocity = { x: 0, y: 0, z: 0 };
+      st.fly.velocity.set(0, 0, 0);
       st.fly.initialized = true;
     }
 
@@ -2319,10 +2365,13 @@ export default function TerrainEditor() {
     entityMarkersGroupRef.current = group;
   }
 
-  function getOrCreateGroup(blockId) {
+  function getOrCreateGroup(blockId: number) {
     const st = threeRef.current;
+    if(!st.scene) 
+      return;
     let g = st.groups.get(blockId);
-    if (g) return g;
+    if (g !== undefined)
+      return g;
     const capacity = 64;
     const geometry = new THREE.BoxGeometry(0.98, 0.98, 0.98);
     const material = buildMaterialForBlock(blockId);
@@ -2335,8 +2384,10 @@ export default function TerrainEditor() {
     return g;
   }
 
-  function growGroup(blockId) {
+  function growGroup(blockId: number) {
     const st = threeRef.current;
+    if(!st.scene) 
+      return;
     const g = st.groups.get(blockId);
     if (!g) return;
     const newCapacity = g.capacity * 2;
@@ -2358,15 +2409,21 @@ export default function TerrainEditor() {
     g.coords = newCoords;
   }
 
-  function addInstance(blockId, x:number, y:number, z:number) {
-    if (blockId === AIR) return;
+  function addInstance(blockId: number, x:number, y:number, z:number) {
+    if (blockId === AIR)
+      return;
     let g = getOrCreateGroup(blockId);
+    if (g === undefined) {
+      return;
+    }
     const key = keyOf(x, y, z);
     if (g.indexMap.has(key))
       return;
     if (g.count >= g.capacity) {
       growGroup(blockId);
       g = threeRef.current.groups.get(blockId);
+      if (!g)
+        return;
     }
     const idx = g.count;
     const dummy = new THREE.Object3D();
@@ -2380,13 +2437,15 @@ export default function TerrainEditor() {
     g.mesh.instanceMatrix.needsUpdate = true;
   }
 
-  function removeInstanceAtCoord(blockId, x:number, y:number, z:number) {
+  function removeInstanceAtCoord(blockId: number, x:number, y:number, z:number) {
     const st = threeRef.current;
     const g = st.groups.get(blockId);
-    if (!g) return;
+    if (!g)
+      return;
     const key = keyOf(x, y, z);
     const idx = g.indexMap.get(key);
-    if (idx === undefined) return;
+    if (idx === undefined)
+      return;
     const lastIdx = g.count - 1;
     if (idx !== lastIdx) {
       const lastCoord = g.coords[lastIdx];
@@ -2397,7 +2456,7 @@ export default function TerrainEditor() {
       g.indexMap.set(keyOf(lastCoord.x, lastCoord.y, lastCoord.z), idx);
     }
     g.indexMap.delete(key);
-    g.coords[lastIdx] = null;
+    //g.coords[lastIdx] = null;
     g.count--;
     g.mesh.count = g.count;
     g.mesh.instanceMatrix.needsUpdate = true;
@@ -2455,7 +2514,7 @@ export default function TerrainEditor() {
     const st = threeRef.current;
     if (!st.camera || !st.raycaster)
       return null;
-    st.raycaster.setFromCamera({ x: ndcX, y: ndcY }, st.camera);
+    st.raycaster.setFromCamera(new THREE.Vector2( ndcX, ndcY ), st.camera);
     const hits = st.raycaster.intersectObjects(raycastTargets(), false);
     const hit = hits.find((h) => h.object !== st.planeMesh); // ignore the invisible ground plane
     return hit ? hit.point.clone() : null;
@@ -2484,14 +2543,17 @@ export default function TerrainEditor() {
     return pivot;
   }
 
-  function coordFromHit(hit) {
+  function coordFromHit(hit: THREE.Intersection) {
     const st = threeRef.current;
-    if (hit.object === st.planeMesh) return null;
+    if (hit.object === st.planeMesh)
+      return null;
     const blockId = hit.object.userData ? hit.object.userData.blockId : undefined;
     const g = blockId !== undefined ? st.groups.get(blockId) : null;
-    if (!g) return null;
+    if (!g || hit.instanceId === undefined)
+      return null;
     const coord = g.coords[hit.instanceId];
-    if (!coord) return null;
+    if (!coord)
+      return null;
     return { ...coord, blockId };
   }
 
@@ -2503,25 +2565,27 @@ export default function TerrainEditor() {
     const rect = canvas.getBoundingClientRect();
     const mx = ((clientX - rect.left) / rect.width) * 2 - 1;
     const my = -((clientY - rect.top) / rect.height) * 2 + 1;
-    st.raycaster.setFromCamera({ x: mx, y: my }, st.camera);
+    st.raycaster.setFromCamera( new THREE.Vector2(mx, my), st.camera);
 
     const targets = raycastTargets();
-    if (!targets.length) return;
+    if (!targets.length)
+      return;
     const hits = st.raycaster.intersectObjects(targets, false);
-    if (!hits.length) return;
+    if (!hits.length)
+      return;
     const hit = hits[0];
     const isErase = toolRef.current === "eraser";
     const isPaint = toolRef.current === "paint";
     let cx: number, cy: number, cz: number;
 
     const hitCoord = coordFromHit(hit);
-    if (hitCoord) {
+    if (hitCoord !== null) {
       if (isErase || isPaint) {
         cx = hitCoord.x;
         cy = hitCoord.y;
         cz = hitCoord.z;
       } else {
-        const n = hit.face.normal;
+        const n = hit.face?.normal || {x: 0, y:0, z:0};
         cx = hitCoord.x + Math.round(n.x);
         cy = hitCoord.y + Math.round(n.y);
         cz = hitCoord.z + Math.round(n.z);
@@ -2582,12 +2646,14 @@ export default function TerrainEditor() {
 
   function raycastFromCamera() {
     const st = threeRef.current;
-    if (!st.camera || !st.raycaster) return null;
+    if (!st.camera || !st.raycaster)
+      return null;
     const dir = new THREE.Vector3(0, 0, -1);
     dir.applyQuaternion(st.camera.quaternion);
     st.raycaster.set(st.camera.position, dir);
     const targets = raycastTargets();
-    if (!targets.length) return null;
+    if (!targets.length)
+      return null;
     const hits = st.raycaster.intersectObjects(targets, false);
     return hits.length ? hits[0] : null;
   }
@@ -2613,14 +2679,15 @@ export default function TerrainEditor() {
     setCurrentLayer(cy);
   }
 
-  function performPlace() {
+  function performPlace():void {
     const hit = raycastFromCamera();
-    if (!hit) return;
+    if (hit === null)
+      return;
     const dims = dimsRef.current;
     let cx: number, cy: number, cz: number;
     const hitCoord = coordFromHit(hit);
     if (hitCoord) {
-      const n = hit.face.normal;
+      const n = hit.face?.normal || {x:0, y:0, z:0};
       cx = hitCoord.x + Math.round(n.x);
       cy = hitCoord.y + Math.round(n.y);
       cz = hitCoord.z + Math.round(n.z);
@@ -2724,31 +2791,6 @@ export default function TerrainEditor() {
         g.z = pivot.z + (g.z - pivot.z) * factor;
       }
       st.orbit.targetRadius = newR;
-      /*
-      const canvas2 = canvas3dRef.current;
-      if (!canvas2 || !st.camera || !st.raycaster)
-        return;
-      const rect = canvas2.getBoundingClientRect();
-      const mx = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-      const my = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-      st.raycaster.setFromCamera({ x: mx, y: my }, st.camera);
-      const dir = st.raycaster.ray.direction.clone();
-      const dims = dimsRef.current;
-      const maxR = Math.max(dims.width, dims.depth, dims.totalHeight, 4) * 4 + 20;
-      const oldTarget = st.orbit.targetRadius;
-
-      const factor = event.deltaY > 0 ? DEFAULT_SETTINGS.ZOOM_ORBIT_STEP : 1 / DEFAULT_SETTINGS.ZOOM_ORBIT_STEP;
-      const newTarget = Math.max(
-        1,
-        // Math.min(maxR, oldTarget * (1 + event.deltaY * 0.001))
-        Math.min(maxR, oldTarget * factor)
-      );
-      const delta = newTarget - oldTarget;
-      st.orbit.targetGoal.x += dir.x * -delta;
-      st.orbit.targetGoal.y += dir.y * -delta;
-      st.orbit.targetGoal.z += dir.z * -delta;
-      st.orbit.targetRadius = newTarget;
-      */
     }
     function onContextMenu(event) {
       event.preventDefault();
@@ -2910,25 +2952,11 @@ export default function TerrainEditor() {
       event.preventDefault();
       const delta = event.deltaY || event.deltaX;
         if (delta === 0) return;
-      // const rect = el.getBoundingClientRect();
-      // const ox = event.clientX - rect.left;
-      // const oy = event.clientY - rect.top;
-      // const px = ox + el.scrollLeft;
-      // const py = oy + el.scrollTop;
-      // const old = zoomRef.current;
       const step = Math.pow(DEFAULT_SETTINGS.ZOOM_WHEEL_STEP, event.shiftKey ? DEFAULT_SETTINGS.ZOOM_SHIFT_MULT : 1);
       const next = Math.round(clamp(zoomRef.current * (delta > 0 ? 1/step : step), 0.4, 3) * 100) / 100;
       const rect = canvasRef.current?.getBoundingClientRect(); // the canvas fills the container
       if (rect)
         zoomAt(next, event.clientX - rect.left, event.clientY - rect.top);
-      // if (next === old)
-      //   return;
-      // zoomRef.current = next;
-      // setZoom(next);
-      // requestAnimationFrame(() => {
-      //   el.scrollLeft = px * (next / old) - ox;
-      //   el.scrollTop = py * (next / old) - oy;
-      // });
     }
     el.addEventListener("wheel", onWheel2d, { passive: false });
     return () => el.removeEventListener("wheel", onWheel2d);
@@ -3061,12 +3089,15 @@ export default function TerrainEditor() {
 
   function setOrbitPivot(p: THREE.Vector3):void {
     const st = threeRef.current;
+    if(!st.camera)
+      return;
     const o = st.orbit;
     const off = st.camera.position.clone().sub(p);
     const r = off.length();
-    if (r < 1e-3) return;
-    o.target = { x: p.x, y: p.y, z: p.z };
-    o.targetGoal = { x: p.x, y: p.y, z: p.z };
+    if (r < 1e-3)
+      return;
+    o.target = new THREE.Vector3(p.x, p.y, p.z );
+    o.targetGoal = o.target.clone();
     o.radius = r;
     o.targetRadius = r;
     o.phi = clampPhi(Math.acos(off.y / r));
@@ -3083,7 +3114,7 @@ export default function TerrainEditor() {
       st.orbit.phiDelta = 0;
     } else {
       st.fly.initialized = false;
-      st.fly.velocity = { x: 0, y: 0, z: 0 };
+      st.fly.velocity.set(0, 0, 0);
     }
     rebuildInstances();
   }
