@@ -123,6 +123,7 @@ export default function ToolbarRow({
         <>
           {toolBtn("pencil", t.pencil, t.pencilTitle)}
           {toolBtn("eraser", t.eraser, t.eraserTitle)}
+          {toolBtn("paint", t.paint, t.paintTitle)}
         </>
       )}
       {viewMode === "2d" && (

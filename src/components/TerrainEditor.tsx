@@ -29,7 +29,7 @@ import {storage, createNamedStore, writeJson, readJson } from "../lib/storage.ts
 import {Hotbar, PaletteEntry, usePalette} from "../hooks/usePalette.ts"
 import PaletteHotbar from "./PaletteHotbar.tsx";
 import { RngParams } from "../lib/mapGenerator.ts";
-import { hotkeyLabel, TOOL_BY_CODE, TOOL_BY_ID } from "../lib/tools.ts";
+import { hotkeyLabel, isFreehand, TOOL_BY_CODE, TOOL_BY_ID } from "../lib/tools.ts";
 
 
 export interface MapData {
@@ -1050,17 +1050,35 @@ export default function TerrainEditor() {
   }
 
   // ---- mirror painting ----
-  function setVoxelMirrored(x, y, z, block, meta, record) {
-    setVoxel(x, y, z, block, meta, record);
+  function forEachMirrored(x: number, y: number, z: number, fn: (x: number, y: number, z: number) => void) {
+    fn(x, y, z);
     const mx = width - 1 - x;
     const mz = depth - 1 - z;
-    if (mirrorX && mx !== x) setVoxel(mx, y, z, block, meta, record);
-    if (mirrorZ && mz !== z) setVoxel(x, y, mz, block, meta, record);
-    if (mirrorX && mirrorZ && (mx !== x || mz !== z)) setVoxel(mx, y, mz, block, meta, record);
+    if (mirrorX && mx !== x)
+      fn(mx, y, z);
+    if (mirrorZ && mz !== z)
+      fn(x, y, mz);
+    if (mirrorX && mirrorZ && (mx !== x || mz !== z))
+      fn(mx, y, mz);
+  }
+
+  function setVoxelMirrored(x: number, y: number, z: number, block: number, meta: number, record: boolean) {
+    forEachMirrored(x, y, z, (a, b, c) => setVoxel(a, b, c, block, meta, record));
+  }
+
+  // For recolor tool
+  function paintVoxel(x: number, y: number, z: number, block: number) {
+    const v = terrain.get(x, y, z);
+    if (!v)
+      return;                      // air: nothing to recolor
+    terrain.set(x, y, z, block, v.meta); // keep meta, change only the block
+  }
+  function paintMirrored(x: number, y: number, z: number, block: number) {
+    forEachMirrored(x, y, z, (a, b, c) => paintVoxel(a, b, c, block));
   }
 
   // ---- copy / paste a rectangular volume (spans a Y-layer range) ----
-  function copyRegion(x0, z0, x1, z1) {
+  function copyRegion(x0: number, z0: number, x1: number, z1: number) {
     const minX = Math.max(0, Math.min(x0, x1));
     const maxX = Math.min(width - 1, Math.max(x0, x1));
     const minZ = Math.max(0, Math.min(z0, z1));
@@ -2421,7 +2439,7 @@ export default function TerrainEditor() {
     return { ...coord, blockId };
   }
 
-  function performMouseRaycastAction(clientX, clientY, isContinuous) {
+  function performMouseRaycastAction(clientX: number, clientY: number, isContinuous: boolean) {
     const st = threeRef.current;
     const canvas = canvas3dRef.current;
     if (!canvas || !st.camera || !st.raycaster) return;
@@ -2437,11 +2455,12 @@ export default function TerrainEditor() {
     if (!hits.length) return;
     const hit = hits[0];
     const isErase = toolRef.current === "eraser";
-    let cx, cy, cz;
+    const isPaint = toolRef.current === "paint";
+    let cx: number, cy: number, cz: number;
 
     const hitCoord = coordFromHit(hit);
     if (hitCoord) {
-      if (isErase) {
+      if (isErase || isPaint) {
         cx = hitCoord.x;
         cy = hitCoord.y;
         cz = hitCoord.z;
@@ -2452,7 +2471,8 @@ export default function TerrainEditor() {
         cz = hitCoord.z + Math.round(n.z);
       }
     } else {
-      if (isErase) return;
+      if (isErase || isPaint)
+        return;
       cx = Math.floor(hit.point.x);
       cz = Math.floor(hit.point.z);
       cy = 0;
@@ -2489,13 +2509,18 @@ export default function TerrainEditor() {
       return;
     }
 
-    if (toolRef.current !== "pencil" && toolRef.current !== "eraser")
+    if (toolRef.current !== "pencil" && !isErase && !isPaint)
       return; // early exit if no tool is selected
     const oldEntry = terrain.get(cx,cy,cz);
     const oldBlock = oldEntry ? oldEntry.block : AIR;
     const newBlock = isErase ? AIR : selectedBlockRef.current;
+    // separate early handler + exit for changing block
+    if (isPaint) {
+      paintVoxel(cx, cy, cz, selectedBlockRef.current);
+      setCurrentLayer(cy);
+      return;
+    }
     setVoxel(cx, cy, cz, newBlock, 0, true);
-    // syncVoxel3D(cx, cy, cz, oldBlock, newBlock);
     setCurrentLayer(cy);
   }
 
@@ -3233,7 +3258,7 @@ export default function TerrainEditor() {
     if (!isDrawingRef.current)
       return false;
     isDrawingRef.current = false;
-    if (tool === "pencil" || tool === "eraser")
+    if (isFreehand(tool))
       commitStroke(); // keeps what was painted, one undo step
     rectStartRef.current = null;
     previewRectRef.current = null;
@@ -3281,9 +3306,12 @@ export default function TerrainEditor() {
     if (tool === "none")
       return; // early exit if no tool is selected
     isDrawingRef.current = true;
-    if (tool === "pencil" || tool === "eraser") {
+    if (isFreehand(tool)) {
       beginStroke();
-      setVoxelMirrored(x, currentLayer, z, tool === "eraser" ? AIR : selectedBlock, 0, true);
+      if (tool === "paint")
+        paintMirrored(x, currentLayer, z, selectedBlock);
+      else
+        setVoxelMirrored(x, currentLayer, z, tool === "eraser" ? AIR : selectedBlock, 0, true);
       draw();
     } else if (tool === "rect-fill" || tool === "rect-hollow" || tool === "rect-erase" || tool === "copy") {
       rectStartRef.current = { x, z };
@@ -3309,10 +3337,13 @@ export default function TerrainEditor() {
     const raw = cellFromPoint(e.clientX, e.clientY);
     const x = clamp(raw.x, 0, width - 1);
     const z = clamp(raw.z, 0, depth - 1);
-    if (tool === "pencil" || tool === "eraser") {
+    if (isFreehand(tool)) {
       if (x !== raw.x || z !== raw.z) 
         return; // freehand only paints inside the grid
-      setVoxelMirrored(x, currentLayer, z, tool === "eraser" ? AIR : selectedBlock, 0, true);
+      if (tool === "paint") 
+        paintMirrored(x, currentLayer, z, selectedBlock);
+      else
+        setVoxelMirrored(x, currentLayer, z, tool === "eraser" ? AIR : selectedBlock, 0, true);
       draw();
     } else if (tool === "rect-fill" || tool === "rect-hollow" || tool === "rect-erase" || tool === "copy") {
       if (rectStartRef.current) {
@@ -3326,7 +3357,7 @@ export default function TerrainEditor() {
     if (!isDrawingRef.current)
       return; // early exit if cancelled
     isDrawingRef.current = false;
-    if (tool === "pencil" || tool === "eraser") {
+    if (isFreehand(tool)) {
       commitStroke();
     } else if (tool === "rect-fill" || tool === "rect-hollow" || tool === "rect-erase") {
       if (previewRectRef.current) {

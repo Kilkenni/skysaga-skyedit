@@ -1,7 +1,7 @@
 interface ToolDef {
   id: string;
   codes: string[];                 // KeyboardEvent.code; no code = no hotkey
-  views: ("2d" | "3d")[];        // where the tool exists
+  views: ("2d" | "3d")[];          // Modes where the tool exists
 }
 
 const TOOLS: ToolDef[] = [
@@ -14,8 +14,12 @@ const TOOLS: ToolDef[] = [
   { id: "rect-erase", codes: ["KeyX"], views: ["2d"] },
   { id: "copy",       codes: ["KeyC"], views: ["2d"] },
   { id: "road",       codes: ["KeyO"], views: ["2d"] },
+  { id: "paint",      codes: ["KeyB"], views: ["2d", "3d"] },
 ];
 
+function isFreehand(t: string) {
+  return t === "pencil" || t === "eraser" || t === "paint";
+}
 const TOOL_BY_ID = new Map(TOOLS.map((t) => [t.id, t]));
 const TOOL_BY_CODE = new Map(
   TOOLS.flatMap((t) => t.codes.map((c) => [c, t] as const))
@@ -25,6 +29,7 @@ const hotkeyLabel = (codes: string[]) => codes.map((c) => c.replace(/^Key/, ""))
 export {
   ToolDef,
   TOOLS,
+  isFreehand,
   TOOL_BY_ID,
   TOOL_BY_CODE,
   hotkeyLabel

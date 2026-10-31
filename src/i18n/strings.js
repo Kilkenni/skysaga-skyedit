@@ -35,6 +35,8 @@ export const STRINGS = {
     pencilTitle: "Paint with the selected block",
     eraser: "🧹 Eraser",
     eraserTitle: "Erase (air)",
+    paint: "🖌️ Paint",
+    paintTitle: "Change block (recolour)",
     rectFill: "▭ Rectangle",
     rectFillTitle: "Fill a rectangular area",
     rectHollow: "▭ Hollow Rect",
