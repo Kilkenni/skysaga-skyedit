@@ -63,7 +63,7 @@ export const STRINGS = {
     mirrorZTitle: "Mirror painting across the Z axis",
     onionSkin: "Onion skin",
     onionSkinTitle: "Show nearby layers faded (blue = below, orange = above) as an alignment guide",
-    clipboardStatus: (w, h, d, n) => `Clipboard: ${w}×${h}×${d} (${n} voxels)`,
+    clipboardStatus: (w: number, h: number, d: number, n: number) => `Clipboard: ${w}×${h}×${d} (${n} voxels)`,
     hotbarHint: "Left click — select · Right click — assign current block · 1-9,0 — select by key · scroll — cycle",
     copyYFrom: "Y from",
     copyYTo: "Y to",

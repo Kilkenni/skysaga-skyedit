@@ -3191,12 +3191,14 @@ export default function TerrainEditor() {
     
     if (onionSkin) {
       for (let off = -onionRange; off <= onionRange; off++) {
-        if (off === 0) continue;
+        if (off === 0)
+          continue;
         const ly = currentLayer + off;
-        if (ly < 0 || ly >= totalHeight) continue;
-        const alpha = 0.32 / Math.abs(off);
+        if (ly < 0 || ly >= totalHeight)
+          continue;
+        const alpha = 0.15 / Math.abs(off);
         ctx.globalAlpha = alpha;
-        for (const voxel of terrain.layerCells(currentLayer)) {
+        for (const voxel of terrain.layerCells(ly)) {
           const {x, y, z} = voxel;
           //if (y !== ly) continue;
           if (x < 0 || x >= width || z < 0 || z >= depth) continue;
