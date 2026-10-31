@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect, useCallback, KeyboardEvent } from "react";
 import * as THREE from "three";
 import {
   CHUNK, CELL_BASE, REAL_BIOMES, MAX_CHUNKS, MAP_SIZES, mapSizeKey, ENTITIES, ENTITY_CATEGORY,
@@ -29,6 +29,7 @@ import {storage, createNamedStore, writeJson, readJson } from "../lib/storage.ts
 import {Hotbar, PaletteEntry, usePalette} from "../hooks/usePalette.ts"
 import PaletteHotbar from "./PaletteHotbar.tsx";
 import { RngParams } from "../lib/mapGenerator.ts";
+import { hotkeyLabel, TOOL_BY_CODE, TOOL_BY_ID } from "../lib/tools.ts";
 
 
 export interface MapData {
@@ -103,6 +104,11 @@ const DEFAULT_LEVEL_DATA:DeepReadonly< Pick<LevelData, "mapSizeChunks" | "biomeN
   entities: [],
 }
 
+const DEFAULT_SETTINGS = {
+  ZOOM_WHEEL_STEP: 1.05,
+  ZOOM_ORBIT_STEP: 1.02,
+}
+
 function getDefaultLevelData():LevelData {
   return {
     ...DEFAULT_LEVEL_DATA,
@@ -148,7 +154,7 @@ export default function TerrainEditor() {
   const [currentLayer, setCurrentLayer] = useState(0);
   const [zoom, setZoom] = useState(1);
   const zoomRef = useRef(1);
-  const [tool, setTool] = useState("pencil");
+  const [tool, setTool] = useState("none");
   const clipboardRef = useRef<any>(null);
 
   // Road Tool
@@ -2576,52 +2582,55 @@ export default function TerrainEditor() {
 
   function attachOrbitListeners(canvas) {
     const st = threeRef.current;
-    function onMouseDown(e) {
+    function onMouseDown(event) {
       st.drag.isDown = true;
-      st.drag.button = e.button;
-      st.drag.lastX = e.clientX;
-      st.drag.lastY = e.clientY;
-      if (e.button === 0) {
+      st.drag.button = event.button;
+      st.drag.lastX = event.clientX;
+      st.drag.lastY = event.clientY;
+      if (event.button === 0) {
         beginStroke();
-        performMouseRaycastAction(e.clientX, e.clientY, false);
+        performMouseRaycastAction(event.clientX, event.clientY, false);
       }
     }
-    function onMouseMove(e) {
+    function onMouseMove(event) {
       if (!st.drag.isDown) return;
-      const dx = e.clientX - st.drag.lastX;
-      const dy = e.clientY - st.drag.lastY;
+      const dx = event.clientX - st.drag.lastX;
+      const dy = event.clientY - st.drag.lastY;
       if (st.drag.button === 0) {
-        performMouseRaycastAction(e.clientX, e.clientY, true);
-      } else if (st.drag.button === 2 && !e.shiftKey) {
+        performMouseRaycastAction(event.clientX, event.clientY, true);
+      } else if (st.drag.button === 2 && !event.shiftKey) {
         st.orbit.thetaDelta -= dx * 0.008;
         st.orbit.phiDelta -= dy * 0.008;
-      } else if (st.drag.button === 1 || (st.drag.button === 2 && e.shiftKey)) {
+      } else if (st.drag.button === 1 || (st.drag.button === 2 && event.shiftKey)) {
         panOrbit(dx, dy);
       }
-      st.drag.lastX = e.clientX;
-      st.drag.lastY = e.clientY;
+      st.drag.lastX = event.clientX;
+      st.drag.lastY = event.clientY;
     }
-    function onMouseUp(e) {
-      if (st.drag.isDown && e.button === st.drag.button) {
-        if (e.button === 0) commitStroke();
+    function onMouseUp(event) {
+      if (st.drag.isDown && event.button === st.drag.button) {
+        if (event.button === 0) commitStroke();
         st.drag.isDown = false;
       }
     }
-    function onWheel(e) {
-      e.preventDefault();
+    function onWheel(event) {
+      event.preventDefault();
       const canvas2 = canvas3dRef.current;
       if (!canvas2 || !st.camera || !st.raycaster) return;
       const rect = canvas2.getBoundingClientRect();
-      const mx = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-      const my = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+      const mx = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      const my = -((event.clientY - rect.top) / rect.height) * 2 + 1;
       st.raycaster.setFromCamera({ x: mx, y: my }, st.camera);
       const dir = st.raycaster.ray.direction.clone();
       const dims = dimsRef.current;
       const maxR = Math.max(dims.width, dims.depth, dims.totalHeight, 4) * 4 + 20;
       const oldTarget = st.orbit.targetRadius;
+
+      const factor = event.deltaY > 0 ? DEFAULT_SETTINGS.ZOOM_ORBIT_STEP : 1 / DEFAULT_SETTINGS.ZOOM_ORBIT_STEP;
       const newTarget = Math.max(
         4,
-        Math.min(maxR, oldTarget * (1 + e.deltaY * 0.001))
+        // Math.min(maxR, oldTarget * (1 + event.deltaY * 0.001))
+        Math.min(maxR, oldTarget * factor)
       );
       const delta = newTarget - oldTarget;
       st.orbit.targetGoal.x += dir.x * -delta;
@@ -2727,19 +2736,25 @@ export default function TerrainEditor() {
         e.preventDefault();
       }
     }
-    function onKeyUp(e) {
-      if (e.code === "KeyW") st.keys.forward = false;
-      else if (e.code === "KeyS") st.keys.back = false;
-      else if (e.code === "KeyA") st.keys.left = false;
-      else if (e.code === "KeyD") st.keys.right = false;
-      else if (e.code === "Space") st.keys.up = false;
-      else if (e.code === "ShiftLeft" || e.code === "ShiftRight")
+    function onKeyUp(event) {
+      if (event.code === "KeyW") 
+        st.keys.forward = false;
+      else if (event.code === "KeyS") 
+        st.keys.back = false;
+      else if (event.code === "KeyA") 
+        st.keys.left = false;
+      else if (event.code === "KeyD") 
+        st.keys.right = false;
+      else if (event.code === "Space") 
+        st.keys.up = false;
+      else if (event.code === "ShiftLeft" || event.code === "ShiftRight")
         st.keys.down = false;
     }
-    function onWheel(e:WheelEvent) {
-      e.preventDefault();
-      if (!st.camera) return;
-      st.camera.fov = Math.max(15, Math.min(100, st.camera.fov * (1 + e.deltaY * 0.001)));
+    function onWheel(event:WheelEvent) {
+      event.preventDefault();
+      if (!st.camera)
+        return;
+      st.camera.fov = Math.max(15, Math.min(100, st.camera.fov * (1 + event.deltaY * 0.001)));
       st.camera.updateProjectionMatrix();
     }
 
@@ -2777,18 +2792,19 @@ export default function TerrainEditor() {
     const el = containerRef.current;
     if (el === null)
       return undefined;
-    function onWheel2d(e) {
+    function onWheel2d(event:WheelEvent) {
       if (viewModeRef.current !== "2d" || el === null)
         return;
-      e.preventDefault();
+      event.preventDefault();
       const rect = el.getBoundingClientRect();
-      const ox = e.clientX - rect.left;
-      const oy = e.clientY - rect.top;
+      const ox = event.clientX - rect.left;
+      const oy = event.clientY - rect.top;
       const px = ox + el.scrollLeft;
       const py = oy + el.scrollTop;
       const old = zoomRef.current;
-      const next = Math.round(clamp(old * (e.deltaY > 0 ? 0.9 : 1 / 0.9), 0.4, 3) * 100) / 100;
-      if (next === old) return;
+      const next = Math.round(clamp(old * (event.deltaY > 0 ? 1/DEFAULT_SETTINGS.ZOOM_WHEEL_STEP : DEFAULT_SETTINGS.ZOOM_WHEEL_STEP), 0.4, 3) * 100) / 100;
+      if (next === old)
+        return;
       zoomRef.current = next;
       setZoom(next);
       requestAnimationFrame(() => {
@@ -3360,7 +3376,7 @@ export default function TerrainEditor() {
   }, []);
 
   useEffect(() => {
-    function onKey(event: KeyboardEvent) {
+    function onKey(event) {
       if ((event.ctrlKey || event.metaKey) && event.code === "KeyZ") {
         event.preventDefault();
         if (event.shiftKey) 
@@ -3405,10 +3421,11 @@ export default function TerrainEditor() {
                 setTool("none");
               return;
             }
-            // Eyedropper hotkey - only in 2D for now
-            if (event.code === "KeyI" && viewModeRef.current === "2d") {
+            const def = TOOL_BY_CODE.get(event.code);
+            // Tool hotkey - only in 2D for now
+            if (def && def.views.includes(viewModeRef.current)) {
               event.preventDefault();
-              setTool("eyedropper");
+              setTool(def.id);
               return;
             }
           }
@@ -3649,10 +3666,11 @@ export default function TerrainEditor() {
   const chunkY = Math.floor(currentLayer / CHUNK);
   const localY = currentLayer % CHUNK;
 
-  const toolBtn = (id:string, label:string, title:string) => (
-    <button
+  const toolBtn = (id:string, label:string, title:string) => {
+    const codes = TOOL_BY_ID.get(id)?.codes;
+    return (<button
       onClick={() => setTool(id)}
-      title={title}
+      title={codes?.length ? `${title} [${hotkeyLabel(codes)}]` : title}
       style={{
         padding: "6px 10px",
         borderRadius: 6,
@@ -3664,8 +3682,8 @@ export default function TerrainEditor() {
       }}
     >
       {label}
-    </button>
-  );
+    </button>)
+  };
 
   return (
     <div

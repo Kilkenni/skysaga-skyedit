@@ -364,7 +364,7 @@ export default function ToolbarRow({
               type="range"
               min={0.4}
               max={3}
-              step={0.1}
+              step={0.05}
               value={zoom}
               onChange={(e) => {
                 zoomRef.current = Number(e.target.value);
