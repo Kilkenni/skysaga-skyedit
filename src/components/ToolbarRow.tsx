@@ -16,6 +16,7 @@ interface Props {
   mirrorX,
   mirrorZ,
   moveSpeed,
+  shiftMap: (dx: number, dy: number, dz: number) => void,
   onionRange,
   onionSkin,
   redo,
@@ -68,6 +69,7 @@ export default function ToolbarRow({
   mirrorX,
   mirrorZ,
   moveSpeed,
+  shiftMap,
   onionRange,
   onionSkin,
   redo,
@@ -304,6 +306,24 @@ export default function ToolbarRow({
       </button>
 
       <div style={{ flex: 1 }} />
+
+      <div style={{ width: 1, height: 20, background: "#2a2f3a", margin: "0 4px" }} />
+      <span style={{ fontSize: 11, color: "#8a91a3" }}>{t.shiftMap}</span>
+      {([["X-", -1, 0, 0], ["X+", 1, 0, 0], ["Z-", 0, 0, -1], ["Z+", 0, 0, 1], ["Y-", 0, -1, 0], ["Y+", 0, 1, 0]] as const).map(
+        ([label, dx, dy, dz]) => (
+          <button
+            key={label}
+            style={actionBtn}
+            title={t.shiftMapTitle}
+            onClick={(e) => {
+              const n = e.shiftKey ? 10 : 1;
+              shiftMap(dx * n, dy * n, dz * n);
+            }}
+          >
+            {label}
+          </button>
+        )
+      )}
 
       {viewMode === "2d" && (
         <>

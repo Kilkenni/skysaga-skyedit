@@ -31,6 +31,12 @@ export const STRINGS = {
     palette: "PALETTE",
     idPlaceholder: "ID 1-255",
     selectedBlock: "Selected block:",
+    shiftMap: "Shift map:",
+    shiftMapTitle: "Move the whole map by one block (+Shift: 10). Clears undo history.",
+    shiftNothing: "Nothing to shift",
+    shiftNoRoom: "No room: the map would leave the grid",
+    shiftDone: (dx: number, dy: number, dz: number) =>
+      `Map shifted (${dx}, ${dy}, ${dz}); undo history cleared`,
     pencil: "✏️ Pencil",
     pencilTitle: "Paint with the selected block",
     eraser: "🧹 Eraser",

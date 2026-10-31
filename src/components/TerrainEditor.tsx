@@ -3750,6 +3750,32 @@ export default function TerrainEditor() {
     scheduleSave();
   }
 
+  // move existing map within the grid limits
+  function shiftMap(dx: number, dy: number, dz: number) {
+    const cells = Array.from(terrain.cells()); // a snapshot, so we never walk the live map
+    const entities = entityInstancesRef.current;
+    if (cells.length === 0 && entities.length === 0) {
+      setStatus(STRINGS.en.shiftNothing);
+      return;
+    }
+    const fits = (x: number, y: number, z: number) => {
+      return (x + dx >= 0 && x + dx < width &&
+        y + dy >= 0 && y + dy < totalHeight &&
+        z + dz >= 0 && z + dz < depth);
+    }
+    if (!cells.every((c) => fits(c.x, c.y, c.z)) || !entities.every((ent) => fits(ent.x, ent.y, ent.z))) {
+      setStatus(STRINGS.en.shiftNoRoom); // refuse; nothing changes
+      return;
+    }
+    const movedEntities = entities.map((ent) => ({ ...ent, x: ent.x + dx, y: ent.y + dy, z: ent.z + dz }));
+    entityInstancesRef.current = movedEntities; // the ref first, so the autosave sees the new positions
+    setEntityInstances(movedEntities);
+    terrain.replaceAll(cells.map((c) => ({ x: c.x + dx, y: c.y + dy, z: c.z + dz, block: c.block, meta: c.meta })));
+    lastHeightMapRef.current = null; // the "regenerate trees/ore" snapshot no longer matches
+    setCurrentLayer((layer) => clamp(layer + dy, 0, totalHeight - 1)); // Follow the Y layer if it shifts
+    setStatus(STRINGS.en.shiftDone(dx, dy, dz));
+  }
+
   function ensureAirship() {
     if (entityInstancesRef.current.some((e) => e.name === "Airship")) return true;
     const dims = dimsRef.current;
@@ -4019,6 +4045,7 @@ export default function TerrainEditor() {
             mirrorX={mirrorX}
             mirrorZ={mirrorZ}
             moveSpeed={moveSpeed}
+            shiftMap={shiftMap}
             onionRange={onionRange}
             onionSkin={onionSkin}
             redo={()=> terrain.redo()}
