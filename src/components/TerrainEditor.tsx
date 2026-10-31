@@ -157,6 +157,7 @@ export default function TerrainEditor() {
   const [zoom, setZoom] = useState(1);
   const zoomRef = useRef(1);
   const zoomAnchorRef = useRef<{ pivot: THREE.Vector3 | null; x: number; y: number; t: number } | null>(null); // Center of zooming
+  const panDragRef = useRef<{ x: number; y: number } | null>(null);
   const [tool, setTool] = useState("none");
   const clipboardRef = useRef<any>(null);
 
@@ -2909,22 +2910,25 @@ export default function TerrainEditor() {
       event.preventDefault();
       const delta = event.deltaY || event.deltaX;
         if (delta === 0) return;
-      const rect = el.getBoundingClientRect();
-      const ox = event.clientX - rect.left;
-      const oy = event.clientY - rect.top;
-      const px = ox + el.scrollLeft;
-      const py = oy + el.scrollTop;
-      const old = zoomRef.current;
+      // const rect = el.getBoundingClientRect();
+      // const ox = event.clientX - rect.left;
+      // const oy = event.clientY - rect.top;
+      // const px = ox + el.scrollLeft;
+      // const py = oy + el.scrollTop;
+      // const old = zoomRef.current;
       const step = Math.pow(DEFAULT_SETTINGS.ZOOM_WHEEL_STEP, event.shiftKey ? DEFAULT_SETTINGS.ZOOM_SHIFT_MULT : 1);
-      const next = Math.round(clamp(old * (delta > 0 ? 1/step : step), 0.4, 3) * 100) / 100;
-      if (next === old)
-        return;
-      zoomRef.current = next;
-      setZoom(next);
-      requestAnimationFrame(() => {
-        el.scrollLeft = px * (next / old) - ox;
-        el.scrollTop = py * (next / old) - oy;
-      });
+      const next = Math.round(clamp(zoomRef.current * (delta > 0 ? 1/step : step), 0.4, 3) * 100) / 100;
+      const rect = canvasRef.current?.getBoundingClientRect(); // the canvas fills the container
+      if (rect)
+        zoomAt(next, event.clientX - rect.left, event.clientY - rect.top);
+      // if (next === old)
+      //   return;
+      // zoomRef.current = next;
+      // setZoom(next);
+      // requestAnimationFrame(() => {
+      //   el.scrollLeft = px * (next / old) - ox;
+      //   el.scrollTop = py * (next / old) - oy;
+      // });
     }
     el.addEventListener("wheel", onWheel2d, { passive: false });
     return () => el.removeEventListener("wheel", onWheel2d);
@@ -3111,7 +3115,6 @@ export default function TerrainEditor() {
       stack.push([x, z - 1]);
     }
     commitStroke();
-    // draw();
   }
 
   function fillRect(x0: number, z0: number, x1: number, z1: number, block: number, hollow = false) {
@@ -3128,7 +3131,6 @@ export default function TerrainEditor() {
       }
     }
     commitStroke();
-    // draw();
   }
 
   function clearLayer() {
@@ -3157,17 +3159,35 @@ export default function TerrainEditor() {
   // ---- canvas drawing (2D) ----
   const draw = useCallback(() => {
     // const t0 = performance.now();
+    const cell = CELL_BASE * zoomRef.current;   // same source as the pan, never a stale render value
 
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    const host = containerRef.current;
+    if (!canvas || !host)
+      return;
+    const cw = host.clientWidth;
+    const ch = host.clientHeight;
+    if (cw === 0 || ch === 0)
+      return; // no need to draw if there is no place
+    if (canvas.width !== cw || canvas.height !== ch) { // assigning width clears the canvas, so only on a real change
+      canvas.width = cw;
+      canvas.height = ch;
+    }
+
     const ctx = canvas.getContext("2d");
-    canvas.width = width * cell;
-    canvas.height = depth * cell;
     if(!ctx)
       throw new Error("Canvas has no context `2d`");
+    const { panX, panY } = viewRef.current;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.fillStyle = "#08090c";                           // area outside the grid
+    ctx.fillRect(0, 0, cw, ch);
+    ctx.setTransform(1, 0, 0, 1, panX, panY);
     ctx.imageSmoothingEnabled = false;
-    ctx.fillStyle = "#12151b";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#12151b";                           // the grid itself
+    ctx.fillRect(0, 0, width * cell, depth * cell);
+    ctx.strokeStyle = "#2a2f3a";                         // replaces the old CSS box-shadow outline
+    ctx.lineWidth = 1;
+    ctx.strokeRect(-0.5, -0.5, width * cell + 1, depth * cell + 1);
     
     if (onionSkin) {
       for (let off = -onionRange; off <= onionRange; off++) {
@@ -3207,14 +3227,14 @@ export default function TerrainEditor() {
         if (x % CHUNK === 0) continue;
         ctx.beginPath();
         ctx.moveTo(x * cell + 0.5, 0);
-        ctx.lineTo(x * cell + 0.5, canvas.height);
+        ctx.lineTo(x * cell + 0.5, depth * cell);
         ctx.stroke();
       }
       for (let z = 0; z <= depth; z++) {
         if (z % CHUNK === 0) continue;
         ctx.beginPath();
         ctx.moveTo(0, z * cell + 0.5);
-        ctx.lineTo(canvas.width, z * cell + 0.5);
+        ctx.lineTo(width * cell, z * cell + 0.5);
         ctx.stroke();
       }
     }
@@ -3224,13 +3244,13 @@ export default function TerrainEditor() {
     for (let x = 0; x <= width; x += CHUNK) {
       ctx.beginPath();
       ctx.moveTo(x * cell, 0);
-      ctx.lineTo(x * cell, canvas.height);
+      ctx.lineTo(x * cell, depth * cell);
       ctx.stroke();
     }
     for (let z = 0; z <= depth; z += CHUNK) {
       ctx.beginPath();
       ctx.moveTo(0, z * cell);
-      ctx.lineTo(canvas.width, z * cell);
+      ctx.lineTo(width * cell, z * cell);
       ctx.stroke();
     }
 
@@ -3241,7 +3261,7 @@ export default function TerrainEditor() {
       ctx.setLineDash([4, 3]);
       ctx.beginPath();
       ctx.moveTo(gx, 0);
-      ctx.lineTo(gx, canvas.height);
+      ctx.lineTo(gx, depth * cell);
       ctx.stroke();
       ctx.setLineDash([]);
     }
@@ -3252,7 +3272,7 @@ export default function TerrainEditor() {
       ctx.setLineDash([4, 3]);
       ctx.beginPath();
       ctx.moveTo(0, gz);
-      ctx.lineTo(canvas.width, gz);
+      ctx.lineTo(width * cell, gz);
       ctx.stroke();
       ctx.setLineDash([]);
     }
@@ -3332,20 +3352,77 @@ export default function TerrainEditor() {
     }
 
     // const ms = performance.now() - t0;
-    // if (ms > 8) console.log(`draw ${ms.toFixed(1)} ms, voxels: ${terrain.size}`);
+    // if (ms > 1) console.log(`draw ${ms.toFixed(1)} ms, voxels: ${terrain.size}`);
   }, [width, depth, cell, currentLayer, mirrorX, mirrorZ, roadParams.roadPending, roadParams.roadWidth, onionSkin, onionRange, totalHeight, entityInstances]);
+
+  const viewRef = useRef({ panX: 0, panY: 0 }); // screen position of the grid's top-left corner
+  const drawRef = useRef(draw);
+  drawRef.current = draw;                       // lets handlers with [] deps call a fresh draw()
+
+  function centerView(): void {
+    const host = containerRef.current;
+    if (!host)
+      return;
+    const { width, depth } = dimsRef.current;
+    const cell = CELL_BASE * zoomRef.current;
+    viewRef.current.panX = Math.round((host.clientWidth - width * cell) / 2);  // whole pixels for smooth panning
+    viewRef.current.panY = Math.round((host.clientHeight - depth * cell) / 2); // whole pixels
+  }
+
+  function setPan(px: number, py: number): void {
+    const host = containerRef.current;
+    if (!host)
+      return;
+    const { width, depth } = dimsRef.current;
+    const cell = CELL_BASE * zoomRef.current;
+    const m = 48; // always keep at least this much of the grid on screen
+    viewRef.current.panX = Math.round(clamp(px, m - width * cell, host.clientWidth - m));
+    viewRef.current.panY = Math.round(clamp(py, m - depth * cell, host.clientHeight - m));
+  }
+
+  function zoomAt(next: number, anchorX: number, anchorY: number) {   // anchor in canvas pixels
+    const old = zoomRef.current;
+    if (next === old)
+      return;
+    const k = next / old;
+    const { panX, panY } = viewRef.current;
+    zoomRef.current = next; // setPan should clamp with the new cell size!
+    setPan(anchorX - (anchorX - panX) * k, anchorY - (anchorY - panY) * k);
+    setZoom(next);
+  }
+
+  function zoomToCenter(next: number) {
+    const host = containerRef.current;
+    if (host)
+      zoomAt(next, host.clientWidth / 2, host.clientHeight / 2);
+  }
+
+  useEffect(() => { // declared before the existing `useEffect(() => draw(), [draw])`
+    centerView();
+    drawRef.current();
+  }, [width, depth]);
+
+  useEffect(() => { // redraw whenever the viewport changes size (window, opened panels)
+    const host = containerRef.current;
+    if (!host) return undefined;
+    const ro = new ResizeObserver(() => drawRef.current());
+    ro.observe(host);
+    return () => ro.disconnect();
+  }, []);
 
   useEffect(() => {
     draw();
   }, [draw]);
 
   function cellFromPoint(clientX: number, clientY: number) {
+    const cell = CELL_BASE * zoomRef.current;
     if (!canvasRef.current) 
       throw new Error("canvasRef is undefined!");
     const rect = canvasRef.current.getBoundingClientRect();
+    const { panX, panY } = viewRef.current;
     return {
-      x: Math.floor((clientX - rect.left) / cell),
-      z: Math.floor((clientY - rect.top) / cell),
+      x: Math.floor((clientX - rect.left - panX) / cell),
+      z: Math.floor((clientY - rect.top  - panY) / cell),
     };
   }
   function cellFromEvent(event: React.MouseEvent<HTMLCanvasElement>) {
@@ -3370,6 +3447,14 @@ export default function TerrainEditor() {
   }
 
   function handleMouseDown(event:React.MouseEvent<HTMLCanvasElement>) {
+    // a drag can start outside the grid
+    if (event.button === 1) {
+      event.preventDefault();
+      panDragRef.current = { x: event.clientX, y: event.clientY };
+      return;
+    }
+    if (event.button !== 0)
+      return;
     const { x, z } = cellFromEvent(event);
     if (x < 0 || x >= width || z < 0 || z >= depth) return;
     if (placingEntityName) {
@@ -3427,14 +3512,25 @@ export default function TerrainEditor() {
 
   function handleMouseMove(event:React.MouseEvent<HTMLCanvasElement>) {
     const pos = cellFromEvent(event);
-    setHoverCell(pos);
+    const inside = pos.x >= 0 && pos.x < width && pos.z >= 0 && pos.z < depth;
+    setHoverCell(inside ? pos : null);
     if (tool === "road" && roadStartRef.current) {
-      roadHoverRef.current = pos;
+      roadHoverRef.current = { x: clamp(pos.x, 0, width - 1), z: clamp(pos.z, 0, depth - 1) };
       draw(); // road preview
     }
   }
 
   function handleDragMove(e: MouseEvent) {
+    const pd = panDragRef.current;
+    if (pd) {
+      const v = viewRef.current;
+      setPan(v.panX + (e.clientX - pd.x), v.panY + (e.clientY - pd.y));
+      pd.x = e.clientX;
+      pd.y = e.clientY;
+      draw();
+      return;
+    }
+
     if (!isDrawingRef.current) 
       return;
     const raw = cellFromPoint(e.clientX, e.clientY);
@@ -3457,6 +3553,10 @@ export default function TerrainEditor() {
   }
 
   function handleMouseUp() {
+    if (panDragRef.current) {
+      panDragRef.current = null;
+      return;
+    }
     if (!isDrawingRef.current)
       return; // early exit if cancelled
     isDrawingRef.current = false;
@@ -3543,10 +3643,15 @@ export default function TerrainEditor() {
           if (pan) {
             event.preventDefault();
             if (view === "2d") {
-              if (containerRef.current) {
-                const step = n * CELL_BASE * zoomRef.current;
-                containerRef.current.scrollBy({ left: pan[0] * step, top: pan[1] * step, behavior: "instant" });
-              }
+              const step = n * CELL_BASE * zoomRef.current;
+              const v = viewRef.current;
+              setPan(v.panX - pan[0] * step, v.panY - pan[1] * step); // the view goes right, so the content goes left
+              drawRef.current();
+
+              // if (containerRef.current) {
+              //   const step = n * CELL_BASE * zoomRef.current;
+              //   containerRef.current.scrollBy({ left: pan[0] * step, top: pan[1] * step, behavior: "instant" });
+              // }
             } else {
               panOrbitByUnits(pan[0] * n, -pan[1] * n, 0); // W/ArrowUp = forward
             }
@@ -3560,6 +3665,12 @@ export default function TerrainEditor() {
             } else if (!isDrawingRef.current) {
               setCurrentLayer((prevLayer) => clamp(prevLayer + dir * n, 0, dimsRef.current.totalHeight - 1)); // In 2D, switch layers up/down
             }
+            return;
+          }
+          if (view === "2d" && event.code === "Home") {
+            event.preventDefault();
+            centerView();
+            drawRef.current();
             return;
           }
         }
@@ -3929,7 +4040,7 @@ export default function TerrainEditor() {
             setShowRandomPanel={setShowRandomPanel}
             setShowSaves={setShowSaves}
             setShowStructuresPanel={setShowStructuresPanel}
-            setZoom={setZoom}
+            setZoom={zoomToCenter}
             showBulkTexturePanel={showBulkTexturePanel}
             showEntitiesPanel={showEntitiesPanel}
             showPresets={showPresets}
@@ -4037,8 +4148,8 @@ export default function TerrainEditor() {
               style={{
                 position: "absolute",
                 inset: 0,
-                overflow: viewMode === "2d" ? "auto" : "hidden",
-                padding: viewMode === "2d" ? 16 : 0,
+                overflow: "hidden",
+                padding: 0,
                 background: "#08090c",
               }}
             >
@@ -4050,9 +4161,11 @@ export default function TerrainEditor() {
                 onMouseLeave={handleMouseLeave}
                 style={{
                   display: viewMode === "2d" ? "block" : "none",
+                  width: "100%",
+                  height: "100%",
                   cursor: "crosshair",
                   imageRendering: "pixelated",
-                  boxShadow: "0 0 0 1px #2a2f3a",
+                  // boxShadow: "0 0 0 1px #2a2f3a",
                 }}
               />
               <canvas

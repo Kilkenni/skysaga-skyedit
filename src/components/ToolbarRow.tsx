@@ -367,10 +367,7 @@ export default function ToolbarRow({
               max={3}
               step={0.05}
               value={zoom}
-              onChange={(e) => {
-                zoomRef.current = Number(e.target.value);
-                setZoom(zoomRef.current);
-              }}
+              onChange={(e) => setZoom(Number(e.target.value))}
             />
           </label>
         </>
