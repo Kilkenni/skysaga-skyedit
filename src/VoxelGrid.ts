@@ -57,14 +57,16 @@ class VoxelGrid  {
     }
   }
 
+  static #check(axis: string, value: number, size: number) {
+    if (!Number.isInteger(value) || value < 0 || value >= size)
+      throw new Error(`${axis}:${value} is out of range: 0..${size - 1}`);
+  }
+
   #index(x: number, y: number, z: number) {
     const {width, depth, height} = this.#dim;
-    if(!Number.isInteger(x) || x < 0 || x >= width )
-      throw new Error(`x:${x} is out of range: 0..${width-1}`);
-    if(y >= height )
-      throw new Error(`y:${y} is out of range: 0..${height-1}`);
-    if(z >= depth )
-      throw new Error(`z:${z} is out of range: 0..${depth-1}`);
+    VoxelGrid.#check("x", x, width);
+    VoxelGrid.#check("y", y, height);
+    VoxelGrid.#check("z", z, depth);
 
     return (x + z * width + y * width * depth);
   }

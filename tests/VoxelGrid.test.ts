@@ -14,7 +14,7 @@ describe("VoxelGrid", () => {
     { width: 4, depth: -1, height: 5 },
     { width: 4, depth: 3, height: 2.5 },
     { width: NaN, depth: 3, height: 5 },
-  ])("rejects invalid dimensions %p", (dims) => {
+  ])("rejects invalid dimensions %s", (dims) => {
     expect(() => new VoxelGrid(dims)).toThrow();
   });
 
@@ -71,9 +71,10 @@ describe("VoxelGrid", () => {
   });
 
   it.each([
+    [0, 1.5, 0], [0, NaN, 0], [0, 0, 1.5], [0, 0, NaN],
     [-1, 0, 0], [4, 0, 0], [0, -1, 0], [0, 5, 0],
     [0, 0, -1], [0, 0, 3], [1.5, 0, 0], [NaN, 0, 0],
-  ])("rejects out-of-range coordinate (%p, %p, %p)", (x, y, z) => {
+  ])("rejects out-of-range coordinate (%s, %s, %s)", (x, y, z) => {
     const grid = new VoxelGrid(DIMS);
     expect(() => grid.set(x, y, z, 1)).toThrow();
     expect(() => grid.get(x, y, z)).toThrow();
