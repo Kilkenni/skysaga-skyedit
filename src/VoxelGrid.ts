@@ -82,6 +82,10 @@ class VoxelGrid  {
       this.#meta[index] = 0;
   }
 
+  /**
+   * 
+   * @returns undefined if the block is AIR
+   */
   get(x: number, y: number, z: number):VoxelCell|undefined {
     const index = this.#index(x, y, z);
     const block = this.#grid[index];

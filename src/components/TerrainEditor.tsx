@@ -1701,6 +1701,7 @@ export default function TerrainEditor() {
       }
     }
 
+    // WATERFALLS
     if (normParams.rivers.isWaterfallEnabled && normParams.rivers.isEnabled) {
       for (let x = 0; x < width; x++) {
         for (let z = 0; z < depth; z++) {
@@ -1733,6 +1734,70 @@ export default function TerrainEditor() {
       }
     }
 
+    // ORES
+    if (normParams.ore.isEnabled && normParams.ore.blockList.length && normParams.ore.countScaled > 0) {
+      function placeOreBlob(cx: number, cy: number, cz: number, oreBlock: number, r: number) {
+        for (let dx = -r; dx <= r; dx++) {
+          for (let dy = -r; dy <= r; dy++) {
+            for (let dz = -r; dz <= r; dz++) {
+              const d2 = dx * dx + dy * dy + dz * dz;
+              if (d2 > r * r + rand() * 1.5) 
+                continue;
+              if (rand() < 0.3) 
+                continue;
+              const wx = cx + dx;
+              const wy = cy + dy;
+              const wz = cz + dz;
+              if (wx < 0 || wx >= width || wy < 0 || wy >= totalHeight || wz < 0 || wz >= depth)
+                continue;
+              if (grid.getBlock(wx, wy, wz) === AIR) 
+                continue;
+              grid.set(wx, wy, wz, oreBlock);
+            }
+          }
+        }
+      }
+
+      for (let i = 0; i < normParams.ore.countScaled; i++) {
+        const ox = Math.floor(rand() * width);
+        const oz = Math.floor(rand() * depth);
+        const colH = heightMap[ox * depth + oz];
+        if (colH < 3) 
+          continue;
+        const maxY = Math.min(colH - 2, normParams.island.groundDepth - 1);
+        if (maxY < 1) 
+          continue;
+        const oy = 1 + Math.floor(rand() * maxY);
+        const oreBlock = normParams.ore.blockList[Math.floor(rand() * normParams.ore.blockList.length)];
+
+        if (rand() < normParams.ore.bigVeinChance) {
+          // rare jackpot: a chain of overlapping blobs forming one large,
+          // irregular deposit instead of a single small vein
+          const blobCount = 3 + Math.floor(rand() * 4);
+          let cx = ox;
+          let cy = oy;
+          let cz = oz;
+          for (let b = 0; b < blobCount; b++) {
+            placeOreBlob(cx, cy, cz, oreBlock, normParams.ore.bigVeinSize);
+            cx = Math.max(
+              0,
+              Math.min(width - 1, cx + Math.round((rand() - 0.5) * normParams.ore.bigVeinSize))
+            );
+            cy = Math.max(
+              1,
+              Math.min(maxY, cy + Math.round((rand() - 0.5) * normParams.ore.bigVeinSize * 0.6))
+            );
+            cz = Math.max(
+              0,
+              Math.min(depth - 1, cz + Math.round((rand() - 0.5) * normParams.ore.bigVeinSize))
+            );
+          }
+        } else {
+          placeOreBlob(ox, oy, oz, oreBlock, normParams.ore.bigVeinSize);
+        }
+      }
+    }
+
     return {
       grid,
       heightMap,
@@ -1754,68 +1819,7 @@ export default function TerrainEditor() {
 
     
 
-    if (oresOn && oreBlockList.length && oreCountScaled > 0) {
-      const oreBigChance = clamp(params.randOreBigChance, 0, 100) / 100;
-      const oreBigR = clamp(params.randOreBigSize, 1, 10);
-
-      function placeOreBlob(cx: number, cy: number, cz: number, oreBlock, r) {
-        for (let dx = -r; dx <= r; dx++) {
-          for (let dy = -r; dy <= r; dy++) {
-            for (let dz = -r; dz <= r; dz++) {
-              const d2 = dx * dx + dy * dy + dz * dz;
-              if (d2 > r * r + rand() * 1.5) continue;
-              if (rand() < 0.3) continue;
-              const wx = cx + dx;
-              const wy = cy + dy;
-              const wz = cz + dz;
-              if (wx < 0 || wx >= width || wy < 0 || wy >= totalHeight || wz < 0 || wz >= depth)
-                continue;
-
-              const existing = terrain.get(wx, wy, wz);
-              if (!existing || existing.block === AIR) continue;
-              setVoxel(wx, wy, wz, oreBlock, 0, true);
-            }
-          }
-        }
-      }
-
-      for (let i = 0; i < oreCountScaled; i++) {
-        const ox = Math.floor(rand() * width);
-        const oz = Math.floor(rand() * depth);
-        const colH = heightMap[ox * depth + oz];
-        if (colH < 3) continue;
-        const maxY = Math.min(colH - 2, groundDepth - 1);
-        if (maxY < 1) continue;
-        const oy = 1 + Math.floor(rand() * maxY);
-        const oreBlock = oreBlockList[Math.floor(rand() * oreBlockList.length)];
-
-        if (rand() < oreBigChance) {
-          // rare jackpot: a chain of overlapping blobs forming one large,
-          // irregular deposit instead of a single small vein
-          const blobCount = 3 + Math.floor(rand() * 4);
-          let cx = ox;
-          let cy = oy;
-          let cz = oz;
-          for (let b = 0; b < blobCount; b++) {
-            placeOreBlob(cx, cy, cz, oreBlock, oreBigR);
-            cx = Math.max(
-              0,
-              Math.min(width - 1, cx + Math.round((rand() - 0.5) * oreBigR))
-            );
-            cy = Math.max(
-              1,
-              Math.min(maxY, cy + Math.round((rand() - 0.5) * oreBigR * 0.6))
-            );
-            cz = Math.max(
-              0,
-              Math.min(depth - 1, cz + Math.round((rand() - 0.5) * oreBigR))
-            );
-          }
-        } else {
-          placeOreBlob(ox, oy, oz, oreBlock, oreVeinR);
-        }
-      }
-    }
+    
 
     const enabledStructures = structures.filter((s) => s.enabled && s.count > 0);
     if (enabledStructures.length) {

@@ -195,9 +195,9 @@ interface NormalizedParams {
     isEnabled: boolean,
     blockList: number[],
     countScaled: number,
-    veinR: number,
-    bigChance: number,
-    bigVeinR: number,
+    veinSize: number,
+    bigVeinChance: number,
+    bigVeinSize: number,
   }
 }
 
@@ -318,9 +318,9 @@ function normalizeRngParameters(params:RngParams, width: number, depth: number, 
       isEnabled: params.randOres,
       blockList: parseIdList(params.randOreBlocks),
       countScaled: Math.round(clamp(params.randOreCount, 0, 500) * ((width * depth) / (128 * 128))),
-      veinR: clamp(params.randOreVeinSize, 1, 5),
-      bigChance: clamp(params.randOreBigChance, 0, 100) / 100,
-      bigVeinR: clamp(params.randOreBigSize, 1, 10),
+      veinSize: clamp(params.randOreVeinSize, 1, 5),
+      bigVeinChance: clamp(params.randOreBigChance, 0, 100) / 100,
+      bigVeinSize: clamp(params.randOreBigSize, 1, 10),
     }
   };
 
