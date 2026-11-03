@@ -28,10 +28,10 @@ import { VoxelCell, VoxelStore, VoxelStoreEvent } from "../VoxelStore";
 import {storage, createNamedStore, writeJson, readJson } from "../lib/storage.ts";
 import {Hotbar, PaletteEntry, usePalette} from "../hooks/usePalette.ts"
 import PaletteHotbar from "./PaletteHotbar.tsx";
-import { NormalizedParams, normalizeRngParameters, RngParams } from "../lib/mapParamNormalizer.ts";
+import { NormalizedParams, normalizeRngParameters, RngParams, TreeParams, VegParams } from "../lib/mapParamNormalizer.ts";
 import { hotkeyLabel, isFreehand, PAN_KEYS, TOOL_BY_CODE, TOOL_BY_ID } from "../lib/tools.ts";
 import { VoxelGrid } from "../VoxelGrid.ts";
-import { canPlantVeg, generateTerrain } from "../lib/mapGenerator.ts";
+import { canPlantVeg, generateTerrain, PlantedVeg, stampFoliageLayer } from "../lib/mapGenerator.ts";
 
 
 export interface MapData {
@@ -909,7 +909,7 @@ export default function TerrainEditor() {
       //const oldEntry = voxelsRef.current.get(key);
       const oldEntry = terrain.get(wx, wy, wz);
       const oldBlock = oldEntry ? oldEntry.block : AIR;
-      setVoxel(wx, wy, wz, v.block, v.meta || 0, true);
+      setVoxel(wx, wy, wz, v.block, v.meta || 0);
     }
     commitStroke();
   }
@@ -979,7 +979,7 @@ export default function TerrainEditor() {
           if (!Array.isArray(ed) || ed.length < 4) continue;
           const [x, y, z, block] = ed.map(Number);
           if (x < 0 || x >= dims.width || y < 0 || y >= dims.totalHeight || z < 0 || z >= dims.depth) continue;
-          setVoxel(x, y, z, block, 0, true);
+          setVoxel(x, y, z, block, 0);
           n++;
         }
         commitStroke();
@@ -1095,7 +1095,7 @@ export default function TerrainEditor() {
   }
 
   // ---- voxel editing ----
-  function setVoxel(x:number, y:number, z:number, block:number, meta, record) {
+  function setVoxel(x:number, y:number, z:number, block:number, meta?: number) {
     terrain.set(x, y, z, block, meta);
   }
 
@@ -1120,8 +1120,8 @@ export default function TerrainEditor() {
       fn(mx, y, mz);
   }
 
-  function setVoxelMirrored(x: number, y: number, z: number, block: number, meta: number, record: boolean) {
-    forEachMirrored(x, y, z, (a, b, c) => setVoxel(a, b, c, block, meta, record));
+  function setVoxelMirrored(x: number, y: number, z: number, block: number, meta: number) {
+    forEachMirrored(x, y, z, (a, b, c) => setVoxel(a, b, c, block, meta));
   }
 
   // For recolor tool
@@ -1183,7 +1183,7 @@ export default function TerrainEditor() {
       const y = currentLayer + c.dy;
       const z = z0 + c.dz;
       if (x < 0 || x >= width || y < 0 || y >= totalHeight || z < 0 || z >= depth) continue;
-      setVoxelMirrored(x, y, z, c.block, c.meta, true);
+      setVoxelMirrored(x, y, z, c.block, c.meta);
     }
     commitStroke();
   }
@@ -1215,7 +1215,7 @@ export default function TerrainEditor() {
           const wy = followSurface ? findSurfaceY(wx, wz) : currentLayer;
           if (wy < 0)
             continue;
-          setVoxelMirrored(wx, wy, wz, pathBlock, 0, true);
+          setVoxelMirrored(wx, wy, wz, pathBlock, 0);
         }
       }
     }
@@ -1287,17 +1287,17 @@ export default function TerrainEditor() {
     }
     
     for (const voxel of toRemove) {
-      setVoxel(voxel.x, voxel.y, voxel.z, AIR, 0, true);
+      setVoxel(voxel.x, voxel.y, voxel.z, AIR, 0);
     }
   }
 
-  function plantTreeStandalone(rand: ()=> number, tx: number, groundY: number, tz: number, opts):void {
-    const { treeWood, treeLeaves, treeMinH, treeMaxH, width, depth, totalHeight } = opts;
-    const trunkHeight = treeMinH + Math.floor(rand() * (treeMaxH - treeMinH + 1));
+  function plantTreeStandalone(rand: ()=> number, tx: number, groundY: number, tz: number, opts: TreeParams, dims: MapDimensions):void {
+    const { woodBlock, leavesBlock, minH, maxH} = opts;
+    const trunkHeight = minH + Math.floor(rand() * (maxH - minH + 1));
     const trunkTop = groundY + trunkHeight - 1;
     if (trunkTop + 3 >= totalHeight) return;
     for (let ty = 0; ty < trunkHeight; ty++) {
-      setVoxel(tx, groundY + ty, tz, treeWood, 0, true);
+      setVoxel(tx, groundY + ty, tz, woodBlock, 0);
     }
     const layers = [
       { dy: -1, radius: 2 },
@@ -1307,44 +1307,25 @@ export default function TerrainEditor() {
     ];
     for (const layer of layers) {
       const ly = trunkTop + layer.dy;
-      if (ly < 0 || ly >= totalHeight) continue;
-      const r = layer.radius;
-      for (let dx = -r; dx <= r; dx++) {
-        for (let dz = -r; dz <= r; dz++) {
-          const dist = Math.sqrt(dx * dx + dz * dz);
-          if (dist > r + 0.4) continue;
-          if (Math.abs(dx) === r && Math.abs(dz) === r && rand() < 0.5) continue;
-          const lx = tx + dx;
-          const lz = tz + dz;
-          if (lx < 0 || lx >= width || lz < 0 || lz >= depth) continue;
-          if (dx === 0 && dz === 0 && ly <= trunkTop) continue;
-          setVoxel(lx, ly, lz, treeLeaves, 0, true);
-        }
-      }
+      stampFoliageLayer(terrain, rand,
+        tx, ly, tz,
+        layer.radius, 0.4, leavesBlock,
+        dims, ly <= trunkTop);
     }
   }
 
-  function plantBushStandalone(rand: ()=> number, tx: number, groundY: number, tz: number, opts):void {
-    const { bushBlock, width, depth, totalHeight } = opts;
+  function plantBushStandalone(rand: ()=> number, tx: number, groundY: number, tz: number, opts: VegParams, dims: MapDimensions):void {
+    const { leavesBlock } = opts;
     const layers = [
       { dy: 0, radius: 1 },
       { dy: 1, radius: 1 },
     ];
     for (const layer of layers) {
       const ly = groundY + layer.dy;
-      if (ly < 0 || ly >= totalHeight) continue;
-      const r = layer.radius;
-      for (let dx = -r; dx <= r; dx++) {
-        for (let dz = -r; dz <= r; dz++) {
-          const dist = Math.sqrt(dx * dx + dz * dz);
-          if (dist > r + 0.3) continue;
-          if (Math.abs(dx) === r && Math.abs(dz) === r && rand() < 0.5) continue;
-          const lx = tx + dx;
-          const lz = tz + dz;
-          if (lx < 0 || lx >= width || lz < 0 || lz >= depth) continue;
-          setVoxel(lx, ly, lz, bushBlock, 0, true);
-        }
-      }
+      stampFoliageLayer(terrain, rand,
+        tx, ly, tz,
+        layer.radius, 0.4, leavesBlock,
+        dims, false);
     }
   }
 
@@ -1373,7 +1354,7 @@ export default function TerrainEditor() {
         if (h <= 0 || h >= totalHeight || snap.isWaterMap[idx]) continue;
         if (rand() < decoChance) {
           const pick = pickWeighted(decoWeightedList, rand);
-          setVoxel(x, h, z, pick, 0, true);
+          setVoxel(x, h, z, pick, 0);
         }
       }
     }
@@ -1393,20 +1374,12 @@ export default function TerrainEditor() {
       return;
     }
     const rand = mulberry32(Math.floor(Math.random() * 1e9));
-    const treeChance = clamp(params.randTreeDensity, 0, 100) / 100;
-    const treeMinH = clamp(params.randTreeMinHeight, 1, 20);
-    const treeMaxH = clamp(params.randTreeMaxHeight, treeMinH, 20);
-    const treeWood = clampBlockId(params.randTreeWoodBlock);
-    const treeLeaves = clampBlockId(params.randTreeLeavesBlock);
-    const treeSpacing = clamp(params.randTreeSpacing, 0, 20);
-    const forestDensity = clamp(params.randForestDensity, 0, 100) / 100;
-    const forestMask = params.randForests ? makeValueNoise(rand, width, depth, 20) : null;
-    const bushChance = clamp(params.randBushDensity, 0, 100) / 100;
-    const bushBlock = clampBlockId(params.randBushBlock);
-    const bushSpacing = clamp(params.randBushSpacing, 0, 10);
-    const idSet = new Set([treeWood, treeLeaves, bushBlock]);
-    const plantedT:{x,z}[] = [];
-    const plantedB:{x,z}[] = [];
+    const normParams = normalizeRngParameters(params, width, depth, totalHeight)
+    
+    const forestMask = normParams.veg.trees.isForests ? makeValueNoise(rand, width, depth, 20) : null;
+    const idSet = new Set([normParams.veg.trees.woodBlock, normParams.veg.trees.leavesBlock, normParams.veg.bushes.leavesBlock]);
+    const plantedT: PlantedVeg = [];
+    const plantedB: PlantedVeg = [];
 
     beginStroke();
     clearVoxelsByBlockIds(idSet);
@@ -1417,19 +1390,12 @@ export default function TerrainEditor() {
         if (h <= 0 || h >= totalHeight || snap.isWaterMap[idx]) continue;
 
         let treePlanted = false;
-        if (params.randTrees) {
-          let chance = treeChance;
-          if (params.randForests && forestMask) chance = forestMask(x, z) > 0.55 ? forestDensity : 0;
-          if (chance > 0 && rand() < chance && canPlantVeg(x, z, plantedT, treeSpacing)) {
-            plantTreeStandalone(rand, x, h, z, {
-              treeWood,
-              treeLeaves,
-              treeMinH,
-              treeMaxH,
-              width,
-              depth,
-              totalHeight,
-            });
+        if (normParams.veg.trees.isEnabled) {
+          let chance = normParams.veg.trees.chance;
+          if (normParams.veg.trees.isForests && forestMask)
+            chance = forestMask(x, z) > 0.55 ? normParams.veg.trees.forestDensity : 0;
+          if (chance > 0 && rand() < chance && canPlantVeg(x, z, plantedT, normParams.veg.trees.spacing)) {
+            plantTreeStandalone(rand, x, h, z, normParams.veg.trees, {width, depth, totalHeight});
             plantedT.push({ x, z });
             treePlanted = true;
           }
@@ -1437,12 +1403,12 @@ export default function TerrainEditor() {
 
         if (
           !treePlanted &&
-          params.randBushes &&
-          bushChance > 0 &&
-          rand() < bushChance &&
-          canPlantVeg(x, z, plantedB, bushSpacing)
+          normParams.veg.bushes.isEnabled &&
+          normParams.veg.bushes.chance > 0 &&
+          rand() < normParams.veg.bushes.chance &&
+          canPlantVeg(x, z, plantedB, normParams.veg.bushes.spacing)
         ) {
-          plantBushStandalone(rand, x, h, z, { bushBlock, width, depth, totalHeight });
+          plantBushStandalone(rand, x, h, z, normParams.veg.bushes, {width, depth, totalHeight });
           plantedB.push({ x, z });
         }
       }
@@ -1485,10 +1451,10 @@ export default function TerrainEditor() {
             const wz = cz + dz;
             if (wx < 0 || wx >= width || wy < 0 || wy >= totalHeight || wz < 0 || wz >= depth)
               continue;
-            // const existing = voxelsRef.current.get(keyOf(wx, wy, wz));
             const existing = terrain.get(wx, wy, wz);
-            if (!existing || existing.block === AIR) continue;
-            setVoxel(wx, wy, wz, oreBlock, 0, true);
+            if (!existing || existing.block === AIR)
+              continue;
+            setVoxel(wx, wy, wz, oreBlock, 0);
           }
         }
       }
@@ -2033,7 +1999,7 @@ export default function TerrainEditor() {
       setCurrentLayer(cy);
       return;
     }
-    setVoxel(cx, cy, cz, newBlock, 0, true);
+    setVoxel(cx, cy, cz, newBlock, 0);
     setCurrentLayer(cy);
   }
 
@@ -2067,8 +2033,7 @@ export default function TerrainEditor() {
       cy >= dims.totalHeight
     )
       return;
-    setVoxel(cx, cy, cz, AIR, 0, true);
-    // syncVoxel3D(cx, cy, cz, blockId, AIR);
+    setVoxel(cx, cy, cz, AIR, 0);
     setCurrentLayer(cy);
   }
 
@@ -2116,7 +2081,7 @@ export default function TerrainEditor() {
     const oldEntry = terrain.get( cx, cy, cz);
     const oldBlock = oldEntry ? oldEntry.block : AIR;
     const newBlock = selectedBlockRef.current;
-    setVoxel(cx, cy, cz, newBlock, 0, true);
+    setVoxel(cx, cy, cz, newBlock, 0);
     // syncVoxel3D(cx, cy, cz, oldBlock, newBlock);
     setCurrentLayer(cy);
   }
@@ -2532,7 +2497,7 @@ export default function TerrainEditor() {
       const val = terrain.get(x, currentLayer, z);
       const block = val ? val.block : AIR;
       if (block !== startBlock) continue;
-      setVoxelMirrored(x, currentLayer, z, selectedBlock, 0, true);
+      setVoxelMirrored(x, currentLayer, z, selectedBlock, 0);
       stack.push([x + 1, z]);
       stack.push([x - 1, z]);
       stack.push([x, z + 1]);
@@ -2551,7 +2516,7 @@ export default function TerrainEditor() {
       for (let z = minZ; z <= maxZ; z++) {
         if (hollow && x > minX && x < maxX && z > minZ && z < maxZ)
           continue; // skip fill if disabled
-        setVoxelMirrored(x, currentLayer, z, block, 0, true);
+        setVoxelMirrored(x, currentLayer, z, block, 0);
       }
     }
     commitStroke();
@@ -2573,7 +2538,7 @@ export default function TerrainEditor() {
       for (let z = 0; z < depth; z++) {
         // const val = voxelsRef.current.get(keyOf(x, currentLayer, z));
         const val = terrain.get(x, currentLayer, z);
-        setVoxel(x, target, z, val ? val.block : AIR, val ? val.meta : 0, true);
+        setVoxel(x, target, z, val ? val.block : AIR, val ? val.meta : 0);
       }
     }
     commitStroke();
@@ -2925,7 +2890,7 @@ export default function TerrainEditor() {
       if (tool === "paint")
         paintMirrored(x, currentLayer, z, selectedBlock);
       else
-        setVoxelMirrored(x, currentLayer, z, tool === "eraser" ? AIR : selectedBlock, 0, true);
+        setVoxelMirrored(x, currentLayer, z, tool === "eraser" ? AIR : selectedBlock, 0);
       draw();
     } else if (tool === "rect-fill" || tool === "rect-hollow" || tool === "rect-erase" || tool === "copy") {
       rectStartRef.current = { x, z };
@@ -2968,7 +2933,7 @@ export default function TerrainEditor() {
       if (tool === "paint") 
         paintMirrored(x, currentLayer, z, selectedBlock);
       else
-        setVoxelMirrored(x, currentLayer, z, tool === "eraser" ? AIR : selectedBlock, 0, true);
+        setVoxelMirrored(x, currentLayer, z, tool === "eraser" ? AIR : selectedBlock, 0);
       draw();
     } else if (tool === "rect-fill" || tool === "rect-hollow" || tool === "rect-erase" || tool === "copy") {
       if (rectStartRef.current) {
