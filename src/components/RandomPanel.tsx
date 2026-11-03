@@ -1,7 +1,7 @@
 import { STRINGS } from "../i18n/strings";
 import { inputStyle, actionBtn } from "../styles/inline";
 import { colorForId } from "../lib/colors";
-import { clamp, parseIdList } from "../lib/numbers";
+import { clamp, clampBlockId, parseIdList } from "../lib/numbers";
 import { RngParams } from "../lib/mapGenerator";
 import React from "react";
 import CollapsibleOptionsBlock from "./CollapsibleOptionsBlock";
@@ -122,7 +122,7 @@ export default function RandomPanel(props:Props) {
             width: 12,
             height: 12,
             borderRadius: 3,
-            background: colorForId(clamp(props.rngParams.randBaseBlock, 1, 255)),
+            background: colorForId(clampBlockId(props.rngParams.randBaseBlock)),
           }}
         />
       </label>
@@ -141,7 +141,7 @@ export default function RandomPanel(props:Props) {
             width: 12,
             height: 12,
             borderRadius: 3,
-            background: colorForId(clamp(props.rngParams.randSurfaceBlock, 1, 255)),
+            background: colorForId(clampBlockId(props.rngParams.randSurfaceBlock)),
           }}
         />
       </label>
@@ -243,7 +243,7 @@ export default function RandomPanel(props:Props) {
                     width: 12,
                     height: 12,
                     borderRadius: 3,
-                    background: colorForId(clamp(props.rngParams.randSeaBlock, 1, 255)),
+                    background: colorForId(clampBlockId(props.rngParams.randSeaBlock)),
                   }}
                 />
               </label>
@@ -443,7 +443,7 @@ export default function RandomPanel(props:Props) {
                 width: 12,
                 height: 12,
                 borderRadius: 3,
-                background: colorForId(clamp(props.rngParams.randRiverBlock, 1, 255)),
+                background: colorForId(clampBlockId(props.rngParams.randRiverBlock)),
               }}
             />
           </label>
@@ -505,7 +505,7 @@ export default function RandomPanel(props:Props) {
                 width: 12,
                 height: 12,
                 borderRadius: 3,
-                background: colorForId(clamp(props.rngParams.randLakeBlock, 1, 255)),
+                background: colorForId(clampBlockId(props.rngParams.randLakeBlock)),
               }}
             />
           </label>
@@ -580,7 +580,7 @@ export default function RandomPanel(props:Props) {
                     width: 12,
                     height: 12,
                     borderRadius: 3,
-                    background: colorForId(clamp(props.rngParams.randCaveGlowBlock, 1, 255)),
+                    background: colorForId(clampBlockId(props.rngParams.randCaveGlowBlock)),
                   }}
                 />
               </label>
@@ -666,7 +666,7 @@ export default function RandomPanel(props:Props) {
                 width: 12,
                 height: 12,
                 borderRadius: 3,
-                background: colorForId(clamp(props.rngParams.randTreeWoodBlock, 1, 255)),
+                background: colorForId(clampBlockId(props.rngParams.randTreeWoodBlock)),
               }}
             />
           </label>
@@ -685,7 +685,7 @@ export default function RandomPanel(props:Props) {
                 width: 12,
                 height: 12,
                 borderRadius: 3,
-                background: colorForId(clamp(props.rngParams.randTreeLeavesBlock, 1, 255)),
+                background: colorForId(clampBlockId(props.rngParams.randTreeLeavesBlock)),
               }}
             />
           </label>
@@ -735,7 +735,7 @@ export default function RandomPanel(props:Props) {
                 width: 12,
                 height: 12,
                 borderRadius: 3,
-                background: colorForId(clamp(props.rngParams.randBushBlock, 1, 255)),
+                background: colorForId(clampBlockId(props.rngParams.randBushBlock)),
               }}
             />
           </label>
@@ -785,7 +785,7 @@ export default function RandomPanel(props:Props) {
                 width: 12,
                 height: 12,
                 borderRadius: 3,
-                background: colorForId(clamp(props.rngParams.randBeachBlock, 1, 255)),
+                background: colorForId(clampBlockId(props.rngParams.randBeachBlock)),
               }}
             />
           </label>
@@ -815,7 +815,7 @@ export default function RandomPanel(props:Props) {
                 width: 12,
                 height: 12,
                 borderRadius: 3,
-                background: colorForId(clamp(props.rngParams.randSnowBlock, 1, 255)),
+                background: colorForId(clampBlockId(props.rngParams.randSnowBlock)),
               }}
             />
           </label>
@@ -854,7 +854,7 @@ export default function RandomPanel(props:Props) {
                 width: 12,
                 height: 12,
                 borderRadius: 3,
-                background: colorForId(clamp(props.rngParams.randShoreBlock, 1, 255)),
+                background: colorForId(clampBlockId(props.rngParams.randShoreBlock)),
               }}
             />
           </label>

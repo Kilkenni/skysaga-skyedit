@@ -8,7 +8,7 @@ import {
 import { STRINGS } from "../i18n/strings";
 import { colorForId } from "../lib/colors";
 import { keyOf } from "../lib/keys";
-import { clamp, parseIdList, parseWeightedIdList, pickWeighted } from "../lib/numbers";
+import { clamp, clampBlockId, parseIdList, parseWeightedIdList, pickWeighted } from "../lib/numbers";
 import { mulberry32, makeValueNoise, makeValueNoise3D } from "../lib/noise";
 import { rotateStructure90, getRotatedStructure, generateStructureThumbnail } from "../lib/structures";
 import { inputStyle, actionBtn } from "../styles/inline";
@@ -360,7 +360,7 @@ export default function TerrainEditor() {
   const cameraModeRef = useRef(cameraMode);
   const moveSpeedRef = useRef(moveSpeed);
 
-  const texturesRef = useRef(new Map()); // blockId -> dataURL
+  const texturesRef = useRef<Map<number, any>>(new Map()); // blockId -> dataURL
   const textureImg2DRef = useRef(new Map()); // blockId -> HTMLImageElement (2D canvas)
   const textureThreeCacheRef = useRef(new Map()); // blockId -> THREE.Texture
   const [textureTargetId, setTextureTargetId] = useState<number|null>(null);
@@ -717,8 +717,9 @@ export default function TerrainEditor() {
     }
   }
 
-  function handleTextureFile(blockId, file:File) {
-    if (!file) return;
+  function handleTextureFile(blockId: number, file: File) {
+    if (!file)
+      return;
     const reader = new FileReader();
     reader.onload = () => {
       const dataUrl = reader.result;
@@ -736,7 +737,7 @@ export default function TerrainEditor() {
     reader.readAsDataURL(file);
   }
 
-  function clearTexture(blockId) {
+  function clearTexture(blockId: number) {
     texturesRef.current.delete(blockId);
     textureImg2DRef.current.delete(blockId);
     textureThreeCacheRef.current.delete(blockId);
@@ -773,13 +774,13 @@ export default function TerrainEditor() {
     setBulkTextureRows(rows);
   }
 
-  function updateBulkRowId(index, id) {
+  function updateBulkRowId(index: number, id: number|string) {
     setBulkTextureRows((prev) =>
-      prev.map((r, i) => (i === index ? { ...r, id: id === "" ? null : clamp(id, 1, 255) } : r))
+      prev.map((r, i) => (i === index ? { ...r, id: id === "" ? null : clampBlockId(id) } : r))
     );
   }
 
-  function toggleBulkRow(index) {
+  function toggleBulkRow(index: number) {
     setBulkTextureRows((prev) =>
       prev.map((r, i) => (i === index ? { ...r, include: !r.include } : r))
     );
@@ -790,6 +791,8 @@ export default function TerrainEditor() {
     if (!rows.length) return;
     setBulkApplying(true);
     for (const row of rows) {
+      if(row.id === null)
+        continue;
       const dataUrl = await new Promise((resolve) => {
         const reader = new FileReader();
         reader.onload = () => resolve(reader.result);
@@ -813,7 +816,7 @@ export default function TerrainEditor() {
     setShowBulkTexturePanel(false);
   }
 
-  function buildMaterialForBlock(blockId) {
+  function buildMaterialForBlock(blockId: number) {
     const dataUrl = texturesRef.current.get(blockId);
     if (dataUrl) {
       let tex = textureThreeCacheRef.current.get(blockId);
@@ -893,7 +896,7 @@ export default function TerrainEditor() {
     return structureThumbsRef.current.get(entry.id);
   }
 
-  function stampStructureAt(anchorX: number, anchorY: number, anchorZ: number, entry, rotationSteps) {
+  function stampStructureAt(anchorX: number, anchorY: number, anchorZ: number, entry: Structure, rotationSteps) {
     const dims = dimsRef.current;
     const rotated = getRotatedStructure(entry, rotationSteps);
     beginStroke();
@@ -1277,17 +1280,17 @@ export default function TerrainEditor() {
     const groundDepth = clamp(params.randGroundDepth, 0, totalHeight);
     const bottomRoughness = clamp(params.randBottomRoughness, 0, totalHeight);
     const maxThickness = clamp(params.randMaxThickness, 1, totalHeight);
-    const baseBlock = clamp(params.randBaseBlock, 1, 255);
-    const surfaceBlock = clamp(params.randSurfaceBlock, 1, 255);
+    const baseBlock = clampBlockId(params.randBaseBlock);
+    const surfaceBlock = clampBlockId(params.randSurfaceBlock);
     const decoWeightedList = parseWeightedIdList(params.randDecoBlocks);
     const decoChance = clamp(params.randDecoChance, 0, 100) / 100;
     const hillStrength = clamp(params.randHillStrength, 0, 100) / 100;
     const mountainBoost = clamp(params.randMountainHeight, 0, totalHeight);
     const plateauHeight = clamp(params.randPlateauHeight, 1, totalHeight);
     const valleyDepth = clamp(params.randValleyDepth, 1, totalHeight);
-    const riverBlock = clamp(params.randRiverBlock, 1, 255);
+    const riverBlock = clampBlockId(params.randRiverBlock);
     const riverThreshold = clamp(params.randRiverWidth, 1, 40) / 100;
-    const lakeBlock = clamp(params.randLakeBlock, 1, 255);
+    const lakeBlock = clampBlockId(params.randLakeBlock);
     const lakeThreshold = 1 - clamp(params.randLakeSize, 1, 10) / 12;
     const caveThreshold = 1 - clamp(params.randCaveDensity, 0, 100) / 100;
     const forestDensity = clamp(params.randForestDensity, 0, 100) / 100;
@@ -1296,7 +1299,7 @@ export default function TerrainEditor() {
       { small: 0.42, medium: 0.7, large: 0.96 }[params.randIslandSize] || 0.96;
     const isFloatingIsland = params.randIslandMode !== "island";
     const seaLevel = clamp(params.randSeaLevel, 0, totalHeight);
-    const seaBlock = clamp(params.randSeaBlock, 1, 255);
+    const seaBlock = clampBlockId(params.randSeaBlock);
     const riverLakeSurfaceH = isFloatingIsland
       ? groundDepth + Math.max(1, Math.round(minH * 0.6))
       : seaLevel;
@@ -1328,9 +1331,9 @@ export default function TerrainEditor() {
 
     const altitudeOn = params.randAltitudeBlocks;
     const beachLevel = clamp(params.randBeachLevel, 0, totalHeight);
-    const beachBlock = clamp(params.randBeachBlock, 1, 255);
+    const beachBlock = clampBlockId(params.randBeachBlock);
     const snowLevel = clamp(params.randSnowLevel, 0, totalHeight);
-    const snowBlock = clamp(params.randSnowBlock, 1, 255);
+    const snowBlock = clampBlockId(params.randSnowBlock);
 
     const oresOn = params.randOres;
     const oreBlockList = parseIdList(params.randOreBlocks);
@@ -1341,16 +1344,16 @@ export default function TerrainEditor() {
 
     const caveGlowOn = params.randCaveGlow && params.randCaves;
     const caveGlowChance = clamp(params.randCaveGlowChance, 0, 100) / 100;
-    const caveGlowBlock = clamp(params.randCaveGlowBlock, 1, 255);
+    const caveGlowBlock = clampBlockId(params.randCaveGlowBlock);
 
-    const shoreBlock = clamp(params.randShoreBlock, 1, 255);
+    const shoreBlock = clampBlockId(params.randShoreBlock);
     const shoreRadius = clamp(params.randShoreRadius, 1, 5);
 
     const treeChance = clamp(params.randTreeDensity, 0, 100) / 100;
     const treeMinH = clamp(params.randTreeMinHeight, 1, 20);
     const treeMaxH = clamp(params.randTreeMaxHeight, treeMinH, 20);
-    const treeWood = clamp(params.randTreeWoodBlock, 1, 255);
-    const treeLeaves = clamp(params.randTreeLeavesBlock, 1, 255);
+    const treeWood = clampBlockId(params.randTreeWoodBlock);
+    const treeLeaves = clampBlockId(params.randTreeLeavesBlock);
     const treeSpacing = clamp(params.randTreeSpacing, 0, 20);
     
     const plantedTrees:{x,z}[] = [];
@@ -1401,7 +1404,7 @@ export default function TerrainEditor() {
     }
 
     const bushChance = clamp(params.randBushDensity, 0, 100) / 100;
-    const bushBlock = clamp(params.randBushBlock, 1, 255);
+    const bushBlock = clampBlockId(params.randBushBlock);
     const bushSpacing = clamp(params.randBushSpacing, 0, 10);
     const plantedBushes:{
       x: number,
@@ -1995,13 +1998,13 @@ export default function TerrainEditor() {
     const treeChance = clamp(params.randTreeDensity, 0, 100) / 100;
     const treeMinH = clamp(params.randTreeMinHeight, 1, 20);
     const treeMaxH = clamp(params.randTreeMaxHeight, treeMinH, 20);
-    const treeWood = clamp(params.randTreeWoodBlock, 1, 255);
-    const treeLeaves = clamp(params.randTreeLeavesBlock, 1, 255);
+    const treeWood = clampBlockId(params.randTreeWoodBlock);
+    const treeLeaves = clampBlockId(params.randTreeLeavesBlock);
     const treeSpacing = clamp(params.randTreeSpacing, 0, 20);
     const forestDensity = clamp(params.randForestDensity, 0, 100) / 100;
     const forestMask = params.randForests ? makeValueNoise(rand, width, depth, 20) : null;
     const bushChance = clamp(params.randBushDensity, 0, 100) / 100;
-    const bushBlock = clamp(params.randBushBlock, 1, 255);
+    const bushBlock = clampBlockId(params.randBushBlock);
     const bushSpacing = clamp(params.randBushSpacing, 0, 10);
     const idSet = new Set([treeWood, treeLeaves, bushBlock]);
     const plantedT:{x,z}[] = [];
@@ -3172,7 +3175,7 @@ export default function TerrainEditor() {
     fillRect(0, 0, width - 1, depth - 1, selectedBlock);
   }
 
-  function copyLayer(direction) {
+  function copyLayer(direction: number) {
     const target = currentLayer + direction;
     if (target < 0 || target >= totalHeight) return;
     beginStroke();

@@ -2,6 +2,16 @@ import { STRINGS } from "../i18n/strings";
 import { inputStyle, actionBtn } from "../styles/inline";
 import { colorForId } from "../lib/colors";
 
+interface Props {
+  applyBulkTextures,
+  bulkApplying,
+  bulkFolderInputRef,
+  bulkTextureRows,
+  handleBulkFolderSelect,
+  toggleBulkRow,
+  updateBulkRowId,
+}
+
 export default function BulkTexturePanel({
   applyBulkTextures,
   bulkApplying,
@@ -10,7 +20,7 @@ export default function BulkTexturePanel({
   handleBulkFolderSelect,
   toggleBulkRow,
   updateBulkRowId,
-}) {
+}:Props) {
   const t = STRINGS.en;
   return (
     <div
@@ -34,7 +44,6 @@ export default function BulkTexturePanel({
           type="file"
           accept="image/*"
           webkitdirectory="true"
-          directory="true"
           multiple
           ref={bulkFolderInputRef}
           style={{ display: "none" }}

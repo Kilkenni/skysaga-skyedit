@@ -1,25 +1,37 @@
 import { useEffect, useRef, useState } from "react";
-import { BLOCK_NAMES, DEFAULT_PALETTE } from "../constants";
-import { clamp } from "../lib/numbers";
+import { AIR, BLOCK_NAMES, DEFAULT_PALETTE } from "../constants";
+import { clampBlockId } from "../lib/numbers";
 
 interface PaletteEntry { 
   id: number; 
   label: string 
 }
 
+/**
+ * @returns true if not null and not AIR (255)
+ */
+function isBlockId(id: number|null):boolean {
+  if(id === null)
+    return false;
+  if(id === AIR)
+    return false;
+  return true;
+}
+
 type Hotbar = (number | null)[];   // 10 slots
 
-interface paletteProps {
+interface PaletteProps {
   onChange: ()=>void,
 }
 
-function usePalette({onChange}:paletteProps) {
+function usePalette({onChange}:PaletteProps) {
   const [selectedBlock, setSelectedBlock] = useState(1);
   const selectedBlockRef = useRef(selectedBlock);
   const [hotbar, setHotbar] = useState<Hotbar>(() => {
     const slots = new Array(10).fill(null);
-    const ids = DEFAULT_PALETTE.filter((id) => id !== 0);
-    for (let i = 0; i < 10 && i < ids.length; i++) slots[i] = ids[i];
+    const ids = DEFAULT_PALETTE.filter((id) => isBlockId(id));
+    for (let i = 0; i < 10 && i < ids.length; i++)
+      slots[i] = ids[i];
     return slots;
   });
   const hotbarRef = useRef(hotbar);
@@ -44,7 +56,7 @@ function usePalette({onChange}:paletteProps) {
   // ---- hotbar ----
   function selectHotbarSlot(i: number) {
     const id = hotbarRef.current[i];
-    if (id)
+    if (id !== null && id !== AIR)
       setSelectedBlock(id);
   }
 
@@ -58,8 +70,9 @@ function usePalette({onChange}:paletteProps) {
   }
 
   function addCustomBlock() {
-    const id = clamp(customIdInput, 1, 255);
-    if (!id) return;
+    const id = clampBlockId(customIdInput);
+    if (!isBlockId(id))
+      return;
     if (!paletteRef.current.find((p) => p.id === id)) {
       setPalette(prev => [...prev, { id, label: BLOCK_NAMES[id] || "Block " + id }]);
     }
@@ -68,7 +81,8 @@ function usePalette({onChange}:paletteProps) {
   }
 
   function renamePaletteEntry(id: number, label: string) {
-    if (BLOCK_NAMES[id]) return; // real block names are locked, not user-editable
+    if (BLOCK_NAMES[id])
+      return; // real block names are locked, not user-editable
     setPalette(prev => prev.map((p) => (p.id === id ? { ...p, label } : p)));
   }
 
@@ -99,4 +113,5 @@ export type {
 
 export { 
   usePalette,
+  isBlockId,
 }

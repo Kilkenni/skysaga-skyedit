@@ -7,8 +7,18 @@ function clamp(v:string|number, min:number, max:number):number {
   return Math.max(min, Math.min(max, v));
 }
 
-function clampBlockId(blockId: string|number) {
-  return clamp(blockId, 1, 255);
+/**
+ * Normalizes the blockId between 0 and 254. AIR (255) is excluded.
+ * @param blockId 
+ * @returns 0 = dirt if incorrect, id otherwise
+ */
+function clampBlockId(blockId: string|number): number {
+  if (typeof blockId === "string" && blockId.trim() === "")
+    return 0;
+  const id = Number(blockId);
+  if (!Number.isInteger(id))
+    return 0;
+  return Math.min(Math.max(id, 0), AIR - 1);
 }
 
 function parseIdList(str: string):number[] {

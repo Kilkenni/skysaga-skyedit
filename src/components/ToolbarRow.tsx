@@ -6,27 +6,23 @@ import { RoadParams } from "./TerrainEditor";
 
 interface Props {
   cameraMode,
-  clearLayer,
+  clearLayer: () => void,
   clipboardInfo,
-  computeMapStats,
+  computeMapStats: () => void,
   copyLayer,
-  copyYFrom,
-  copyYTo,
+  copyYFrom: number,
+  copyYTo: number,
   fillLayer,
-  mirrorX,
-  mirrorZ,
+  mirrorX: boolean,
+  mirrorZ: boolean,
   moveSpeed,
   shiftMap: (dx: number, dy: number, dz: number) => void,
-  onionRange,
-  onionSkin,
+  onionRange: number,
+  onionSkin: boolean,
   redo,
-  resetCameraView,
+  resetCameraView: () => void,
   roadParams: RoadParams,
   updateRoadParams: <K extends keyof RoadParams>(paramName: K, value: RoadParams[K]) => void,
-  /*roadBlock,
-  roadWidth,
-  setRoadBlock,
-  setRoadWidth,*/
 
   setCopyYFrom,
   setCopyYTo,
@@ -41,19 +37,19 @@ interface Props {
   setShowRandomPanel,
   setShowSaves,
   setShowStructuresPanel,
-  setZoom,
-  showBulkTexturePanel,
-  showEntitiesPanel,
-  showPresets,
-  showRandomPanel,
-  showSaves,
-  showStructuresPanel,
-  tool,
+  setZoom: (next: number) => void,
+  showBulkTexturePanel: boolean,
+  showEntitiesPanel: boolean,
+  showPresets: boolean,
+  showRandomPanel: boolean,
+  showSaves: boolean,
+  showStructuresPanel: boolean,
+  tool: string,
   toolBtn: (id:string, label:string, title:string)=>React.JSX.Element,
-  totalHeight,
+  totalHeight: number,
   undo,
   viewMode,
-  zoom,
+  zoom: number,
   zoomRef,
 }
 
@@ -192,7 +188,7 @@ export default function ToolbarRow({
                   min={1}
                   max={255}
                   value={roadParams.roadBlock}
-                  onChange={(e) => updateRoadParams("roadBlock", clamp(e.target.value, 1, 255))}
+                  onChange={(e) => updateRoadParams("roadBlock", clampBlockId(e.target.value))}
                   style={{ ...inputStyle, width: 46 }}
                 />
                 <span
@@ -200,7 +196,7 @@ export default function ToolbarRow({
                     width: 12,
                     height: 12,
                     borderRadius: 3,
-                    background: colorForId(clamp(roadParams.roadBlock, 1, 255)),
+                    background: colorForId(clampBlockId(roadParams.roadBlock)),
                   }}
                 />
               </label>
