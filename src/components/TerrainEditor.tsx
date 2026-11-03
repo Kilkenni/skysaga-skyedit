@@ -1259,6 +1259,13 @@ export default function TerrainEditor() {
     setStatus(STRINGS.en.randomizedAll);
   }
 
+  // for testing hash matching, remove later
+  function hashArray(a: ArrayLike<number>) {
+    let h = 2166136261;
+    for (let i = 0; i < a.length; i++) h = Math.imul(h ^ a[i], 16777619);
+    return h >>> 0;
+  }
+
   function generateTerrain(
     mapDimensions: MapDimensions,
     seed: number, 
@@ -1408,6 +1415,72 @@ export default function TerrainEditor() {
         heightMap[idx] = Math.min(h, totalHeight);
         isWaterMap[idx] = isWater ? 1 : 0;
         waterBlockMap[idx] = waterBlock;
+      }
+    }
+
+    if (normParams.erosion.isEnabled) {
+      for (let iter = 0; iter < normParams.erosion.iterations; iter++) {
+        const next = heightMap.slice();
+        for (let x = 0; x < width; x++) {
+          for (let z = 0; z < depth; z++) {
+            const idx = x * depth + z;
+            const h0 = heightMap[idx];
+            if (h0 <= 0 || isWaterMap[idx])
+              continue;
+            let sum = h0;
+            let count = 1;
+            const nbrs = [
+              [x - 1, z],
+              [x + 1, z],
+              [x, z - 1],
+              [x, z + 1],
+            ];
+            for (const [nx, nz] of nbrs) {
+              if (nx < 0 || nx >= width || nz < 0 || nz >= depth)   
+                continue;
+              const nIdx = nx * depth + nz;
+              const nh = heightMap[nIdx];
+              if (nh <= 0 || isWaterMap[nIdx])
+                continue;
+              sum += nh;
+              count++;
+            }
+            const avg = sum / count;
+            next[idx] = Math.max(1, Math.round(h0 + (avg - h0) * normParams.erosion.strength));
+          }
+        }
+        heightMap.set(next);
+        /*for (let i = 0; i < next.length; i++)
+          heightMap[i] = next[i];*/
+      }
+    }
+
+    let shoreMap:Uint8Array|null = null;
+    if (normParams.shore.isEnabled) {
+      shoreMap = new Uint8Array(width * depth);
+      const r2 = normParams.shore.radius * normParams.shore.radius;
+      const shoreNoise = makeValueNoise(rand, width, depth, Math.max(6, normParams.shore.radius * 4));
+      for (let x = 0; x < width; x++) {
+        for (let z = 0; z < depth; z++) {
+          const idx = x * depth + z;
+          if (heightMap[idx] <= 0 || isWaterMap[idx])
+            continue;
+          let nearWater = false;
+          for (let dx = -normParams.shore.radius; dx <= normParams.shore.radius && !nearWater; dx++) {
+            for (let dz = -normParams.shore.radius; dz <= normParams.shore.radius && !nearWater; dz++) {
+              if (dx * dx + dz * dz > r2)
+                continue;
+              const nx = x + dx;
+              const nz = z + dz;
+              if (nx < 0 || nx >= width || nz < 0 || nz >= depth) 
+                continue;
+              const nIdx = nx * depth + nz;
+              if (isWaterMap[nIdx] || heightMap[nIdx] <= 0) 
+                nearWater = true;
+            }
+          }
+          if (nearWater && shoreNoise(x, z) > normParams.shore.threshold) shoreMap[idx] = 1;
+        }
       }
     }
 
@@ -1735,7 +1808,9 @@ export default function TerrainEditor() {
             next[idx] = Math.max(1, Math.round(h0 + (avg - h0) * erosionStrength));
           }
         }
-        for (let i = 0; i < next.length; i++) heightMap[i] = next[i];
+        
+        for (let i = 0; i < next.length; i++) 
+          heightMap[i] = next[i];
       }
     }
 
