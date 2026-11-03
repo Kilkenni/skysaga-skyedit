@@ -8,7 +8,7 @@ import { getRotatedStructure, Structure } from "./structures";
 
 // HELPER FUNCTIONS
 
-type PlantedVeg = {
+export type PlantedVeg = {
   x: number,
   z: number
 }[]
@@ -27,7 +27,7 @@ export function canPlantVeg(tx: number, tz: number, plantedVeg:PlantedVeg, spaci
 /**
  * @param skipCenter tree: don't overwrite the trunk column
  */
-function stampFoliageLayer(
+export function stampFoliageLayer(
   target: Pick<VoxelGrid, "set">,
   rand:()=>number, 
   centerX: number, layerY: number, centerZ: number, 
