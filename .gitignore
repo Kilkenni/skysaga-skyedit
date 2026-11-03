@@ -1,4 +1,13 @@
+# Dependencies
+
 node_modules
+
+# Build
+
 dist
+
+# Temp 
+
 .DS_Store
 *.log
+temp/*

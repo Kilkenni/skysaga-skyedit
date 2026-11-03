@@ -7,12 +7,12 @@ import { PaletteEntry } from "../hooks/usePalette";
 
 interface Props {
   paletteObj,
-  clearTexture,
-  handleTextureFile,
+  clearTexture: (blockId: number) => void,
+  handleTextureFile: (blockId: number, file: File) => void,
   setTextureTargetId: (newId) => void,
-  textureTargetId,
-  textureVersion,
-  texturesRef,
+  textureTargetId: number | null,
+  textureVersion: number,
+  texturesRef: React.RefObject<Map<number, any>>,
 }
 
 export default function PaletteSidebar({

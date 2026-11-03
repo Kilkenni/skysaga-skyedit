@@ -1,5 +1,5 @@
 import { colorForId } from "../lib/colors";
-import type { Hotbar as HotbarSlots } from "../hooks/usePalette";
+import { isBlockId, type Hotbar as HotbarSlots } from "../hooks/usePalette";
 import { useEffect, useRef, useState } from "react";
 
 interface PaletteHotbarProps {
@@ -59,7 +59,7 @@ export default function PaletteHotbar({slots, selectedBlock, hint, disabled, onS
             width: 34,
             height: 34,
             borderRadius: 5,
-            background: blockId ? colorForId(blockId) : "#1a1d24",
+            background: isBlockId(blockId) ? colorForId(blockId!) : "#1a1d24",
             border:
               blockId === selectedBlock ? "2px solid #6ea8fe" : "1px solid #2a2f3a",
             cursor: "pointer",

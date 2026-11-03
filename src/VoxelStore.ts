@@ -60,7 +60,8 @@ interface Stroke {
  *   draw() / syncVoxel3D() calls   -> subscribers
  */
 class VoxelStore {
-  #map = new Map<string, Voxel>(); // AIR is never stored
+  #map = new Map<string, VoxelCell>();                    // AIR is never stored
+  #layers = new Map<number, Map<string, VoxelCell>>();    // y -> cells on that layer (same objects)
   #undo: VoxelChange[][] = []; // oldest first
   #redo: VoxelChange[][] = [];
   readonly #maxHistory: number = 40; // history stack depth
@@ -85,13 +86,11 @@ class VoxelStore {
     return this.#redo.length > 0;
   }
 
-  get(x: number, y: number, z: number): Voxel | undefined {
+  get(x: number, y: number, z: number): Readonly<VoxelCell> | undefined {
     return this.#map.get(keyOf(x, y, z));
   }
-/**
- * @todo delete this method
- * */
-  getAllRaw() {
+
+  getAllRaw(): MapIterator<[string, Readonly<VoxelCell>]> {
     return this.#map.entries();
   }
 
@@ -101,17 +100,13 @@ class VoxelStore {
     return v ? v.block : AIR;
   }
 
-  /** Drop-in for `for (const [key, v] of voxelsRef.current)` while migrating read sites. */
-  [Symbol.iterator](): IterableIterator<[string, Voxel]> {
-    return this.#map[Symbol.iterator]();
+  layerCells(y: number): IterableIterator<Readonly<VoxelCell>> {
+    return this.#layers.get(y)?.values() ?? [][Symbol.iterator]();
   }
 
   /** Same data with the key already parsed; replaces every `key.split(",")` loop. */
-  *cells(): Generator<VoxelCell, void, undefined> {
-    for (const [key, v] of this.#map) {
-      const p = key.split(",");
-      yield { x: Number(p[0]), y: Number(p[1]), z: Number(p[2]), block: v.block, meta: v.meta };
-    }
+  *cells(): Generator<Readonly<VoxelCell>, void, undefined> {
+      yield* this.#map.values();
   }
 
   // ---------- writes ----------
@@ -150,7 +145,7 @@ class VoxelStore {
     }
 
     // Live data + notification (one entry per write; views may want live feedback mid-stroke).
-    this.#write(key, block, meta);
+    this.#write(x, y, z, block, meta);
     this.#queue({ x, y, z, prevBlock, prevMeta, newBlock: block, newMeta: meta });
   }
 
@@ -193,7 +188,7 @@ class VoxelStore {
     if (!stroke) return false;
     for (let i = stroke.length - 1; i >= 0; i--) {
       const c = stroke[i];
-      this.#write(keyOf(c.x, c.y, c.z), c.prevBlock, c.prevMeta);
+      this.#write(c.x, c.y, c.z, c.prevBlock, c.prevMeta);
       this.#queue(invert(c));
     }
     this.#redo.push(stroke);
@@ -208,7 +203,7 @@ class VoxelStore {
     const stroke = this.#redo.pop();
     if (!stroke) return false;
     for (const c of stroke) {
-      this.#write(keyOf(c.x, c.y, c.z), c.newBlock, c.newMeta);
+      this.#write(c.x, c.y, c.z, c.newBlock, c.newMeta);
       this.#queue(c);
     }
     this.#undo.push(stroke);
@@ -224,8 +219,10 @@ class VoxelStore {
   replaceAll(cells: Iterable<{ x: number; y: number; z: number; block: BlockId; meta?: number }>): void {
     this.#assertIdle("replaceAll");
     this.#map = new Map();
+    this.#layers = new Map();
     for (const c of cells) {
-      if (c.block !== AIR) this.#map.set(keyOf(c.x, c.y, c.z), { block: c.block, meta: c.meta ?? 0 });
+      if (c.block !== AIR) 
+        this.#write( c.x, c.y, c.z, c.block, c.meta ?? 0 );
     }
     this.clearHistory();
     this.#pending = [];
@@ -261,9 +258,26 @@ class VoxelStore {
 
   // ---------- internals ----------
 
-  #write(key: string, block: BlockId, meta: number): void {
-    if (block === AIR) this.#map.delete(key);
-    else this.#map.set(key, { block, meta });
+  #write(x: number, y: number, z: number, block: BlockId, meta: number): void {
+  const key = keyOf(x, y, z);
+  let layer = this.#layers.get(y);
+    if (block === AIR) {
+      this.#map.delete(key);
+      if (layer) {
+        layer.delete(key);
+        if (layer.size === 0) 
+          this.#layers.delete(y);
+      }
+    }
+    else {
+      const cell: VoxelCell = { x, y, z, block, meta };
+      this.#map.set(key, cell);
+      if (!layer) {
+        layer = new Map();
+        this.#layers.set(y, layer);
+      }
+      layer.set(key, cell);
+    }
   }
 
   #queue(change: VoxelChange): void {
@@ -288,7 +302,7 @@ class VoxelStore {
     if (!stroke) return;
     for (let i = stroke.changes.length - 1; i >= 0; i--) {
       const c = stroke.changes[i];
-      this.#write(keyOf(c.x, c.y, c.z), c.prevBlock, c.prevMeta);
+      this.#write(c.x, c.y, c.z, c.prevBlock, c.prevMeta);
       this.#queue(invert(c));
     }
     this.flush();

@@ -8,7 +8,7 @@ import {
 import { STRINGS } from "../i18n/strings";
 import { colorForId } from "../lib/colors";
 import { keyOf } from "../lib/keys";
-import { clamp, parseIdList, parseWeightedIdList, pickWeighted } from "../lib/numbers";
+import { clamp, clampBlockId, parseIdList, parseWeightedIdList, pickWeighted } from "../lib/numbers";
 import { mulberry32, makeValueNoise, makeValueNoise3D } from "../lib/noise";
 import { rotateStructure90, getRotatedStructure, generateStructureThumbnail } from "../lib/structures";
 import { inputStyle, actionBtn } from "../styles/inline";
@@ -28,10 +28,11 @@ import { VoxelCell, VoxelStore, VoxelStoreEvent } from "../VoxelStore";
 import {storage, createNamedStore, writeJson, readJson } from "../lib/storage.ts";
 import {Hotbar, PaletteEntry, usePalette} from "../hooks/usePalette.ts"
 import PaletteHotbar from "./PaletteHotbar.tsx";
-import { RngParams, NormalizedParams, normalizeRngParameters } from "../lib/mapGenerator.ts";
+import { RngParams } from "../lib/mapGenerator.ts";
+import { hotkeyLabel, isFreehand, PAN_KEYS, TOOL_BY_CODE, TOOL_BY_ID } from "../lib/tools.ts";
 
 
-interface MapData {
+export interface MapData {
   gridX: number,
   gridY: number,
   gridZ: number,
@@ -109,6 +110,13 @@ const DEFAULT_LEVEL_DATA:DeepReadonly< Pick<LevelData, "mapSizeChunks" | "biomeN
   entities: [],
 }
 
+const DEFAULT_SETTINGS = {
+  ZOOM_WHEEL_STEP: 1.05,
+  ZOOM_ORBIT_STEP: 1.05,
+  ZOOM_SHIFT_MULT: 3,         // Shift + wheel zoom multiplier per notch
+  ZOOM_GESTURE_MS: 500,       // wheel events closer together than this belong to one gesture, i.e. a throttle on recalc zoom parameters
+}
+
 function getDefaultLevelData():LevelData {
   return {
     ...DEFAULT_LEVEL_DATA,
@@ -136,6 +144,7 @@ export default function TerrainEditor() {
   const [mapData, setMapData] = useState<MapData>(DEFAULT_MAP_DATA);
   const paletteObj = usePalette({ onChange: scheduleSave })
   const { selectedBlock,
+    setSelectedBlock,
     selectedBlockRef,
     hotbar,
     setHotbar,
@@ -153,14 +162,10 @@ export default function TerrainEditor() {
   const [currentLayer, setCurrentLayer] = useState(0);
   const [zoom, setZoom] = useState(1);
   const zoomRef = useRef(1);
-  const [tool, setTool] = useState("pencil");
+  const zoomAnchorRef = useRef<{ pivot: THREE.Vector3 | null; x: number; y: number; t: number } | null>(null); // Center of zooming
+  const panDragRef = useRef<{ x: number; y: number } | null>(null);
+  const [tool, setTool] = useState("none");
   const clipboardRef = useRef<any>(null);
-
-  /*
-  const [roadPending, setRoadPending] = useState<{x: number, z: number}|null>(null);
-  const [roadWidth, setRoadWidth] = useState(2);
-  const [roadBlock, setRoadBlock] = useState(18);
-  */
 
   // Road Tool
   const [roadParams, setRoadParams] = useState<RoadParams>({roadPending:null, roadWidth: 2, roadBlock: 18});
@@ -348,7 +353,8 @@ export default function TerrainEditor() {
   const containerRef = useRef<HTMLDivElement>(null);
   const isDrawingRef = useRef(false);
   const rectStartRef = useRef<{x:number, z:number}>(null);
-  const previewRectRef = useRef<{ x0:number, z0:number, x1:number, z1:number}>(null);
+  const previewRectRef = useRef<{ x0:number, z0:number, x1:number, z1:number}>(null); // for preview on Rectangle tools
+  const roadHoverRef = useRef<{ x: number; z: number } | null>(null); // for preview on Road tool
   // const strokeChangesRef = useRef<any[]>([]);
   // const touchedInStrokeRef = useRef(new Map());
   const saveTimerRef = useRef<number>(null);
@@ -360,7 +366,7 @@ export default function TerrainEditor() {
   const cameraModeRef = useRef(cameraMode);
   const moveSpeedRef = useRef(moveSpeed);
 
-  const texturesRef = useRef(new Map()); // blockId -> dataURL
+  const texturesRef = useRef<Map<number, any>>(new Map()); // blockId -> dataURL
   const textureImg2DRef = useRef(new Map()); // blockId -> HTMLImageElement (2D canvas)
   const textureThreeCacheRef = useRef(new Map()); // blockId -> THREE.Texture
   const [textureTargetId, setTextureTargetId] = useState<number|null>(null);
@@ -383,7 +389,59 @@ export default function TerrainEditor() {
   }[]>([]);
   const [bulkApplying, setBulkApplying] = useState(false);
 
-  const threeRef = useRef<any>({
+  interface ThreeGroup {
+    mesh: THREE.InstancedMesh, 
+    coords: {x:number, y: number, z:number}[], // unused coords in the end are capped by count
+    indexMap: Map<string, number>, 
+    count: number, 
+    capacity: number,
+  }
+
+  interface ThreeInstance {
+    renderer: THREE.WebGLRenderer | null,
+    scene: THREE.Scene | null,
+    camera: THREE.PerspectiveCamera | null,
+    groups: Map<number, ThreeGroup>,
+    planeMesh: THREE.Mesh | null,
+    gridHelper: THREE.GridHelper | null,
+    raycaster: THREE.Raycaster | null,
+    orbit: {
+      theta: number,
+      phi: number,
+      radius: number,
+      targetRadius: number,
+      thetaDelta: number,
+      phiDelta: number,
+      target: THREE.Vector3,
+      targetGoal: THREE.Vector3,
+      initialized: boolean,
+    },
+    fly: {
+      position: THREE.Vector3,
+      yaw: number,
+      pitch: number,
+      velocity: THREE.Vector3,
+      initialized: boolean,
+    },
+    drag: {
+      isDown: boolean,
+      button: number,
+      lastX: number,
+      lastY: number,
+    },
+    keys: {
+      forward: boolean,
+      back: boolean,
+      left: boolean,
+      right: boolean,
+      up: boolean,
+      down: boolean,
+    },
+    locked: boolean,
+    leftDown: boolean,
+  }
+
+  const threeRef = useRef<ThreeInstance>({
     renderer: null,
     scene: null,
     camera: null,
@@ -398,15 +456,15 @@ export default function TerrainEditor() {
       targetRadius: 60,
       thetaDelta: 0,
       phiDelta: 0,
-      target: { x: 0, y: 0, z: 0 },
-      targetGoal: { x: 0, y: 0, z: 0 },
+      target: new THREE.Vector3(0, 0, 0),
+      targetGoal: new THREE.Vector3(0, 0, 0),
       initialized: false,
     },
     fly: {
-      position: { x: 0, y: 0, z: 0 },
+      position: new THREE.Vector3(0, 0, 0),
       yaw: 0,
       pitch: -0.5,
-      velocity: { x: 0, y: 0, z: 0 },
+      velocity:new THREE.Vector3(0, 0, 0),
       initialized: false,
     },
     drag: {
@@ -665,8 +723,9 @@ export default function TerrainEditor() {
     }
   }
 
-  function handleTextureFile(blockId, file:File) {
-    if (!file) return;
+  function handleTextureFile(blockId: number, file: File) {
+    if (!file)
+      return;
     const reader = new FileReader();
     reader.onload = () => {
       const dataUrl = reader.result;
@@ -684,7 +743,7 @@ export default function TerrainEditor() {
     reader.readAsDataURL(file);
   }
 
-  function clearTexture(blockId) {
+  function clearTexture(blockId: number) {
     texturesRef.current.delete(blockId);
     textureImg2DRef.current.delete(blockId);
     textureThreeCacheRef.current.delete(blockId);
@@ -721,13 +780,13 @@ export default function TerrainEditor() {
     setBulkTextureRows(rows);
   }
 
-  function updateBulkRowId(index, id) {
+  function updateBulkRowId(index: number, id: number|string) {
     setBulkTextureRows((prev) =>
-      prev.map((r, i) => (i === index ? { ...r, id: id === "" ? null : clamp(id, 1, 255) } : r))
+      prev.map((r, i) => (i === index ? { ...r, id: id === "" ? null : clampBlockId(id) } : r))
     );
   }
 
-  function toggleBulkRow(index) {
+  function toggleBulkRow(index: number) {
     setBulkTextureRows((prev) =>
       prev.map((r, i) => (i === index ? { ...r, include: !r.include } : r))
     );
@@ -738,6 +797,8 @@ export default function TerrainEditor() {
     if (!rows.length) return;
     setBulkApplying(true);
     for (const row of rows) {
+      if(row.id === null)
+        continue;
       const dataUrl = await new Promise((resolve) => {
         const reader = new FileReader();
         reader.onload = () => resolve(reader.result);
@@ -761,7 +822,7 @@ export default function TerrainEditor() {
     setShowBulkTexturePanel(false);
   }
 
-  function buildMaterialForBlock(blockId) {
+  function buildMaterialForBlock(blockId: number) {
     const dataUrl = texturesRef.current.get(blockId);
     if (dataUrl) {
       let tex = textureThreeCacheRef.current.get(blockId);
@@ -841,7 +902,7 @@ export default function TerrainEditor() {
     return structureThumbsRef.current.get(entry.id);
   }
 
-  function stampStructureAt(anchorX: number, anchorY: number, anchorZ: number, entry, rotationSteps) {
+  function stampStructureAt(anchorX: number, anchorY: number, anchorZ: number, entry: Structure, rotationSteps) {
     const dims = dimsRef.current;
     const rotated = getRotatedStructure(entry, rotationSteps);
     beginStroke();
@@ -950,7 +1011,7 @@ export default function TerrainEditor() {
 
   }
 
-  function saveCurrentMapAsStructure(name, category) {
+  function saveCurrentMapAsStructure(name: string, category: string) {
     // const entries = Array.from(voxelsRef.current.entries());
     const entries = Array.from(terrain.getAllRaw());
     if (!entries.length) return;
@@ -1054,17 +1115,35 @@ export default function TerrainEditor() {
   }
 
   // ---- mirror painting ----
-  function setVoxelMirrored(x, y, z, block, meta, record) {
-    setVoxel(x, y, z, block, meta, record);
+  function forEachMirrored(x: number, y: number, z: number, fn: (x: number, y: number, z: number) => void) {
+    fn(x, y, z);
     const mx = width - 1 - x;
     const mz = depth - 1 - z;
-    if (mirrorX && mx !== x) setVoxel(mx, y, z, block, meta, record);
-    if (mirrorZ && mz !== z) setVoxel(x, y, mz, block, meta, record);
-    if (mirrorX && mirrorZ && (mx !== x || mz !== z)) setVoxel(mx, y, mz, block, meta, record);
+    if (mirrorX && mx !== x)
+      fn(mx, y, z);
+    if (mirrorZ && mz !== z)
+      fn(x, y, mz);
+    if (mirrorX && mirrorZ && (mx !== x || mz !== z))
+      fn(mx, y, mz);
+  }
+
+  function setVoxelMirrored(x: number, y: number, z: number, block: number, meta: number, record: boolean) {
+    forEachMirrored(x, y, z, (a, b, c) => setVoxel(a, b, c, block, meta, record));
+  }
+
+  // For recolor tool
+  function paintVoxel(x: number, y: number, z: number, block: number) {
+    const v = terrain.get(x, y, z);
+    if (!v)
+      return;                      // air: nothing to recolor
+    terrain.set(x, y, z, block, v.meta); // keep meta, change only the block
+  }
+  function paintMirrored(x: number, y: number, z: number, block: number) {
+    forEachMirrored(x, y, z, (a, b, c) => paintVoxel(a, b, c, block));
   }
 
   // ---- copy / paste a rectangular volume (spans a Y-layer range) ----
-  function copyRegion(x0, z0, x1, z1) {
+  function copyRegion(x0: number, z0: number, x1: number, z1: number) {
     const minX = Math.max(0, Math.min(x0, x1));
     const maxX = Math.min(width - 1, Math.max(x0, x1));
     const minZ = Math.max(0, Math.min(z0, z1));
@@ -1126,7 +1205,7 @@ export default function TerrainEditor() {
     return -1;
   }
 
-  function drawRoad(x0: number, z0: number, x1: number, z1: number, widthBlocks: number, pathBlock: number) {
+  function drawRoad(x0: number, z0: number, x1: number, z1: number, widthBlocks: number, pathBlock: number, followSurface = false) {
     const steps = Math.max(Math.abs(x1 - x0), Math.abs(z1 - z0), 1);
     const r = Math.max(0, Math.floor(widthBlocks / 2));
     beginStroke();
@@ -1140,12 +1219,10 @@ export default function TerrainEditor() {
           const wx = cx + dx;
           const wz = cz + dz;
           if (wx < 0 || wx >= width || wz < 0 || wz >= depth) continue;
-          const sy = findSurfaceY(wx, wz);
-          if (sy < 0) continue;
-          // const oldEntry = voxelsRef.current.get(keyOf(wx, sy, wz));
-          const oldEntry = terrain.get(wx, sy, wz);
-          const oldBlock = oldEntry ? oldEntry.block : AIR;
-          setVoxel(wx, sy, wz, pathBlock, 0, true);
+          const wy = followSurface ? findSurfaceY(wx, wz) : currentLayer;
+          if (wy < 0)
+            continue;
+          setVoxelMirrored(wx, wy, wz, pathBlock, 0, true);
         }
       }
     }
@@ -1794,17 +1871,17 @@ function generateRandomTerrain(params:RngParams) {
     const groundDepth = clamp(params.randGroundDepth, 0, totalHeight);
     const bottomRoughness = clamp(params.randBottomRoughness, 0, totalHeight);
     const maxThickness = clamp(params.randMaxThickness, 1, totalHeight);
-    const baseBlock = clamp(params.randBaseBlock, 1, 255);
-    const surfaceBlock = clamp(params.randSurfaceBlock, 1, 255);
+    const baseBlock = clampBlockId(params.randBaseBlock);
+    const surfaceBlock = clampBlockId(params.randSurfaceBlock);
     const decoWeightedList = parseWeightedIdList(params.randDecoBlocks);
     const decoChance = clamp(params.randDecoChance, 0, 100) / 100;
     const hillStrength = clamp(params.randHillStrength, 0, 100) / 100;
     const mountainBoost = clamp(params.randMountainHeight, 0, totalHeight);
     const plateauHeight = clamp(params.randPlateauHeight, 1, totalHeight);
     const valleyDepth = clamp(params.randValleyDepth, 1, totalHeight);
-    const riverBlock = clamp(params.randRiverBlock, 1, 255);
+    const riverBlock = clampBlockId(params.randRiverBlock);
     const riverThreshold = clamp(params.randRiverWidth, 1, 40) / 100;
-    const lakeBlock = clamp(params.randLakeBlock, 1, 255);
+    const lakeBlock = clampBlockId(params.randLakeBlock);
     const lakeThreshold = 1 - clamp(params.randLakeSize, 1, 10) / 12;
     const caveThreshold = 1 - clamp(params.randCaveDensity, 0, 100) / 100;
     const forestDensity = clamp(params.randForestDensity, 0, 100) / 100;
@@ -1813,7 +1890,7 @@ function generateRandomTerrain(params:RngParams) {
       { small: 0.42, medium: 0.7, large: 0.96 }[params.randIslandSize] || 0.96;
     const isFloatingIsland = params.randIslandMode !== "island";
     const seaLevel = clamp(params.randSeaLevel, 0, totalHeight);
-    const seaBlock = clamp(params.randSeaBlock, 1, 255);
+    const seaBlock = clampBlockId(params.randSeaBlock);
     const riverLakeSurfaceH = isFloatingIsland
       ? groundDepth + Math.max(1, Math.round(minH * 0.6))
       : seaLevel;
@@ -1845,9 +1922,9 @@ function generateRandomTerrain(params:RngParams) {
 
     const altitudeOn = params.randAltitudeBlocks;
     const beachLevel = clamp(params.randBeachLevel, 0, totalHeight);
-    const beachBlock = clamp(params.randBeachBlock, 1, 255);
+    const beachBlock = clampBlockId(params.randBeachBlock);
     const snowLevel = clamp(params.randSnowLevel, 0, totalHeight);
-    const snowBlock = clamp(params.randSnowBlock, 1, 255);
+    const snowBlock = clampBlockId(params.randSnowBlock);
 
     const oresOn = params.randOres;
     const oreBlockList = parseIdList(params.randOreBlocks);
@@ -1858,16 +1935,16 @@ function generateRandomTerrain(params:RngParams) {
 
     const caveGlowOn = params.randCaveGlow && params.randCaves;
     const caveGlowChance = clamp(params.randCaveGlowChance, 0, 100) / 100;
-    const caveGlowBlock = clamp(params.randCaveGlowBlock, 1, 255);
+    const caveGlowBlock = clampBlockId(params.randCaveGlowBlock);
 
-    const shoreBlock = clamp(params.randShoreBlock, 1, 255);
+    const shoreBlock = clampBlockId(params.randShoreBlock);
     const shoreRadius = clamp(params.randShoreRadius, 1, 5);
 
     const treeChance = clamp(params.randTreeDensity, 0, 100) / 100;
     const treeMinH = clamp(params.randTreeMinHeight, 1, 20);
     const treeMaxH = clamp(params.randTreeMaxHeight, treeMinH, 20);
-    const treeWood = clamp(params.randTreeWoodBlock, 1, 255);
-    const treeLeaves = clamp(params.randTreeLeavesBlock, 1, 255);
+    const treeWood = clampBlockId(params.randTreeWoodBlock);
+    const treeLeaves = clampBlockId(params.randTreeLeavesBlock);
     const treeSpacing = clamp(params.randTreeSpacing, 0, 20);
     
     const plantedTrees:{x,z}[] = [];
@@ -1918,7 +1995,7 @@ function generateRandomTerrain(params:RngParams) {
     }
 
     const bushChance = clamp(params.randBushDensity, 0, 100) / 100;
-    const bushBlock = clamp(params.randBushBlock, 1, 255);
+    const bushBlock = clampBlockId(params.randBushBlock);
     const bushSpacing = clamp(params.randBushSpacing, 0, 10);
     const plantedBushes:{
       x: number,
@@ -2512,13 +2589,13 @@ function generateRandomTerrain(params:RngParams) {
     const treeChance = clamp(params.randTreeDensity, 0, 100) / 100;
     const treeMinH = clamp(params.randTreeMinHeight, 1, 20);
     const treeMaxH = clamp(params.randTreeMaxHeight, treeMinH, 20);
-    const treeWood = clamp(params.randTreeWoodBlock, 1, 255);
-    const treeLeaves = clamp(params.randTreeLeavesBlock, 1, 255);
+    const treeWood = clampBlockId(params.randTreeWoodBlock);
+    const treeLeaves = clampBlockId(params.randTreeLeavesBlock);
     const treeSpacing = clamp(params.randTreeSpacing, 0, 20);
     const forestDensity = clamp(params.randForestDensity, 0, 100) / 100;
     const forestMask = params.randForests ? makeValueNoise(rand, width, depth, 20) : null;
     const bushChance = clamp(params.randBushDensity, 0, 100) / 100;
-    const bushBlock = clamp(params.randBushBlock, 1, 255);
+    const bushBlock = clampBlockId(params.randBushBlock);
     const bushSpacing = clamp(params.randBushSpacing, 0, 10);
     const idSet = new Set([treeWood, treeLeaves, bushBlock]);
     const plantedT:{x,z}[] = [];
@@ -2679,7 +2756,7 @@ function generateRandomTerrain(params:RngParams) {
     threeRef.current.raycaster = new THREE.Raycaster();
   }
 
-  function clampPhi(p) {
+  function clampPhi(p: number) {
     return Math.max(0.15, Math.min(Math.PI - 0.15, p));
   }
 
@@ -2703,6 +2780,12 @@ function generateRandomTerrain(params:RngParams) {
   }
 
   function rebuildInstances() {
+    function disposeMesh(mesh: THREE.Mesh) {
+      mesh.geometry.dispose();
+      const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+      for (const mat of materials)
+        mat.dispose();
+    }
     const st = threeRef.current;
     const scene = st.scene;
     if (!scene) return;
@@ -2710,15 +2793,13 @@ function generateRandomTerrain(params:RngParams) {
 
     for (const g of st.groups.values()) {
       scene.remove(g.mesh);
-      g.mesh.geometry.dispose();
-      g.mesh.material.dispose();
+      disposeMesh(g.mesh);
     }
     st.groups = new Map();
 
     if (st.planeMesh) {
       scene.remove(st.planeMesh);
-      st.planeMesh.geometry.dispose();
-      st.planeMesh.material.dispose();
+      disposeMesh(st.planeMesh);
       st.planeMesh = null;
     }
     if (st.gridHelper) {
@@ -2726,7 +2807,7 @@ function generateRandomTerrain(params:RngParams) {
       st.gridHelper = null;
     }
 
-    const byBlock = new Map();
+    const byBlock = new Map<number, {x: number, y: number, z: number}[]>();
     for (const voxel of Array.from(terrain.cells())) {
       let arr = byBlock.get(voxel.block);
       if (!arr) {
@@ -2744,8 +2825,8 @@ function generateRandomTerrain(params:RngParams) {
       const material = buildMaterialForBlock(blockId);
       const mesh = new THREE.InstancedMesh(geometry, material, capacity);
       mesh.userData.blockId = blockId;
-      const coords = new Array(capacity);
-      const indexMap = new Map();
+      const coords = new Array<{x: number, y: number, z: number}>(capacity);
+      const indexMap = new Map<string, number>();
       let i = 0;
       for (const c of list) {
         dummy.position.set(c.x + 0.5, c.y + 0.5, c.z + 0.5);
@@ -2760,7 +2841,6 @@ function generateRandomTerrain(params:RngParams) {
       scene.add(mesh);
       st.groups.set(blockId, { mesh, coords, indexMap, count: i, capacity });
     }
-
     const planeGeo = new THREE.PlaneGeometry(
       Math.max(dims.width, 1),
       Math.max(dims.depth, 1)
@@ -2789,12 +2869,12 @@ function generateRandomTerrain(params:RngParams) {
     st.planeMesh = planeMesh;
     st.gridHelper = gridHelper;
 
-    st.orbit.target = {
-      x: dims.width / 2,
-      y: Math.min(dims.totalHeight, 20) / 2,
-      z: dims.depth / 2,
-    };
-    st.orbit.targetGoal = { ...st.orbit.target };
+    st.orbit.target.set(
+      dims.width / 2,
+      Math.min(dims.totalHeight, 20) / 2,
+      dims.depth / 2,
+    );
+    st.orbit.targetGoal = st.orbit.target.clone();
     if (!st.orbit.initialized) {
       st.orbit.radius =
         Math.max(dims.width, dims.depth, dims.totalHeight, 4) * 1.3 + 10;
@@ -2811,14 +2891,14 @@ function generateRandomTerrain(params:RngParams) {
       const px = cx;
       const py = cy + dist * 0.45;
       const pz = cz + dist;
-      st.fly.position = { x: px, y: py, z: pz };
+      st.fly.position.set(px, py, pz);
       const dx = cx - px;
       const dy = cy - py;
       const dz = cz - pz;
       const horiz = Math.sqrt(dx * dx + dz * dz) || 0.0001;
       st.fly.yaw = Math.atan2(-dx, -dz);
       st.fly.pitch = Math.atan2(dy, horiz);
-      st.fly.velocity = { x: 0, y: 0, z: 0 };
+      st.fly.velocity.set(0, 0, 0);
       st.fly.initialized = true;
     }
 
@@ -2879,10 +2959,13 @@ function generateRandomTerrain(params:RngParams) {
     entityMarkersGroupRef.current = group;
   }
 
-  function getOrCreateGroup(blockId) {
+  function getOrCreateGroup(blockId: number) {
     const st = threeRef.current;
+    if(!st.scene) 
+      return;
     let g = st.groups.get(blockId);
-    if (g) return g;
+    if (g !== undefined)
+      return g;
     const capacity = 64;
     const geometry = new THREE.BoxGeometry(0.98, 0.98, 0.98);
     const material = buildMaterialForBlock(blockId);
@@ -2895,8 +2978,10 @@ function generateRandomTerrain(params:RngParams) {
     return g;
   }
 
-  function growGroup(blockId) {
+  function growGroup(blockId: number) {
     const st = threeRef.current;
+    if(!st.scene) 
+      return;
     const g = st.groups.get(blockId);
     if (!g) return;
     const newCapacity = g.capacity * 2;
@@ -2918,15 +3003,21 @@ function generateRandomTerrain(params:RngParams) {
     g.coords = newCoords;
   }
 
-  function addInstance(blockId, x:number, y:number, z:number) {
-    if (blockId === AIR) return;
+  function addInstance(blockId: number, x:number, y:number, z:number) {
+    if (blockId === AIR)
+      return;
     let g = getOrCreateGroup(blockId);
+    if (g === undefined) {
+      return;
+    }
     const key = keyOf(x, y, z);
     if (g.indexMap.has(key))
       return;
     if (g.count >= g.capacity) {
       growGroup(blockId);
       g = threeRef.current.groups.get(blockId);
+      if (!g)
+        return;
     }
     const idx = g.count;
     const dummy = new THREE.Object3D();
@@ -2940,13 +3031,15 @@ function generateRandomTerrain(params:RngParams) {
     g.mesh.instanceMatrix.needsUpdate = true;
   }
 
-  function removeInstanceAtCoord(blockId, x:number, y:number, z:number) {
+  function removeInstanceAtCoord(blockId: number, x:number, y:number, z:number) {
     const st = threeRef.current;
     const g = st.groups.get(blockId);
-    if (!g) return;
+    if (!g)
+      return;
     const key = keyOf(x, y, z);
     const idx = g.indexMap.get(key);
-    if (idx === undefined) return;
+    if (idx === undefined)
+      return;
     const lastIdx = g.count - 1;
     if (idx !== lastIdx) {
       const lastCoord = g.coords[lastIdx];
@@ -2957,13 +3050,13 @@ function generateRandomTerrain(params:RngParams) {
       g.indexMap.set(keyOf(lastCoord.x, lastCoord.y, lastCoord.z), idx);
     }
     g.indexMap.delete(key);
-    g.coords[lastIdx] = null;
+    //g.coords[lastIdx] = null;
     g.count--;
     g.mesh.count = g.count;
     g.mesh.instanceMatrix.needsUpdate = true;
   }
 
-  function syncVoxel3D(x, y, z, oldBlock, newBlock) {
+  function syncVoxel3D(x: number, y: number, z: number, oldBlock: number, newBlock: number) {
     if (oldBlock === newBlock)
       return;
     if (oldBlock !== AIR)
@@ -2972,7 +3065,17 @@ function generateRandomTerrain(params:RngParams) {
       addInstance(newBlock, x, y, z);
   }
 
-  function panOrbit(dx, dy) {
+  function panOrbitByUnits(right: number, forward: number, up: number) {
+    const o = threeRef.current.orbit;
+    const s = Math.sin(o.theta);
+    const c = Math.cos(o.theta);
+    // ground-plane basis from the camera heading (theta)
+    o.targetGoal.x += right * c - forward * s;
+    o.targetGoal.z += -right * s - forward * c;
+    o.targetGoal.y += up;
+  }
+
+  function panOrbit(dx: number, dy: number) {
     const st = threeRef.current;
     const cam = st.camera;
     if (!cam) return;
@@ -3001,18 +3104,54 @@ function generateRandomTerrain(params:RngParams) {
     return targets;
   }
 
-  function coordFromHit(hit) {
+  function pickWorldPoint(ndcX: number, ndcY: number): THREE.Vector3 | null {
     const st = threeRef.current;
-    if (hit.object === st.planeMesh) return null;
+    if (!st.camera || !st.raycaster)
+      return null;
+    st.raycaster.setFromCamera(new THREE.Vector2( ndcX, ndcY ), st.camera);
+    const hits = st.raycaster.intersectObjects(raycastTargets(), false);
+    const hit = hits.find((h) => h.object !== st.planeMesh); // ignore the invisible ground plane
+    return hit ? hit.point.clone() : null;
+  }
+
+  // cursor first, then the center of the view, else null (= keep the current pivot)
+  function pickPivot(clientX: number, clientY: number): THREE.Vector3 | null {
+    const canvas = canvas3dRef.current;
+    if (!canvas)
+      return null;
+    const rect = canvas.getBoundingClientRect();
+    const mx = ((clientX - rect.left) / rect.width) * 2 - 1;
+    const my = -((clientY - rect.top) / rect.height) * 2 + 1;
+    return pickWorldPoint(mx, my) ?? pickWorldPoint(0, 0);
+  }
+
+  function zoomAnchor(clientX: number, clientY: number): THREE.Vector3 | null {
+    const now = performance.now();
+    const a = zoomAnchorRef.current;
+    if (a && now - a.t < DEFAULT_SETTINGS.ZOOM_GESTURE_MS && Math.abs(clientX - a.x) < 4 && Math.abs(clientY - a.y) < 4) {
+      a.t = now; // the gesture continues, so reuse the anchor (a null result is cached too)
+      return a.pivot;
+    }
+    const pivot = pickPivot(clientX, clientY);
+    zoomAnchorRef.current = { pivot, x: clientX, y: clientY, t: now };
+    return pivot;
+  }
+
+  function coordFromHit(hit: THREE.Intersection) {
+    const st = threeRef.current;
+    if (hit.object === st.planeMesh)
+      return null;
     const blockId = hit.object.userData ? hit.object.userData.blockId : undefined;
     const g = blockId !== undefined ? st.groups.get(blockId) : null;
-    if (!g) return null;
+    if (!g || hit.instanceId === undefined)
+      return null;
     const coord = g.coords[hit.instanceId];
-    if (!coord) return null;
+    if (!coord)
+      return null;
     return { ...coord, blockId };
   }
 
-  function performMouseRaycastAction(clientX, clientY, isContinuous) {
+  function performMouseRaycastAction(clientX: number, clientY: number, isContinuous: boolean) {
     const st = threeRef.current;
     const canvas = canvas3dRef.current;
     if (!canvas || !st.camera || !st.raycaster) return;
@@ -3020,30 +3159,34 @@ function generateRandomTerrain(params:RngParams) {
     const rect = canvas.getBoundingClientRect();
     const mx = ((clientX - rect.left) / rect.width) * 2 - 1;
     const my = -((clientY - rect.top) / rect.height) * 2 + 1;
-    st.raycaster.setFromCamera({ x: mx, y: my }, st.camera);
+    st.raycaster.setFromCamera( new THREE.Vector2(mx, my), st.camera);
 
     const targets = raycastTargets();
-    if (!targets.length) return;
+    if (!targets.length)
+      return;
     const hits = st.raycaster.intersectObjects(targets, false);
-    if (!hits.length) return;
+    if (!hits.length)
+      return;
     const hit = hits[0];
     const isErase = toolRef.current === "eraser";
-    let cx, cy, cz;
+    const isPaint = toolRef.current === "paint";
+    let cx: number, cy: number, cz: number;
 
     const hitCoord = coordFromHit(hit);
-    if (hitCoord) {
-      if (isErase) {
+    if (hitCoord !== null) {
+      if (isErase || isPaint) {
         cx = hitCoord.x;
         cy = hitCoord.y;
         cz = hitCoord.z;
       } else {
-        const n = hit.face.normal;
+        const n = hit.face?.normal || {x: 0, y:0, z:0};
         cx = hitCoord.x + Math.round(n.x);
         cy = hitCoord.y + Math.round(n.y);
         cz = hitCoord.z + Math.round(n.z);
       }
     } else {
-      if (isErase) return;
+      if (isErase || isPaint)
+        return;
       cx = Math.floor(hit.point.x);
       cz = Math.floor(hit.point.z);
       cy = 0;
@@ -3080,22 +3223,31 @@ function generateRandomTerrain(params:RngParams) {
       return;
     }
 
+    if (toolRef.current !== "pencil" && !isErase && !isPaint)
+      return; // early exit if no tool is selected
     const oldEntry = terrain.get(cx,cy,cz);
     const oldBlock = oldEntry ? oldEntry.block : AIR;
     const newBlock = isErase ? AIR : selectedBlockRef.current;
+    // separate early handler + exit for changing block
+    if (isPaint) {
+      paintVoxel(cx, cy, cz, selectedBlockRef.current);
+      setCurrentLayer(cy);
+      return;
+    }
     setVoxel(cx, cy, cz, newBlock, 0, true);
-    // syncVoxel3D(cx, cy, cz, oldBlock, newBlock);
     setCurrentLayer(cy);
   }
 
   function raycastFromCamera() {
     const st = threeRef.current;
-    if (!st.camera || !st.raycaster) return null;
+    if (!st.camera || !st.raycaster)
+      return null;
     const dir = new THREE.Vector3(0, 0, -1);
     dir.applyQuaternion(st.camera.quaternion);
     st.raycaster.set(st.camera.position, dir);
     const targets = raycastTargets();
-    if (!targets.length) return null;
+    if (!targets.length)
+      return null;
     const hits = st.raycaster.intersectObjects(targets, false);
     return hits.length ? hits[0] : null;
   }
@@ -3121,14 +3273,15 @@ function generateRandomTerrain(params:RngParams) {
     setCurrentLayer(cy);
   }
 
-  function performPlace() {
+  function performPlace():void {
     const hit = raycastFromCamera();
-    if (!hit) return;
+    if (hit === null)
+      return;
     const dims = dimsRef.current;
-    let cx, cy, cz;
+    let cx: number, cy: number, cz: number;
     const hitCoord = coordFromHit(hit);
     if (hitCoord) {
-      const n = hit.face.normal;
+      const n = hit.face?.normal || {x:0, y:0, z:0};
       cx = hitCoord.x + Math.round(n.x);
       cy = hitCoord.y + Math.round(n.y);
       cz = hitCoord.z + Math.round(n.z);
@@ -3169,63 +3322,72 @@ function generateRandomTerrain(params:RngParams) {
     setCurrentLayer(cy);
   }
 
-  function attachOrbitListeners(canvas) {
+  function attachOrbitListeners(canvas: HTMLCanvasElement) {
     const st = threeRef.current;
-    function onMouseDown(e) {
+    function onMouseDown(event: MouseEvent) {
       st.drag.isDown = true;
-      st.drag.button = e.button;
-      st.drag.lastX = e.clientX;
-      st.drag.lastY = e.clientY;
-      if (e.button === 0) {
+      st.drag.button = event.button;
+      st.drag.lastX = event.clientX;
+      st.drag.lastY = event.clientY;
+      // painting on LMB
+      if (event.button === 0) {
         beginStroke();
-        performMouseRaycastAction(e.clientX, e.clientY, false);
+        performMouseRaycastAction(event.clientX, event.clientY, false);
+        return;
+      }
+      // rotating on RMB
+      if (event.button === 2 && !event.shiftKey) {
+        zoomAnchorRef.current = null; // reset previous zoom anchor ref if we rotate the camera
+        const pivot = pickPivot(event.clientX, event.clientY);
+        if (pivot)
+          setOrbitPivot(pivot);
+        return;
       }
     }
-    function onMouseMove(e) {
+    function onMouseMove(event: MouseEvent) {
       if (!st.drag.isDown) return;
-      const dx = e.clientX - st.drag.lastX;
-      const dy = e.clientY - st.drag.lastY;
+      const dx = event.clientX - st.drag.lastX;
+      const dy = event.clientY - st.drag.lastY;
       if (st.drag.button === 0) {
-        performMouseRaycastAction(e.clientX, e.clientY, true);
-      } else if (st.drag.button === 2 && !e.shiftKey) {
+        performMouseRaycastAction(event.clientX, event.clientY, true);
+      } else if (st.drag.button === 2 && !event.shiftKey) {
         st.orbit.thetaDelta -= dx * 0.008;
         st.orbit.phiDelta -= dy * 0.008;
-      } else if (st.drag.button === 1 || (st.drag.button === 2 && e.shiftKey)) {
+      } else if (st.drag.button === 1 || (st.drag.button === 2 && event.shiftKey)) {
         panOrbit(dx, dy);
       }
-      st.drag.lastX = e.clientX;
-      st.drag.lastY = e.clientY;
+      st.drag.lastX = event.clientX;
+      st.drag.lastY = event.clientY;
     }
-    function onMouseUp(e) {
-      if (st.drag.isDown && e.button === st.drag.button) {
-        if (e.button === 0) commitStroke();
+    function onMouseUp(event: MouseEvent) {
+      if (st.drag.isDown && event.button === st.drag.button) {
+        if (event.button === 0) commitStroke();
         st.drag.isDown = false;
       }
     }
-    function onWheel(e) {
-      e.preventDefault();
-      const canvas2 = canvas3dRef.current;
-      if (!canvas2 || !st.camera || !st.raycaster) return;
-      const rect = canvas2.getBoundingClientRect();
-      const mx = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-      const my = -((e.clientY - rect.top) / rect.height) * 2 + 1;
-      st.raycaster.setFromCamera({ x: mx, y: my }, st.camera);
-      const dir = st.raycaster.ray.direction.clone();
+    function onWheel(event: WheelEvent) {
+      event.preventDefault();
+      const delta = event.deltaY || event.deltaX; // some browsers report Shift+wheel as horizontal
+        if (delta === 0) return;
       const dims = dimsRef.current;
       const maxR = Math.max(dims.width, dims.depth, dims.totalHeight, 4) * 4 + 20;
-      const oldTarget = st.orbit.targetRadius;
-      const newTarget = Math.max(
-        4,
-        Math.min(maxR, oldTarget * (1 + e.deltaY * 0.001))
-      );
-      const delta = newTarget - oldTarget;
-      st.orbit.targetGoal.x += dir.x * -delta;
-      st.orbit.targetGoal.y += dir.y * -delta;
-      st.orbit.targetGoal.z += dir.z * -delta;
-      st.orbit.targetRadius = newTarget;
+      const oldR = st.orbit.targetRadius;
+      const step = Math.pow(DEFAULT_SETTINGS.ZOOM_ORBIT_STEP, event.shiftKey ? DEFAULT_SETTINGS.ZOOM_SHIFT_MULT : 1);
+      const newR = Math.max(1, Math.min(maxR, oldR * (delta > 0 ? step : 1 / step)));
+      const factor = newR / oldR; // the real ratio after clamping, so hitting a limit doesn't drift the view
+      if (factor === 1)
+        return;
+      const pivot = zoomAnchor(event.clientX, event.clientY);   // cursor, then view center, else null
+      if (pivot) {
+        const g: THREE.Vector3 = st.orbit.targetGoal;
+        g.x = pivot.x + (g.x - pivot.x) * factor;
+        g.y = pivot.y + (g.y - pivot.y) * factor;
+        g.z = pivot.z + (g.z - pivot.z) * factor;
+      }
+      st.orbit.targetRadius = newR;
     }
-    function onContextMenu(e) {
-      e.preventDefault();
+    function onContextMenu(event) {
+      event.preventDefault();
     }
     canvas.addEventListener("mousedown", onMouseDown);
     window.addEventListener("mousemove", onMouseMove);
@@ -3241,7 +3403,7 @@ function generateRandomTerrain(params:RngParams) {
     };
   }
 
-  function attachFlyListeners(canvas) {
+  function attachFlyListeners(canvas: HTMLCanvasElement) {
     const st = threeRef.current;
 
     function onCanvasClick() {
@@ -3266,7 +3428,7 @@ function generateRandomTerrain(params:RngParams) {
     function onPointerLockError() {
       setPointerLockFailed(true);
     }
-    function onMouseMove(e) {
+    function onMouseMove(e: MouseEvent) {
       if (!st.locked) return;
       const sens = 0.0022;
       st.fly.yaw -= e.movementX * sens;
@@ -3274,7 +3436,7 @@ function generateRandomTerrain(params:RngParams) {
       const lim = Math.PI / 2 - 0.02;
       st.fly.pitch = Math.max(-lim, Math.min(lim, st.fly.pitch));
     }
-    function onMouseDown(e) {
+    function onMouseDown(e: MouseEvent) {
       if (!st.locked) return;
       if (e.button === 1) {
         e.preventDefault();
@@ -3291,7 +3453,7 @@ function generateRandomTerrain(params:RngParams) {
         commitStroke();
       }
     }
-    function onMouseUp(e) {
+    function onMouseUp(e: MouseEvent) {
       if (e.button === 0 && st.leftDown) {
         st.leftDown = false;
         commitStroke();
@@ -3300,7 +3462,7 @@ function generateRandomTerrain(params:RngParams) {
     function onContextMenu(e) {
       e.preventDefault();
     }
-    function onKeyDown(e) {
+    function onKeyDown(e: KeyboardEvent) {
       if (!st.locked) return;
       if (e.code === "KeyW") {
         st.keys.forward = true;
@@ -3322,19 +3484,25 @@ function generateRandomTerrain(params:RngParams) {
         e.preventDefault();
       }
     }
-    function onKeyUp(e) {
-      if (e.code === "KeyW") st.keys.forward = false;
-      else if (e.code === "KeyS") st.keys.back = false;
-      else if (e.code === "KeyA") st.keys.left = false;
-      else if (e.code === "KeyD") st.keys.right = false;
-      else if (e.code === "Space") st.keys.up = false;
-      else if (e.code === "ShiftLeft" || e.code === "ShiftRight")
+    function onKeyUp(event: KeyboardEvent) {
+      if (event.code === "KeyW") 
+        st.keys.forward = false;
+      else if (event.code === "KeyS") 
+        st.keys.back = false;
+      else if (event.code === "KeyA") 
+        st.keys.left = false;
+      else if (event.code === "KeyD") 
+        st.keys.right = false;
+      else if (event.code === "Space") 
+        st.keys.up = false;
+      else if (event.code === "ShiftLeft" || event.code === "ShiftRight")
         st.keys.down = false;
     }
-    function onWheel(e) {
-      e.preventDefault();
-      if (!st.camera) return;
-      st.camera.fov = Math.max(15, Math.min(100, st.camera.fov * (1 + e.deltaY * 0.001)));
+    function onWheel(event: WheelEvent) {
+      event.preventDefault();
+      if (!st.camera)
+        return;
+      st.camera.fov = Math.max(15, Math.min(100, st.camera.fov * (1 + event.deltaY * 0.001)));
       st.camera.updateProjectionMatrix();
     }
 
@@ -3372,24 +3540,17 @@ function generateRandomTerrain(params:RngParams) {
     const el = containerRef.current;
     if (el === null)
       return undefined;
-    function onWheel2d(e) {
+    function onWheel2d(event:WheelEvent) {
       if (viewModeRef.current !== "2d" || el === null)
         return;
-      e.preventDefault();
-      const rect = el.getBoundingClientRect();
-      const ox = e.clientX - rect.left;
-      const oy = e.clientY - rect.top;
-      const px = ox + el.scrollLeft;
-      const py = oy + el.scrollTop;
-      const old = zoomRef.current;
-      const next = Math.round(clamp(old * (e.deltaY > 0 ? 0.9 : 1 / 0.9), 0.4, 3) * 100) / 100;
-      if (next === old) return;
-      zoomRef.current = next;
-      setZoom(next);
-      requestAnimationFrame(() => {
-        el.scrollLeft = px * (next / old) - ox;
-        el.scrollTop = py * (next / old) - oy;
-      });
+      event.preventDefault();
+      const delta = event.deltaY || event.deltaX;
+        if (delta === 0) return;
+      const step = Math.pow(DEFAULT_SETTINGS.ZOOM_WHEEL_STEP, event.shiftKey ? DEFAULT_SETTINGS.ZOOM_SHIFT_MULT : 1);
+      const next = Math.round(clamp(zoomRef.current * (delta > 0 ? 1/step : step), 0.4, 3) * 100) / 100;
+      const rect = canvasRef.current?.getBoundingClientRect(); // the canvas fills the container
+      if (rect)
+        zoomAt(next, event.clientX - rect.left, event.clientY - rect.top);
     }
     el.addEventListener("wheel", onWheel2d, { passive: false });
     return () => el.removeEventListener("wheel", onWheel2d);
@@ -3416,8 +3577,9 @@ function generateRandomTerrain(params:RngParams) {
     window.addEventListener("resize", resize);
 
     const mode = cameraModeRef.current;
-    const detach =
-      mode === "orbit" ? attachOrbitListeners(canvas) : attachFlyListeners(canvas);
+      const detach = canvas? (
+        mode === "orbit" ? attachOrbitListeners(canvas) : attachFlyListeners(canvas)
+      ) : undefined;
 
     let raf;
     let lastTime = performance.now();
@@ -3432,7 +3594,7 @@ function generateRandomTerrain(params:RngParams) {
 
       if (mode === "orbit") {
         const rotFactor = 1 - Math.exp(-dt / 0.09);
-        const zoomFactor = 1 - Math.exp(-dt / 0.12);
+        const zoomFactor = 1 - Math.exp(-dt / 0.1);
         const panFactor = 1 - Math.exp(-dt / 0.1);
         const active =
           Math.abs(st.orbit.thetaDelta) > 0.00002 ||
@@ -3513,10 +3675,28 @@ function generateRandomTerrain(params:RngParams) {
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener("resize", resize);
-      if (detach) detach();
+      if (detach) 
+        detach();
     };
     // eslint-disable-next-line
   }, [viewMode, cameraMode]);
+
+  function setOrbitPivot(p: THREE.Vector3):void {
+    const st = threeRef.current;
+    if(!st.camera)
+      return;
+    const o = st.orbit;
+    const off = st.camera.position.clone().sub(p);
+    const r = off.length();
+    if (r < 1e-3)
+      return;
+    o.target = new THREE.Vector3(p.x, p.y, p.z );
+    o.targetGoal = o.target.clone();
+    o.radius = r;
+    o.targetRadius = r;
+    o.phi = clampPhi(Math.acos(off.y / r));
+    o.theta = Math.atan2(off.x, off.z);
+  }
 
   function resetCameraView() {
     const st = threeRef.current;
@@ -3528,7 +3708,7 @@ function generateRandomTerrain(params:RngParams) {
       st.orbit.phiDelta = 0;
     } else {
       st.fly.initialized = false;
-      st.fly.velocity = { x: 0, y: 0, z: 0 };
+      st.fly.velocity.set(0, 0, 0);
     }
     rebuildInstances();
   }
@@ -3560,10 +3740,9 @@ function generateRandomTerrain(params:RngParams) {
       stack.push([x, z - 1]);
     }
     commitStroke();
-    // draw();
   }
 
-  function fillRect(x0, z0, x1, z1, block) {
+  function fillRect(x0: number, z0: number, x1: number, z1: number, block: number, hollow = false) {
     beginStroke();
     const minX = Math.max(0, Math.min(x0, x1));
     const maxX = Math.min(width - 1, Math.max(x0, x1));
@@ -3571,11 +3750,12 @@ function generateRandomTerrain(params:RngParams) {
     const maxZ = Math.min(depth - 1, Math.max(z0, z1));
     for (let x = minX; x <= maxX; x++) {
       for (let z = minZ; z <= maxZ; z++) {
+        if (hollow && x > minX && x < maxX && z > minZ && z < maxZ)
+          continue; // skip fill if disabled
         setVoxelMirrored(x, currentLayer, z, block, 0, true);
       }
     }
     commitStroke();
-    // draw();
   }
 
   function clearLayer() {
@@ -3586,7 +3766,7 @@ function generateRandomTerrain(params:RngParams) {
     fillRect(0, 0, width - 1, depth - 1, selectedBlock);
   }
 
-  function copyLayer(direction) {
+  function copyLayer(direction: number) {
     const target = currentLayer + direction;
     if (target < 0 || target >= totalHeight) return;
     beginStroke();
@@ -3603,27 +3783,49 @@ function generateRandomTerrain(params:RngParams) {
 
   // ---- canvas drawing (2D) ----
   const draw = useCallback(() => {
+    // const t0 = performance.now();
+    const cell = CELL_BASE * zoomRef.current;   // same source as the pan, never a stale render value
+
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    const host = containerRef.current;
+    if (!canvas || !host)
+      return;
+    const cw = host.clientWidth;
+    const ch = host.clientHeight;
+    if (cw === 0 || ch === 0)
+      return; // no need to draw if there is no place
+    if (canvas.width !== cw || canvas.height !== ch) { // assigning width clears the canvas, so only on a real change
+      canvas.width = cw;
+      canvas.height = ch;
+    }
+
     const ctx = canvas.getContext("2d");
-    canvas.width = width * cell;
-    canvas.height = depth * cell;
     if(!ctx)
       throw new Error("Canvas has no context `2d`");
+    const { panX, panY } = viewRef.current;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.fillStyle = "#08090c";                           // area outside the grid
+    ctx.fillRect(0, 0, cw, ch);
+    ctx.setTransform(1, 0, 0, 1, panX, panY);
     ctx.imageSmoothingEnabled = false;
-    ctx.fillStyle = "#12151b";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#12151b";                           // the grid itself
+    ctx.fillRect(0, 0, width * cell, depth * cell);
+    ctx.strokeStyle = "#2a2f3a";                         // replaces the old CSS box-shadow outline
+    ctx.lineWidth = 1;
+    ctx.strokeRect(-0.5, -0.5, width * cell + 1, depth * cell + 1);
     
     if (onionSkin) {
       for (let off = -onionRange; off <= onionRange; off++) {
-        if (off === 0) continue;
+        if (off === 0)
+          continue;
         const ly = currentLayer + off;
-        if (ly < 0 || ly >= totalHeight) continue;
-        const alpha = 0.32 / Math.abs(off);
+        if (ly < 0 || ly >= totalHeight)
+          continue;
+        const alpha = 0.15 / Math.abs(off);
         ctx.globalAlpha = alpha;
-        for (const voxel of Array.from(terrain.cells())) {
+        for (const voxel of terrain.layerCells(ly)) {
           const {x, y, z} = voxel;
-          if (y !== ly) continue;
+          //if (y !== ly) continue;
           if (x < 0 || x >= width || z < 0 || z >= depth) continue;
           ctx.fillStyle = off < 0 ? "#4a90d9" : "#e0954a";
           ctx.fillRect(x * cell, z * cell, cell, cell);
@@ -3632,9 +3834,9 @@ function generateRandomTerrain(params:RngParams) {
       ctx.globalAlpha = 1;
     }
 
-    for (const voxel of Array.from(terrain.cells())) {
+    for (const voxel of terrain.layerCells(currentLayer)) {
       const {x, y, z} = voxel;
-      if (y !== currentLayer) continue;
+      //if (y !== currentLayer) continue;
       if (x < 0 || x >= width || z < 0 || z >= depth) continue;
       const img = textureImg2DRef.current.get(voxel.block);
       if (img && img.complete && img.naturalWidth > 0) {
@@ -3652,14 +3854,14 @@ function generateRandomTerrain(params:RngParams) {
         if (x % CHUNK === 0) continue;
         ctx.beginPath();
         ctx.moveTo(x * cell + 0.5, 0);
-        ctx.lineTo(x * cell + 0.5, canvas.height);
+        ctx.lineTo(x * cell + 0.5, depth * cell);
         ctx.stroke();
       }
       for (let z = 0; z <= depth; z++) {
         if (z % CHUNK === 0) continue;
         ctx.beginPath();
         ctx.moveTo(0, z * cell + 0.5);
-        ctx.lineTo(canvas.width, z * cell + 0.5);
+        ctx.lineTo(width * cell, z * cell + 0.5);
         ctx.stroke();
       }
     }
@@ -3669,13 +3871,13 @@ function generateRandomTerrain(params:RngParams) {
     for (let x = 0; x <= width; x += CHUNK) {
       ctx.beginPath();
       ctx.moveTo(x * cell, 0);
-      ctx.lineTo(x * cell, canvas.height);
+      ctx.lineTo(x * cell, depth * cell);
       ctx.stroke();
     }
     for (let z = 0; z <= depth; z += CHUNK) {
       ctx.beginPath();
       ctx.moveTo(0, z * cell);
-      ctx.lineTo(canvas.width, z * cell);
+      ctx.lineTo(width * cell, z * cell);
       ctx.stroke();
     }
 
@@ -3686,7 +3888,7 @@ function generateRandomTerrain(params:RngParams) {
       ctx.setLineDash([4, 3]);
       ctx.beginPath();
       ctx.moveTo(gx, 0);
-      ctx.lineTo(gx, canvas.height);
+      ctx.lineTo(gx, depth * cell);
       ctx.stroke();
       ctx.setLineDash([]);
     }
@@ -3697,7 +3899,7 @@ function generateRandomTerrain(params:RngParams) {
       ctx.setLineDash([4, 3]);
       ctx.beginPath();
       ctx.moveTo(0, gz);
-      ctx.lineTo(canvas.width, gz);
+      ctx.lineTo(width * cell, gz);
       ctx.stroke();
       ctx.setLineDash([]);
     }
@@ -3716,19 +3918,38 @@ function generateRandomTerrain(params:RngParams) {
     }
 
     if (roadParams.roadPending !== null) {
+      const a = roadParams.roadPending;
+      const r = Math.max(0, Math.floor(roadParams.roadWidth / 2));
       ctx.strokeStyle = "#ffd166";
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.arc(
-        roadParams.roadPending.x * cell + cell / 2,
-        roadParams.roadPending.z * cell + cell / 2,
+        a.x * cell + cell / 2,
+        a.z * cell + cell / 2,
         cell * 0.6,
         0,
         Math.PI * 2
-      );
+      ); // starting marker, a thick circle
       ctx.stroke();
+   
+      if(roadHoverRef.current !== null) {
+        const b = roadHoverRef.current;
+        ctx.save();
+        ctx.lineCap = "round";
+        ctx.beginPath(); // approx road footprint
+        ctx.moveTo((a.x + 0.5) * cell, (a.z + 0.5) * cell);
+        ctx.lineTo((b.x + 0.5) * cell, (b.z + 0.5) * cell);
+        ctx.strokeStyle = "rgba(255, 209, 102, 0.3)";
+        ctx.lineWidth = (2 * r + 1) * cell; // footprint of the road
+        ctx.stroke();
+        ctx.strokeStyle = "#ffd166";
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+        ctx.restore();
+      }
     }
 
+    // Drawing entities
     for (const inst of entityInstancesRef.current) {
       if (inst.x < 0 || inst.x >= width || inst.z < 0 || inst.z >= depth) continue;
       const onLayer = inst.y === currentLayer;
@@ -3756,24 +3977,111 @@ function generateRandomTerrain(params:RngParams) {
       }
       ctx.globalAlpha = 1;
     }
-  }, [width, depth, cell, currentLayer, mirrorX, mirrorZ, roadParams.roadPending, onionSkin, onionRange, totalHeight, entityInstances]);
+
+    // const ms = performance.now() - t0;
+    // if (ms > 1) console.log(`draw ${ms.toFixed(1)} ms, voxels: ${terrain.size}`);
+  }, [width, depth, cell, currentLayer, mirrorX, mirrorZ, roadParams.roadPending, roadParams.roadWidth, onionSkin, onionRange, totalHeight, entityInstances]);
+
+  const viewRef = useRef({ panX: 0, panY: 0 }); // screen position of the grid's top-left corner
+  const drawRef = useRef(draw);
+  drawRef.current = draw;                       // lets handlers with [] deps call a fresh draw()
+
+  function centerView(): void {
+    const host = containerRef.current;
+    if (!host)
+      return;
+    const { width, depth } = dimsRef.current;
+    const cell = CELL_BASE * zoomRef.current;
+    viewRef.current.panX = Math.round((host.clientWidth - width * cell) / 2);  // whole pixels for smooth panning
+    viewRef.current.panY = Math.round((host.clientHeight - depth * cell) / 2); // whole pixels
+  }
+
+  function setPan(px: number, py: number): void {
+    const host = containerRef.current;
+    if (!host)
+      return;
+    const { width, depth } = dimsRef.current;
+    const cell = CELL_BASE * zoomRef.current;
+    const m = 48; // always keep at least this much of the grid on screen
+    viewRef.current.panX = Math.round(clamp(px, m - width * cell, host.clientWidth - m));
+    viewRef.current.panY = Math.round(clamp(py, m - depth * cell, host.clientHeight - m));
+  }
+
+  function zoomAt(next: number, anchorX: number, anchorY: number) {   // anchor in canvas pixels
+    const old = zoomRef.current;
+    if (next === old)
+      return;
+    const k = next / old;
+    const { panX, panY } = viewRef.current;
+    zoomRef.current = next; // setPan should clamp with the new cell size!
+    setPan(anchorX - (anchorX - panX) * k, anchorY - (anchorY - panY) * k);
+    setZoom(next);
+  }
+
+  function zoomToCenter(next: number) {
+    const host = containerRef.current;
+    if (host)
+      zoomAt(next, host.clientWidth / 2, host.clientHeight / 2);
+  }
+
+  useEffect(() => { // declared before the existing `useEffect(() => draw(), [draw])`
+    centerView();
+    drawRef.current();
+  }, [width, depth]);
+
+  useEffect(() => { // redraw whenever the viewport changes size (window, opened panels)
+    const host = containerRef.current;
+    if (!host) return undefined;
+    const ro = new ResizeObserver(() => drawRef.current());
+    ro.observe(host);
+    return () => ro.disconnect();
+  }, []);
 
   useEffect(() => {
     draw();
   }, [draw]);
 
-  function cellFromEvent(event:React.MouseEvent<HTMLCanvasElement>) {
-    if(!canvasRef.current)
-      throw new Error("canvasRef is undefined!")
+  function cellFromPoint(clientX: number, clientY: number) {
+    const cell = CELL_BASE * zoomRef.current;
+    if (!canvasRef.current) 
+      throw new Error("canvasRef is undefined!");
     const rect = canvasRef.current.getBoundingClientRect();
-    const px = event.clientX - rect.left;
-    const py = event.clientY - rect.top;
-    const x = Math.floor(px / cell);
-    const z = Math.floor(py / cell);
-    return { x, z };
+    const { panX, panY } = viewRef.current;
+    return {
+      x: Math.floor((clientX - rect.left - panX) / cell),
+      z: Math.floor((clientY - rect.top  - panY) / cell),
+    };
+  }
+  function cellFromEvent(event: React.MouseEvent<HTMLCanvasElement>) {
+    return cellFromPoint(event.clientX, event.clientY);
+  }
+
+  function cancelDrag(): boolean {
+    if (roadStartRef.current) {            // a pending road start counts as "in progress"
+      roadStartRef.current = null;
+      updateRoadParams("roadPending", null);
+      return true;
+    }
+    if (!isDrawingRef.current)
+      return false;
+    isDrawingRef.current = false;
+    if (isFreehand(tool))
+      commitStroke(); // keeps what was painted, one undo step
+    rectStartRef.current = null;
+    previewRectRef.current = null;
+    draw();
+    return true;
   }
 
   function handleMouseDown(event:React.MouseEvent<HTMLCanvasElement>) {
+    // a drag can start outside the grid
+    if (event.button === 1) {
+      event.preventDefault();
+      panDragRef.current = { x: event.clientX, y: event.clientY };
+      return;
+    }
+    if (event.button !== 0)
+      return;
     const { x, z } = cellFromEvent(event);
     if (x < 0 || x >= width || z < 0 || z >= depth) return;
     if (placingEntityName) {
@@ -3794,6 +4102,7 @@ function generateRandomTerrain(params:RngParams) {
     if (tool === "road") {
       if (!roadStartRef.current) {
         roadStartRef.current = { x, z };
+        roadHoverRef.current = { x, z };   // new: start of the preview line, not the previous road's end
         updateRoadParams("roadPending", { x, z });
       } else {
         const start = roadStartRef.current;
@@ -3803,12 +4112,23 @@ function generateRandomTerrain(params:RngParams) {
       }
       return;
     }
+    if (tool === "eyedropper") {
+      const v = terrain.get(x, currentLayer, z);
+      if (v && v.block !== AIR) 
+        setSelectedBlock(v.block);
+      return;
+    }
+    if (tool === "none")
+      return; // early exit if no tool is selected
     isDrawingRef.current = true;
-    if (tool === "pencil" || tool === "eraser") {
+    if (isFreehand(tool)) {
       beginStroke();
-      setVoxelMirrored(x, currentLayer, z, tool === "eraser" ? AIR : selectedBlock, 0, true);
+      if (tool === "paint")
+        paintMirrored(x, currentLayer, z, selectedBlock);
+      else
+        setVoxelMirrored(x, currentLayer, z, tool === "eraser" ? AIR : selectedBlock, 0, true);
       draw();
-    } else if (tool === "rect-fill" || tool === "rect-erase" || tool === "copy") {
+    } else if (tool === "rect-fill" || tool === "rect-hollow" || tool === "rect-erase" || tool === "copy") {
       rectStartRef.current = { x, z };
       previewRectRef.current = { x0: x, z0: z, x1: x, z1: z };
       draw();
@@ -3818,35 +4138,61 @@ function generateRandomTerrain(params:RngParams) {
   }
 
   function handleMouseMove(event:React.MouseEvent<HTMLCanvasElement>) {
-    const { x, z } = cellFromEvent(event);
-    setHoverCell({ x, z });
-    if (!isDrawingRef.current) return;
-    if (x < 0 || x >= width || z < 0 || z >= depth) return;
-    if (tool === "pencil" || tool === "eraser") {
-      setVoxelMirrored(x, currentLayer, z, tool === "eraser" ? AIR : selectedBlock, 0, true);
+    const pos = cellFromEvent(event);
+    const inside = pos.x >= 0 && pos.x < width && pos.z >= 0 && pos.z < depth;
+    setHoverCell(inside ? pos : null);
+    if (tool === "road" && roadStartRef.current) {
+      roadHoverRef.current = { x: clamp(pos.x, 0, width - 1), z: clamp(pos.z, 0, depth - 1) };
+      draw(); // road preview
+    }
+  }
+
+  function handleDragMove(e: MouseEvent) {
+    const pd = panDragRef.current;
+    if (pd) {
+      const v = viewRef.current;
+      setPan(v.panX + (e.clientX - pd.x), v.panY + (e.clientY - pd.y));
+      pd.x = e.clientX;
+      pd.y = e.clientY;
       draw();
-    } else if (tool === "rect-fill" || tool === "rect-erase" || tool === "copy") {
+      return;
+    }
+
+    if (!isDrawingRef.current) 
+      return;
+    const raw = cellFromPoint(e.clientX, e.clientY);
+    const x = clamp(raw.x, 0, width - 1);
+    const z = clamp(raw.z, 0, depth - 1);
+    if (isFreehand(tool)) {
+      if (x !== raw.x || z !== raw.z) 
+        return; // freehand only paints inside the grid
+      if (tool === "paint") 
+        paintMirrored(x, currentLayer, z, selectedBlock);
+      else
+        setVoxelMirrored(x, currentLayer, z, tool === "eraser" ? AIR : selectedBlock, 0, true);
+      draw();
+    } else if (tool === "rect-fill" || tool === "rect-hollow" || tool === "rect-erase" || tool === "copy") {
       if (rectStartRef.current) {
-        previewRectRef.current = {
-          x0: rectStartRef.current.x,
-          z0: rectStartRef.current.z,
-          x1: x,
-          z1: z,
-        };
+        previewRectRef.current = { x0: rectStartRef.current.x, z0: rectStartRef.current.z, x1: x, z1: z };
         draw();
       }
     }
   }
 
   function handleMouseUp() {
-    if (!isDrawingRef.current) return;
+    if (panDragRef.current) {
+      panDragRef.current = null;
+      return;
+    }
+    if (!isDrawingRef.current)
+      return; // early exit if cancelled
     isDrawingRef.current = false;
-    if (tool === "pencil" || tool === "eraser") {
+    if (isFreehand(tool)) {
       commitStroke();
-    } else if (tool === "rect-fill" || tool === "rect-erase") {
+    } else if (tool === "rect-fill" || tool === "rect-hollow" || tool === "rect-erase") {
       if (previewRectRef.current) {
         const { x0, z0, x1, z1 } = previewRectRef.current;
-        fillRect(x0, z0, x1, z1, tool === "rect-erase" ? AIR : selectedBlock);
+        fillRect(x0, z0, x1, z1, tool === "rect-erase" ? AIR : selectedBlock, tool === "rect-hollow");
       }
       rectStartRef.current = null;
       previewRectRef.current = null;
@@ -3863,19 +4209,36 @@ function generateRandomTerrain(params:RngParams) {
   }
 
   function handleMouseLeave() {
-    if (isDrawingRef.current && (tool === "pencil" || tool === "eraser")) {
-      commitStroke();
-    }
-    isDrawingRef.current = false;
-    rectStartRef.current = null;
-    previewRectRef.current = null;
     setHoverCell(null);
+    roadHoverRef.current = null;
     draw();
   }
 
+  const dragHandlersRef = useRef({ 
+    move: (event: MouseEvent) => {}, 
+    up: () => {} ,
+    cancel: () => false as boolean,
+  });
+  dragHandlersRef.current = { 
+    move: handleDragMove, 
+    up: handleMouseUp,
+    cancel: cancelDrag,
+  };
+
   useEffect(() => {
-    function onKey(event) {
-      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "z") {
+    const move = (event: MouseEvent) => dragHandlersRef.current.move(event);
+    const up = () => dragHandlersRef.current.up();
+    window.addEventListener("mousemove", move);
+    window.addEventListener("mouseup", up);
+    return () => {
+      window.removeEventListener("mousemove", move);
+      window.removeEventListener("mouseup", up);
+    };
+  }, []);
+
+  useEffect(() => {
+    function onKey(event: KeyboardEvent) {
+      if ((event.ctrlKey || event.metaKey) && event.code === "KeyZ") {
         event.preventDefault();
         if (event.shiftKey) 
           terrain.redo();
@@ -3883,7 +4246,7 @@ function generateRandomTerrain(params:RngParams) {
           terrain.undo();
         return;
       }
-      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "y") {
+      if ((event.ctrlKey || event.metaKey) && event.code === "KeyZ") {
         event.preventDefault();
         terrain.redo();
         return;
@@ -3895,10 +4258,56 @@ function generateRandomTerrain(params:RngParams) {
         }
         return;
       }
+      const view = viewModeRef.current;
+      const orbit3d = view === "3d" && cameraModeRef.current === "orbit";
+
+      // Panning via hotkeys
+      if ((view === "2d" || orbit3d) && !event.ctrlKey && !event.metaKey && !event.altKey) {
+        const tag = (event.target as HTMLElement | null)?.tagName;
+        if (tag !== "INPUT" && tag !== "TEXTAREA") {
+          const n = event.shiftKey ? 10 : 1;
+          const pan = PAN_KEYS[event.code];
+          if (pan) {
+            event.preventDefault();
+            if (view === "2d") {
+              const step = n * CELL_BASE * zoomRef.current;
+              const v = viewRef.current;
+              setPan(v.panX - pan[0] * step, v.panY - pan[1] * step); // the view goes right, so the content goes left
+              drawRef.current();
+
+              // if (containerRef.current) {
+              //   const step = n * CELL_BASE * zoomRef.current;
+              //   containerRef.current.scrollBy({ left: pan[0] * step, top: pan[1] * step, behavior: "instant" });
+              // }
+            } else {
+              panOrbitByUnits(pan[0] * n, -pan[1] * n, 0); // W/ArrowUp = forward
+            }
+            return;
+          }
+          if (event.code === "PageUp" || event.code === "PageDown") {
+            event.preventDefault();
+            const dir = event.code === "PageUp" ? 1 : -1;
+            if (orbit3d) {
+              panOrbitByUnits(0, 0, dir * n); // In 3D, pan the camera up/down
+            } else if (!isDrawingRef.current) {
+              setCurrentLayer((prevLayer) => clamp(prevLayer + dir * n, 0, dimsRef.current.totalHeight - 1)); // In 2D, switch layers up/down
+            }
+            return;
+          }
+          if (view === "2d" && event.code === "Home") {
+            event.preventDefault();
+            centerView();
+            drawRef.current();
+            return;
+          }
+        }
+      }
+
       if (placingStructureRef.current) {
-        const tag = event.target && event.target.tagName;
-        if (tag === "INPUT" || tag === "TEXTAREA") return;
-        if (event.key.toLowerCase() === "r") {
+        const tag = (event.target && event.target instanceof HTMLElement) && event.target.tagName;
+        if (tag === "INPUT" || tag === "TEXTAREA")
+          return;
+        if (event.code === "KeyR") {
           event.preventDefault();
           setPlacingRotation((r) => (r + 1) % 4);
         } else if (event.key === "Escape") {
@@ -3907,9 +4316,33 @@ function generateRandomTerrain(params:RngParams) {
         }
         return;
       }
+      
+      if (viewModeRef.current === "2d" || orbit3d) {
+        if(!event.ctrlKey && !event.metaKey && !event.altKey) {
+          const tag = (event.target as HTMLElement | null)?.tagName;
+          if (tag !== "INPUT" && tag !== "TEXTAREA") {
+            // deselect tool if Esc in 2D and 3D-orbit
+            if (event.key === "Escape") {
+              event.preventDefault();
+              if (!dragHandlersRef.current.cancel())
+                setTool("none");
+              return;
+            }
+            const def = TOOL_BY_CODE.get(event.code);
+            // Tool hotkey - only in 2D for now
+            if (def && def.views.includes(viewModeRef.current)) {
+              event.preventDefault();
+              setTool(def.id);
+              return;
+            }
+          }
+        }
+        
+      }
       if (/^[0-9]$/.test(event.key)) {
-        const tag = event.target && event.target.tagName;
-        if (tag === "INPUT" || tag === "TEXTAREA") return;
+        const tag = (event.target && event.target instanceof HTMLElement) && event.target.tagName;
+        if (tag === "INPUT" || tag === "TEXTAREA")
+          return;
         const slot = event.key === "0" ? 9 : Number(event.key) - 1;
         event.preventDefault();
         selectHotbarSlot(slot);
@@ -3942,6 +4375,32 @@ function generateRandomTerrain(params:RngParams) {
       setCurrentLayer(newH - 1);
     setVoxelCount(terrain.size);
     scheduleSave();
+  }
+
+  // move existing map within the grid limits
+  function shiftMap(dx: number, dy: number, dz: number) {
+    const cells = Array.from(terrain.cells()); // a snapshot, so we never walk the live map
+    const entities = entityInstancesRef.current;
+    if (cells.length === 0 && entities.length === 0) {
+      setStatus(STRINGS.en.shiftNothing);
+      return;
+    }
+    const fits = (x: number, y: number, z: number) => {
+      return (x + dx >= 0 && x + dx < width &&
+        y + dy >= 0 && y + dy < totalHeight &&
+        z + dz >= 0 && z + dz < depth);
+    }
+    if (!cells.every((c) => fits(c.x, c.y, c.z)) || !entities.every((ent) => fits(ent.x, ent.y, ent.z))) {
+      setStatus(STRINGS.en.shiftNoRoom); // refuse; nothing changes
+      return;
+    }
+    const movedEntities = entities.map((ent) => ({ ...ent, x: ent.x + dx, y: ent.y + dy, z: ent.z + dz }));
+    entityInstancesRef.current = movedEntities; // the ref first, so the autosave sees the new positions
+    setEntityInstances(movedEntities);
+    terrain.replaceAll(cells.map((c) => ({ x: c.x + dx, y: c.y + dy, z: c.z + dz, block: c.block, meta: c.meta })));
+    lastHeightMapRef.current = null; // the "regenerate trees/ore" snapshot no longer matches
+    setCurrentLayer((layer) => clamp(layer + dy, 0, totalHeight - 1)); // Follow the Y layer if it shifts
+    setStatus(STRINGS.en.shiftDone(dx, dy, dz));
   }
 
   function ensureAirship() {
@@ -4107,6 +4566,17 @@ function generateRandomTerrain(params:RngParams) {
     setShowStats(true);
   }
 
+  function newMap():void {
+    if (!window.confirm("Start a new empty map? The current map and its autosave will be replaced."))
+      return;
+    terrain.replaceAll([]);
+    entityInstancesRef.current = [];      // debounced autosave doesn't see the old entities
+    setEntityInstances([]);
+    lastHeightMapRef.current = null;      // otherwise regenerate* would run on the old map's heightmap
+    setCurrentLayer(0);
+    setStatus("New map");
+  }
+
   function importJson(event:React.ChangeEvent<HTMLInputElement, HTMLInputElement> ) {
     const file = event.target.files && event.target.files[0];
     if (!file)
@@ -4129,10 +4599,11 @@ function generateRandomTerrain(params:RngParams) {
   const chunkY = Math.floor(currentLayer / CHUNK);
   const localY = currentLayer % CHUNK;
 
-  const toolBtn = (id:string, label:string, title:string) => (
-    <button
+  const toolBtn = (id:string, label:string, title:string) => {
+    const codes = TOOL_BY_ID.get(id)?.codes;
+    return (<button
       onClick={() => setTool(id)}
-      title={title}
+      title={codes?.length ? `${title} [${hotkeyLabel(codes)}]` : title}
       style={{
         padding: "6px 10px",
         borderRadius: 6,
@@ -4144,8 +4615,8 @@ function generateRandomTerrain(params:RngParams) {
       }}
     >
       {label}
-    </button>
-  );
+    </button>)
+  };
 
   return (
     <div
@@ -4164,10 +4635,11 @@ function generateRandomTerrain(params:RngParams) {
         applyServerEdits={applyServerEdits}
         cameraMode={cameraMode}
         entityInstances={entityInstances}
+        newMap={newMap}
+        importJson={importJson}
         exportJson={exportJson}
         exportJsonCompressed={exportJsonCompressed}
         mapData={mapData}
-        importJson={importJson}
         scheduleSave={scheduleSave}
         setMapData={setMapData}
         setCameraMode={setCameraMode}
@@ -4200,6 +4672,7 @@ function generateRandomTerrain(params:RngParams) {
             mirrorX={mirrorX}
             mirrorZ={mirrorZ}
             moveSpeed={moveSpeed}
+            shiftMap={shiftMap}
             onionRange={onionRange}
             onionSkin={onionSkin}
             redo={()=> terrain.redo()}
@@ -4207,10 +4680,7 @@ function generateRandomTerrain(params:RngParams) {
 
             roadParams={roadParams}
             updateRoadParams={updateRoadParams}
-            // roadBlock={roadParams.roadBlock}
-            // roadWidth={roadParams.roadWidth}
-            // setRoadBlock={setRoadBlock}
-            // setRoadWidth={setRoadWidth}
+
             setCopyYFrom={setCopyYFrom}
             setCopyYTo={setCopyYTo}
             setMirrorX={setMirrorX}
@@ -4224,7 +4694,7 @@ function generateRandomTerrain(params:RngParams) {
             setShowRandomPanel={setShowRandomPanel}
             setShowSaves={setShowSaves}
             setShowStructuresPanel={setShowStructuresPanel}
-            setZoom={setZoom}
+            setZoom={zoomToCenter}
             showBulkTexturePanel={showBulkTexturePanel}
             showEntitiesPanel={showEntitiesPanel}
             showPresets={showPresets}
@@ -4326,114 +4796,116 @@ function generateRandomTerrain(params:RngParams) {
               setPlacingEntityName={setPlacingEntityName}
             />
           )}
-
-          <div
-            ref={containerRef}
-            style={{
-              flex: 1,
-              minHeight: 0,
-              overflow: viewMode === "2d" ? "auto" : "hidden",
-              padding: viewMode === "2d" ? 16 : 0,
-              background: "#08090c",
-              position: "relative",
-            }}
-          >
-            <canvas
-              ref={canvasRef}
-              onMouseDown={handleMouseDown}
-              onMouseMove={handleMouseMove}
-              onMouseUp={handleMouseUp}
-              onMouseLeave={handleMouseLeave}
+          <div style={{ flex: 1, minHeight: 0, position: "relative" }}>
+            <div
+              ref={containerRef}
               style={{
-                display: viewMode === "2d" ? "block" : "none",
-                cursor: "crosshair",
-                imageRendering: "pixelated",
-                boxShadow: "0 0 0 1px #2a2f3a",
+                position: "absolute",
+                inset: 0,
+                overflow: "hidden",
+                padding: 0,
+                background: "#08090c",
               }}
-            />
-            <canvas
-              ref={canvas3dRef}
-              style={{
-                display: viewMode === "3d" ? "block" : "none",
-                width: "100%",
-                height: "100%",
-                cursor: "crosshair",
-              }}
-            />
-            {viewMode === "3d" && cameraMode === "fly" && (
-              <>
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "50%",
-                    left: "50%",
-                    width: 18,
-                    height: 18,
-                    marginLeft: -9,
-                    marginTop: -9,
-                    pointerEvents: "none",
-                  }}
-                >
+            >
+              <canvas
+                ref={canvasRef}
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                //onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseLeave}
+                style={{
+                  display: viewMode === "2d" ? "block" : "none",
+                  width: "100%",
+                  height: "100%",
+                  cursor: "crosshair",
+                  imageRendering: "pixelated",
+                  // boxShadow: "0 0 0 1px #2a2f3a",
+                }}
+              />
+              <canvas
+                ref={canvas3dRef}
+                style={{
+                  display: viewMode === "3d" ? "block" : "none",
+                  width: "100%",
+                  height: "100%",
+                  cursor: "crosshair",
+                }}
+              />
+              {viewMode === "3d" && cameraMode === "fly" && (
+                <>
                   <div
                     style={{
                       position: "absolute",
-                      left: 8,
-                      top: 0,
-                      width: 2,
-                      height: 18,
-                      background: "rgba(255,255,255,0.85)",
-                      boxShadow: "0 0 2px rgba(0,0,0,0.8)",
-                    }}
-                  />
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: 8,
-                      left: 0,
+                      top: "50%",
+                      left: "50%",
                       width: 18,
-                      height: 2,
-                      background: "rgba(255,255,255,0.85)",
-                      boxShadow: "0 0 2px rgba(0,0,0,0.8)",
-                    }}
-                  />
-                </div>
-                {!isLocked && (
-                  <div
-                    style={{
-                      position: "absolute",
-                      inset: 0,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      background: "rgba(8,9,12,0.6)",
+                      height: 18,
+                      marginLeft: -9,
+                      marginTop: -9,
                       pointerEvents: "none",
-                      textAlign: "center",
                     }}
                   >
-                    <div>
-                      <div style={{ fontSize: 16, color: "#e6e8ee", marginBottom: 8 }}>
-                        {t.clickToPlay}
-                      </div>
-                      <div
-                        style={{
-                          fontSize: 12,
-                          color: "#8a91a3",
-                          lineHeight: 1.6,
-                          whiteSpace: "pre-line",
-                        }}
-                      >
-                        {t.controlsFly}
-                      </div>
-                      {pointerLockFailed && (
-                        <div style={{ fontSize: 11, color: "#ff9e9e", marginTop: 10 }}>
-                          {t.pointerLockFailedMsg}
-                        </div>
-                      )}
-                    </div>
+                    <div
+                      style={{
+                        position: "absolute",
+                        left: 8,
+                        top: 0,
+                        width: 2,
+                        height: 18,
+                        background: "rgba(255,255,255,0.85)",
+                        boxShadow: "0 0 2px rgba(0,0,0,0.8)",
+                      }}
+                    />
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: 8,
+                        left: 0,
+                        width: 18,
+                        height: 2,
+                        background: "rgba(255,255,255,0.85)",
+                        boxShadow: "0 0 2px rgba(0,0,0,0.8)",
+                      }}
+                    />
                   </div>
-                )}
-              </>
-            )}
+                  {!isLocked && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        inset: 0,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        background: "rgba(8,9,12,0.6)",
+                        pointerEvents: "none",
+                        textAlign: "center",
+                      }}
+                    >
+                      <div>
+                        <div style={{ fontSize: 16, color: "#e6e8ee", marginBottom: 8 }}>
+                          {t.clickToPlay}
+                        </div>
+                        <div
+                          style={{
+                            fontSize: 12,
+                            color: "#8a91a3",
+                            lineHeight: 1.6,
+                            whiteSpace: "pre-line",
+                          }}
+                        >
+                          {t.controlsFly}
+                        </div>
+                        {pointerLockFailed && (
+                          <div style={{ fontSize: 11, color: "#ff9e9e", marginTop: 10 }}>
+                            {t.pointerLockFailedMsg}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
 
             <PaletteHotbar
               slots={hotbar}
@@ -4445,7 +4917,7 @@ function generateRandomTerrain(params:RngParams) {
               onAssign={assignHotbarSlot}
             />
           </div>
-
+          
           <div
             style={{
               display: "flex",

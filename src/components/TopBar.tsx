@@ -3,24 +3,46 @@ import { inputStyle, actionBtn } from "../styles/inline";
 import { MAP_SIZES, REAL_BIOMES, MAX_CHUNKS, mapSizeKey } from "../constants";
 import { clamp } from "../lib/numbers";
 import { useRef } from "react";
+import { MapData } from "./TerrainEditor";
+
+interface Props {
+  applyGridResize,
+  applyServerEdits,
+  cameraMode: string,
+  entityInstances,
+  newMap: () => void
+  importJson: (event:React.ChangeEvent<HTMLInputElement, HTMLInputElement> )=> void,
+  exportJson: () => void,
+  exportJsonCompressed: () => Promise<void>,
+
+  mapData: MapData,
+  
+  scheduleSave: () => void,
+  setMapData,
+  setCameraMode,
+  setShowHelp,
+  setViewMode,
+  viewMode,
+}
 
 export default function TopBar({
   applyGridResize,
   applyServerEdits,
   cameraMode,
   entityInstances,
+  newMap,
+  importJson,
   exportJson,
   exportJsonCompressed,
 
   mapData,
-  importJson,
   scheduleSave,
   setMapData,
   setCameraMode,
   setShowHelp,
   setViewMode,
   viewMode,
-}) {
+}: Props) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const editsInputRef = useRef<HTMLInputElement>(null);
   const t = STRINGS.en;
@@ -203,6 +225,9 @@ export default function TopBar({
 
       <div style={{ flex: 1 }} />
 
+      <button onClick={newMap} style={actionBtn} title={t.newMapTitle}>
+        {t.newMap}
+      </button>
       <button onClick={() => setShowHelp(true)} style={actionBtn}>
         {t.helpBtn}
       </button>

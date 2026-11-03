@@ -12,7 +12,7 @@ export const MAX_CHUNKS = { x: 32, y: 7, z: 32 };
 
 export const MAP_SIZES = mapSizes;
 
-export function mapSizeKey(x, y, z) {
+export function mapSizeKey(x: number, y: number, z: number) {
   return x + "x" + y + "x" + z;
 }
 

@@ -75,7 +75,7 @@ export const SPECIAL_BLOCK_COLORS = {
   Water: "#1e7fd0",
 };
 
-export function hexToHsl(hex) {
+export function hexToHsl(hex:string) {
   const r = parseInt(hex.slice(1, 3), 16) / 255;
   const g = parseInt(hex.slice(3, 5), 16) / 255;
   const b = parseInt(hex.slice(5, 7), 16) / 255;
@@ -103,7 +103,7 @@ export function hexToHsl(hex) {
   return [h, s * 100, l * 100];
 }
 
-export function colorForId(id) {
+export function colorForId(id: number):string {
   const name = BLOCK_NAMES[id];
   if (!name) {
     const hue = (id * 47) % 360;
@@ -111,7 +111,8 @@ export function colorForId(id) {
     const light = 38 + ((id * 7) % 20);
     return `hsl(${hue}, ${sat}%, ${light}%)`;
   }
-  if (SPECIAL_BLOCK_COLORS[name]) return SPECIAL_BLOCK_COLORS[name];
+  if (SPECIAL_BLOCK_COLORS[name])
+    return SPECIAL_BLOCK_COLORS[name];
 
   const parts = name.split("_");
   const colorWord = parts[parts.length - 1];

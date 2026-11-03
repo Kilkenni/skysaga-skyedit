@@ -1,6 +1,6 @@
 import { GridDimensions, VoxelGrid } from "../src/VoxelGrid";
 import { AIR } from "../src/constants";
-import { describe, it, expect } from "@jest/globals";
+import { describe, it, expect } from "vitest";
 
 // All three sizes differ, so a mixed-up axis can't hide.
 const DIMS: GridDimensions = { width: 4, depth: 3, height: 5 };

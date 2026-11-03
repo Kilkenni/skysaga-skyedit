@@ -6,26 +6,23 @@ import { RoadParams } from "./TerrainEditor";
 
 interface Props {
   cameraMode,
-  clearLayer,
+  clearLayer: () => void,
   clipboardInfo,
-  computeMapStats,
+  computeMapStats: () => void,
   copyLayer,
-  copyYFrom,
-  copyYTo,
+  copyYFrom: number,
+  copyYTo: number,
   fillLayer,
-  mirrorX,
-  mirrorZ,
+  mirrorX: boolean,
+  mirrorZ: boolean,
   moveSpeed,
-  onionRange,
-  onionSkin,
+  shiftMap: (dx: number, dy: number, dz: number) => void,
+  onionRange: number,
+  onionSkin: boolean,
   redo,
-  resetCameraView,
+  resetCameraView: () => void,
   roadParams: RoadParams,
   updateRoadParams: <K extends keyof RoadParams>(paramName: K, value: RoadParams[K]) => void,
-  /*roadBlock,
-  roadWidth,
-  setRoadBlock,
-  setRoadWidth,*/
 
   setCopyYFrom,
   setCopyYTo,
@@ -40,19 +37,19 @@ interface Props {
   setShowRandomPanel,
   setShowSaves,
   setShowStructuresPanel,
-  setZoom,
-  showBulkTexturePanel,
-  showEntitiesPanel,
-  showPresets,
-  showRandomPanel,
-  showSaves,
-  showStructuresPanel,
-  tool,
-  toolBtn,
-  totalHeight,
+  setZoom: (next: number) => void,
+  showBulkTexturePanel: boolean,
+  showEntitiesPanel: boolean,
+  showPresets: boolean,
+  showRandomPanel: boolean,
+  showSaves: boolean,
+  showStructuresPanel: boolean,
+  tool: string,
+  toolBtn: (id:string, label:string, title:string)=>React.JSX.Element,
+  totalHeight: number,
   undo,
   viewMode,
-  zoom,
+  zoom: number,
   zoomRef,
 }
 
@@ -68,6 +65,7 @@ export default function ToolbarRow({
   mirrorX,
   mirrorZ,
   moveSpeed,
+  shiftMap,
   onionRange,
   onionSkin,
   redo,
@@ -123,12 +121,15 @@ export default function ToolbarRow({
         <>
           {toolBtn("pencil", t.pencil, t.pencilTitle)}
           {toolBtn("eraser", t.eraser, t.eraserTitle)}
+          {toolBtn("paint", t.paint, t.paintTitle)}
         </>
       )}
       {viewMode === "2d" && (
         <>
           {toolBtn("rect-fill", t.rectFill, t.rectFillTitle)}
+          {toolBtn("rect-hollow", t.rectHollow, t.rectHollowTitle)}
           {toolBtn("rect-erase", t.rectErase, t.rectEraseTitle)}
+          {toolBtn("eyedropper", t.eyedropper, t.eyedropperTitle)}
           {toolBtn("bucket", t.bucket, t.bucketTitle)}
           {toolBtn("copy", t.copyArea, t.copyAreaTitle)}
           {tool === "copy" && (
@@ -187,7 +188,7 @@ export default function ToolbarRow({
                   min={1}
                   max={255}
                   value={roadParams.roadBlock}
-                  onChange={(e) => updateRoadParams("roadBlock", clamp(e.target.value, 1, 255))}
+                  onChange={(e) => updateRoadParams("roadBlock", clampBlockId(e.target.value))}
                   style={{ ...inputStyle, width: 46 }}
                 />
                 <span
@@ -195,7 +196,7 @@ export default function ToolbarRow({
                     width: 12,
                     height: 12,
                     borderRadius: 3,
-                    background: colorForId(clamp(roadParams.roadBlock, 1, 255)),
+                    background: colorForId(clampBlockId(roadParams.roadBlock)),
                   }}
                 />
               </label>
@@ -302,6 +303,24 @@ export default function ToolbarRow({
 
       <div style={{ flex: 1 }} />
 
+      <div style={{ width: 1, height: 20, background: "#2a2f3a", margin: "0 4px" }} />
+      <span style={{ fontSize: 11, color: "#8a91a3" }}>{t.shiftMap}</span>
+      {([["X-", -1, 0, 0], ["X+", 1, 0, 0], ["Z-", 0, 0, -1], ["Z+", 0, 0, 1], ["Y-", 0, -1, 0], ["Y+", 0, 1, 0]] as const).map(
+        ([label, dx, dy, dz]) => (
+          <button
+            key={label}
+            style={actionBtn}
+            title={t.shiftMapTitle}
+            onClick={(e) => {
+              const n = e.shiftKey ? 10 : 1;
+              shiftMap(dx * n, dy * n, dz * n);
+            }}
+          >
+            {label}
+          </button>
+        )
+      )}
+
       {viewMode === "2d" && (
         <>
           <button
@@ -362,12 +381,9 @@ export default function ToolbarRow({
               type="range"
               min={0.4}
               max={3}
-              step={0.1}
+              step={0.05}
               value={zoom}
-              onChange={(e) => {
-                zoomRef.current = Number(e.target.value);
-                setZoom(zoomRef.current);
-              }}
+              onChange={(e) => setZoom(Number(e.target.value))}
             />
           </label>
         </>
