@@ -1,10 +1,103 @@
 import { MapDimensions } from "../components/TerrainEditor";
 import { AIR } from "../constants";
 import { VoxelGrid } from "../VoxelGrid";
-import { NormalizedParams } from "./mapParamNormalizer";
+import { NormalizedParams, TreeParams, VegParams } from "./mapParamNormalizer";
 import { makeValueNoise, makeValueNoise3D, mulberry32 } from "./noise";
 import { pickWeighted } from "./numbers";
 import { getRotatedStructure, Structure } from "./structures";
+
+// HELPER FUNCTIONS
+
+type PlantedVeg = {
+  x: number,
+  z: number
+}[]
+
+export function canPlantVeg(tx: number, tz: number, plantedVeg:PlantedVeg, spacing: number):boolean {
+  const spacing2 = spacing * spacing;
+  for (const p of plantedVeg) {
+    const dx = tx - p.x;
+    const dz = tz - p.z;
+    if (dx * dx + dz * dz < spacing2)
+      return false;
+  }
+  return true;
+}
+
+/**
+ * @param skipCenter tree: don't overwrite the trunk column
+ */
+function stampFoliageLayer(
+  target: Pick<VoxelGrid, "set">,
+  rand:()=>number, 
+  centerX: number, layerY: number, centerZ: number, 
+  layerR: number, tolerance: number, leavesBlock: number, dims: MapDimensions, skipCenter = false):void {  
+  if (layerY < 0 || layerY >= dims.totalHeight) 
+    return;
+  for (let dx = -layerR; dx <= layerR; dx++) {
+    for (let dz = -layerR; dz <= layerR; dz++) {
+      const dist = Math.sqrt(dx * dx + dz * dz);
+      if (dist > layerR + tolerance) 
+        continue;
+      // Do not fill corners
+      if (Math.abs(dx) === layerR && Math.abs(dz) === layerR && rand() < 0.5) 
+        continue;
+      const lx = centerX + dx;
+      const lz = centerZ + dz;
+      if (lx < 0 || lx >= dims.width || lz < 0 || lz >= dims.depth) 
+        continue;
+      // Do not overwrite the trunk
+      if(skipCenter && dx === 0 && dz === 0 )
+        continue;
+      target.set(lx, layerY, lz, leavesBlock);
+    }
+  }
+}
+
+export function plantTree(target:Pick<VoxelGrid, "set">, trees: PlantedVeg, rand: ()=> number, tx: number, groundY: number, tz: number, params: TreeParams, dims: MapDimensions): boolean {
+  const trunkHeight = params.minH + Math.floor(rand() * (params.maxH - params.minH + 1));
+  const trunkTop = groundY + trunkHeight - 1;
+  if (trunkTop + 3 >= dims.totalHeight)
+    return false;
+  // trunk
+  for (let ty = 0; ty < trunkHeight; ty++) {
+    target.set(tx, groundY + ty, tz, params.woodBlock);
+  }
+  // leaves
+  const layers = [
+    { dy: -1, radius: 2 },
+    { dy: 0, radius: 2 },
+    { dy: 1, radius: 1 },
+    { dy: 2, radius: 0 },
+  ];
+  for (const layer of layers) {
+    const ly = trunkTop + layer.dy;
+    stampFoliageLayer(target, rand,
+      tx, ly, tz, 
+      layer.radius, 0.4, params.leavesBlock,
+      dims, ly <= trunkTop
+    )
+  }
+  trees.push({ x: tx, z: tz });
+  return true;
+}
+
+export function plantBush(target:Pick<VoxelGrid, "set">, bushes: PlantedVeg, rand: ()=> number, tx: number, groundY: number, tz: number, params: VegParams, dims: MapDimensions):boolean {
+  const layers = [
+    { dy: 0, radius: 1 },
+    { dy: 1, radius: 1 },
+  ];
+  for (const layer of layers) {
+    const ly = groundY + layer.dy;
+    stampFoliageLayer(target, rand,
+      tx, ly, tz,
+      layer.radius, 0.3, params.leavesBlock,
+      dims, false);
+  }
+  bushes.push({ x: tx, z: tz });
+  return true;
+}
+
 
 function generateTerrain(
     mapDimensions: MapDimensions,
@@ -227,109 +320,12 @@ function generateTerrain(
     // Let the witchcraft commence
     const grid = new VoxelGrid({ width, depth, height: totalHeight })
 
-    // HELPER FUNCTIONS
-
-    // TREES
     
-    const plantedTrees:{x: number, z: number}[] = [];
 
-    function canPlantTree(tx: number, tz: number) {
-      const spacing2 = normParams.veg.trees.spacing * normParams.veg.trees.spacing;
-      for (const p of plantedTrees) {
-        const dx = tx - p.x;
-        const dz = tz - p.z;
-        if (dx * dx + dz * dz < spacing2)
-          return false;
-      }
-      return true;
-    }
-
-    function plantTree(tx: number, groundY: number, tz: number) {
-      const trunkHeight = normParams.veg.trees.minH + Math.floor(rand() * (normParams.veg.trees.maxH - normParams.veg.trees.minH + 1));
-      const trunkTop = groundY + trunkHeight - 1;
-      if (trunkTop + 3 >= totalHeight)
-        return;
-
-      for (let ty = 0; ty < trunkHeight; ty++) {
-        grid.set(tx, groundY + ty, tz, normParams.veg.trees.woodBlock);
-      }
-
-      const layers = [
-        { dy: -1, radius: 2 },
-        { dy: 0, radius: 2 },
-        { dy: 1, radius: 1 },
-        { dy: 2, radius: 0 },
-      ];
-      for (const layer of layers) {
-        const ly = trunkTop + layer.dy;
-        if (ly < 0 || ly >= totalHeight)
-          continue;
-        const r = layer.radius;
-        for (let dx = -r; dx <= r; dx++) {
-          for (let dz = -r; dz <= r; dz++) {
-            const dist = Math.sqrt(dx * dx + dz * dz);
-            if (dist > r + 0.4)
-              continue;
-            if (Math.abs(dx) === r && Math.abs(dz) === r && rand() < 0.5)
-              continue;
-            const lx = tx + dx;
-            const lz = tz + dz;
-            if (lx < 0 || lx >= width || lz < 0 || lz >= depth)
-              continue;
-            if (dx === 0 && dz === 0 && ly <= trunkTop)
-              continue;
-            grid.set(lx, ly, lz, normParams.veg.trees.leavesBlock);
-          }
-        }
-      }
-      plantedTrees.push({ x: tx, z: tz });
-    }
-
-    // BUSHES
-
-    const plantedBushes:{
-      x: number,
-      z: number
-    }[] = [];
-
-    function canPlantBush(tx: number, tz: number) {
-      const spacing2 = normParams.veg.bushes.spacing * normParams.veg.bushes.spacing;
-      for (const p of plantedBushes) {
-        const dx = tx - p.x;
-        const dz = tz - p.z;
-        if (dx * dx + dz * dz < spacing2)
-          return false;
-      }
-      return true;
-    }
-
-    function plantBush(tx: number, groundY: number, tz: number) {
-      const layers = [
-        { dy: 0, radius: 1 },
-        { dy: 1, radius: 1 },
-      ];
-      for (const layer of layers) {
-        const ly = groundY + layer.dy;
-        if (ly < 0 || ly >= totalHeight) 
-          continue;
-        const r = layer.radius;
-        for (let dx = -r; dx <= r; dx++) {
-          for (let dz = -r; dz <= r; dz++) {
-            const dist = Math.sqrt(dx * dx + dz * dz);
-            if (dist > r + 0.3) 
-              continue;
-            if (Math.abs(dx) === r && Math.abs(dz) === r && rand() < 0.5) 
-              continue;
-            const lx = tx + dx;
-            const lz = tz + dz;
-            if (lx < 0 || lx >= width || lz < 0 || lz >= depth) 
-              continue;
-            grid.set(lx, ly, lz, normParams.veg.bushes.block);
-          }
-        }
-      }
-      plantedBushes.push({ x: tx, z: tz });
-    }
+    // VEGETATION - TREES and BUSHES made of blocks
+    
+    const plantedTrees:PlantedVeg = [];
+    const plantedBushes:PlantedVeg = [];
 
     // Generating
     for (let x = 0; x < width; x++) {
@@ -399,12 +395,14 @@ function generateTerrain(
 
         let treePlanted = false;
         if (!isWater && !isSubmerged && height < totalHeight && normParams.veg.trees.isEnabled) {
-          let effectiveTreeChance = normParams.veg.trees.treeChance;
+          let effectiveTreeChance = normParams.veg.trees.chance;
           if (normParams.veg.trees.isForests && forestMask) {
             effectiveTreeChance = forestMask(x, z) > 0.55 ? normParams.veg.trees.forestDensity : 0;
           }
-          if (effectiveTreeChance > 0 && rand() < effectiveTreeChance && canPlantTree(x, z)) {
-            plantTree(x, height, z);
+          if (effectiveTreeChance > 0 && rand() < effectiveTreeChance && canPlantVeg(x, z, plantedTrees, normParams.veg.trees.spacing)) {
+            plantTree(grid, plantedTrees, rand, x, height, z, normParams.veg.trees, mapDimensions);
+            // intentional, preserves old behaviour: a tree that doesn't fit still blocks
+            // bush and deco in this column. Revisit in step 3.
             treePlanted = true;
           }
         }
@@ -416,12 +414,11 @@ function generateTerrain(
           !isSubmerged &&
           height < totalHeight &&
           normParams.veg.bushes.isEnabled &&
-          normParams.veg.bushes.bushChance > 0 &&
-          rand() < normParams.veg.bushes.bushChance &&
-          canPlantBush(x, z)
+          normParams.veg.bushes.chance > 0 &&
+          rand() < normParams.veg.bushes.chance &&
+          canPlantVeg(x, z,  plantedBushes, normParams.veg.bushes.spacing)
         ) {
-          plantBush(x, height, z);
-          bushPlanted = true;
+          bushPlanted = plantBush(grid, plantedBushes, rand, x, height, z, normParams.veg.bushes, mapDimensions);
         }
 
         if (

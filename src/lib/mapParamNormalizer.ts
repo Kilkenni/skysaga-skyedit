@@ -86,6 +86,21 @@ interface RngParams {
   randErosionIterations: number,
 }
 
+interface VegParams {
+  isEnabled: boolean,
+  chance: number,
+  spacing: number,
+  leavesBlock: number,
+}
+
+interface TreeParams extends VegParams {
+  isForests: boolean,
+  forestDensity: number,
+  minH: number,
+  maxH: number,
+  woodBlock: number,
+}
+
 interface NormalizedParams {
   block: {
     base: number,
@@ -168,23 +183,8 @@ interface NormalizedParams {
     glowBlock: number,
   },
   veg: {
-    trees: {
-      isEnabled: boolean,
-      isForests: boolean,
-      forestDensity: number,
-      treeChance: number,
-      minH: number,
-      maxH: number,
-      spacing: number,
-      woodBlock: number,
-      leavesBlock: number,
-    },
-    bushes: {
-      isEnabled: boolean,
-      bushChance: number,
-      spacing: number,
-      block: number,
-    }
+    trees: TreeParams,
+    bushes: VegParams,
   },
   deco: {
     weightedList: WeightedList,
@@ -295,7 +295,7 @@ function normalizeRngParameters(params:RngParams, width: number, depth: number, 
         isEnabled: params.randTrees,
         isForests: params.randForests,
         forestDensity: clamp(params.randForestDensity, 0, 100) / 100,
-        treeChance: clamp(params.randTreeDensity, 0, 100) / 100,
+        chance: clamp(params.randTreeDensity, 0, 100) / 100,
         minH: treeMinH,
         maxH: clamp(params.randTreeMaxHeight, treeMinH, 20),
         spacing: clamp(params.randTreeSpacing, 0, 20),
@@ -304,9 +304,9 @@ function normalizeRngParameters(params:RngParams, width: number, depth: number, 
       },
       bushes: {
         isEnabled: params.randBushes,
-        bushChance: clamp(params.randBushDensity, 0, 100) / 100,
+        chance: clamp(params.randBushDensity, 0, 100) / 100,
         spacing: clamp(params.randBushSpacing, 0, 10),
-        block: clampBlockId(params.randBushBlock),
+        leavesBlock: clampBlockId(params.randBushBlock),
       }
     },
     deco: {
@@ -329,5 +329,7 @@ function normalizeRngParameters(params:RngParams, width: number, depth: number, 
 export {
   RngParams,
   NormalizedParams,
+  VegParams,
+  TreeParams,
   normalizeRngParameters
 }

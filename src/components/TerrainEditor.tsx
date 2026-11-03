@@ -31,7 +31,7 @@ import PaletteHotbar from "./PaletteHotbar.tsx";
 import { NormalizedParams, normalizeRngParameters, RngParams } from "../lib/mapParamNormalizer.ts";
 import { hotkeyLabel, isFreehand, PAN_KEYS, TOOL_BY_CODE, TOOL_BY_ID } from "../lib/tools.ts";
 import { VoxelGrid } from "../VoxelGrid.ts";
-import { generateTerrain } from "../lib/mapGenerator.ts";
+import { canPlantVeg, generateTerrain } from "../lib/mapGenerator.ts";
 
 
 export interface MapData {
@@ -1407,15 +1407,7 @@ export default function TerrainEditor() {
     const idSet = new Set([treeWood, treeLeaves, bushBlock]);
     const plantedT:{x,z}[] = [];
     const plantedB:{x,z}[] = [];
-    function canPlant(list, tx, tz, spacing) {
-      const s2 = spacing * spacing;
-      for (const p of list) {
-        const dx = tx - p.x;
-        const dz = tz - p.z;
-        if (dx * dx + dz * dz < s2) return false;
-      }
-      return true;
-    }
+
     beginStroke();
     clearVoxelsByBlockIds(idSet);
     for (let x = 0; x < width; x++) {
@@ -1428,7 +1420,7 @@ export default function TerrainEditor() {
         if (params.randTrees) {
           let chance = treeChance;
           if (params.randForests && forestMask) chance = forestMask(x, z) > 0.55 ? forestDensity : 0;
-          if (chance > 0 && rand() < chance && canPlant(plantedT, x, z, treeSpacing)) {
+          if (chance > 0 && rand() < chance && canPlantVeg(x, z, plantedT, treeSpacing)) {
             plantTreeStandalone(rand, x, h, z, {
               treeWood,
               treeLeaves,
@@ -1448,7 +1440,7 @@ export default function TerrainEditor() {
           params.randBushes &&
           bushChance > 0 &&
           rand() < bushChance &&
-          canPlant(plantedB, x, z, bushSpacing)
+          canPlantVeg(x, z, plantedB, bushSpacing)
         ) {
           plantBushStandalone(rand, x, h, z, { bushBlock, width, depth, totalHeight });
           plantedB.push({ x, z });
