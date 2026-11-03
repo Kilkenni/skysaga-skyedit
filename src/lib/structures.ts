@@ -1,6 +1,21 @@
 import { VoxelCell } from "../VoxelStore";
 import { colorForId } from "./colors";
 
+interface Structure {
+  id: number,
+  name: string,
+  category: string,
+  sizeX: number,
+  sizeY: number,
+  sizeZ: number,
+  voxels,
+  enabled: boolean,
+  count: number,
+  rotate: boolean,
+  minSpacing: number,
+  requireFlat: boolean,
+}
+
 function rotateStructure90(voxels:VoxelCell[], sizeX: number, sizeZ: number) {
   const rotated: VoxelCell[] = voxels.map((v) => ({
     x: v.z,
@@ -57,5 +72,7 @@ function generateStructureThumbnail(entry) {
 export {
   rotateStructure90,
   getRotatedStructure,
-  generateStructureThumbnail
+  generateStructureThumbnail,
+
+  Structure,
 }

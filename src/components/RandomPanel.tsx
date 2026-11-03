@@ -2,7 +2,7 @@ import { STRINGS } from "../i18n/strings";
 import { inputStyle, actionBtn } from "../styles/inline";
 import { colorForId } from "../lib/colors";
 import { clamp, clampBlockId, parseIdList } from "../lib/numbers";
-import { RngParams } from "../lib/mapGenerator";
+import { RngParams } from "../lib/mapParamNormalizer";
 import React from "react";
 import CollapsibleOptionsBlock from "./CollapsibleOptionsBlock";
 
