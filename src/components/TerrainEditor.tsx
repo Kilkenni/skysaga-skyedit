@@ -247,7 +247,7 @@ export default function TerrainEditor() {
   }
   const roadStartRef = useRef<typeof roadParams.roadPending>(null);
 
-  const [clipboardInfo, setClipboardInfo] = useState<any>(null);
+  const [clipboardInfo, setClipboardInfo] = useState<{w: number, h: number, d: number, count: number}|null>(null);
   const [copyYFrom, setCopyYFrom] = useState(0);
   const [copyYTo, setCopyYTo] = useState(0);
   const [mirrorX, setMirrorX] = useState(false);
@@ -289,17 +289,17 @@ export default function TerrainEditor() {
   const structuresRef = useRef<typeof structures>([]);
   const viewModeRef = useRef<typeof viewMode>("3d");
 
-  const [placingStructureId, setPlacingStructureId] = useState(null);
-  const [placingRotation, setPlacingRotation] = useState(0);
-  const placingStructureRef = useRef(null);
-  const placingRotationRef = useRef(0);
+  const [placingStructureId, setPlacingStructureId] = useState<number|null>(null);
+  const [placingRotation, setPlacingRotation] = useState<number>(0);
+  const placingStructureRef = useRef<number|null>(null);
+  const placingRotationRef = useRef<number>(0);
   const structureThumbsRef = useRef(new Map());
   const [thumbVersion, setThumbVersion] = useState(0);
 
   const [entityInstances, setEntityInstances] = useState<EntityDataId[]>([]);
   const entityInstancesRef = useRef<EntityDataId[]>([]);
-  const [placingEntityName, setPlacingEntityName] = useState(null);
-  const placingEntityRef = useRef(null);
+  const [placingEntityName, setPlacingEntityName] = useState<string|null>(null);
+  const placingEntityRef = useRef<string|null>(null);
   const [showEntitiesPanel, setShowEntitiesPanel] = useState(false);
   const [entitySearchQuery, setEntitySearchQuery] = useState("");
   const [openItemsId, setOpenItemsId] = useState(null);
@@ -307,9 +307,9 @@ export default function TerrainEditor() {
   // Search filter for the block palette - needed once BLOCK_NAMES grew from
   // 48 (Alpha 3-era stub table) to the real 146-entry Alpha v10 36731 list;
   // an unfiltered flat scroll of 146 rows was unusable.
-  const entityMarkersGroupRef = useRef<any>(null);
+  const entityMarkersGroupRef = useRef<any>(null); // todo: narrow down to correctly defined THREE.Group
 
-  const [viewMode, setViewMode] = useState<"2d"|"3d">("3d");
+  const [viewMode, setViewMode] = useState<"2d"|"3d">("2d");
   
   const [isLocked, setIsLocked] = useState(false);
   const [pointerLockFailed, setPointerLockFailed] = useState(false);
@@ -1692,7 +1692,7 @@ export default function TerrainEditor() {
     const markerGeometry = new THREE.BoxGeometry(0.5, 0.9, 0.5);
     const cellGeometry = new THREE.BoxGeometry(0.98, 0.98, 0.98);
     const materials = {};
-    function materialFor(category, cell) {
+    function materialFor(category: string, cell: boolean) {
       const key = category + (cell ? ":cell" : "");
       if (!materials[key]) {
         materials[key] = new THREE.MeshLambertMaterial({
@@ -3363,25 +3363,6 @@ export default function TerrainEditor() {
   const chunkY = Math.floor(currentLayer / CHUNK);
   const localY = currentLayer % CHUNK;
 
-  const toolBtn = (id:string, label:string, title:string) => {
-    const codes = TOOL_BY_ID.get(id)?.codes;
-    return (<button
-      onClick={() => setTool(id)}
-      title={codes?.length ? `${title} [${hotkeyLabel(codes)}]` : title}
-      style={{
-        padding: "6px 10px",
-        borderRadius: 6,
-        border: tool === id ? "1px solid #6ea8fe" : "1px solid #2a2f3a",
-        background: tool === id ? "#22314d" : "#1a1d24",
-        color: "#e6e8ee",
-        fontSize: 13,
-        cursor: "pointer",
-      }}
-    >
-      {label}
-    </button>)
-  };
-
   return (
     <div
       style={{
@@ -3425,6 +3406,8 @@ export default function TerrainEditor() {
 
         <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0, minHeight: 0 }}>
           <ToolbarRow
+            setTool={setTool}
+            currentTool={tool}
             cameraMode={cameraMode}
             clearLayer={clearLayer}
             clipboardInfo={clipboardInfo}
@@ -3439,7 +3422,6 @@ export default function TerrainEditor() {
             shiftMap={shiftMap}
             onionRange={onionRange}
             onionSkin={onionSkin}
-            redo={()=> terrain.redo()}
             resetCameraView={resetCameraView}
 
             roadParams={roadParams}
@@ -3465,10 +3447,9 @@ export default function TerrainEditor() {
             showRandomPanel={showRandomPanel}
             showSaves={showSaves}
             showStructuresPanel={showStructuresPanel}
-            tool={tool}
-            toolBtn={toolBtn}
             totalHeight={totalHeight}
             undo={()=>terrain.undo()}
+            redo={()=> terrain.redo()}
             viewMode={viewMode}
             zoom={zoom}
             zoomRef={zoomRef}

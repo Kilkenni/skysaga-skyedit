@@ -3,34 +3,43 @@ import { inputStyle, actionBtn } from "../styles/inline";
 import { colorForId } from "../lib/colors";
 import { clamp, clampBlockId } from "../lib/numbers";
 import { RoadParams } from "./TerrainEditor";
+import ToolButton from "./ToolbarButton";
+
+export interface Tool {
+  id:string,
+  label:string,
+  title:string,
+}
 
 interface Props {
-  cameraMode,
+  setTool: (id: string) => void;
+  currentTool: string,
+  cameraMode: string,
   clearLayer: () => void,
   clipboardInfo,
   computeMapStats: () => void,
-  copyLayer,
+  copyLayer: (direction: number) => void,
   copyYFrom: number,
   copyYTo: number,
-  fillLayer,
+  fillLayer: () => void,
   mirrorX: boolean,
   mirrorZ: boolean,
-  moveSpeed,
+  moveSpeed: number,
   shiftMap: (dx: number, dy: number, dz: number) => void,
   onionRange: number,
   onionSkin: boolean,
-  redo,
+  
   resetCameraView: () => void,
   roadParams: RoadParams,
   updateRoadParams: <K extends keyof RoadParams>(paramName: K, value: RoadParams[K]) => void,
 
-  setCopyYFrom,
+  setCopyYFrom: (copyYFrom: number) => void,
   setCopyYTo,
   setMirrorX,
   setMirrorZ,
   setMoveSpeed,
-  setOnionRange,
-  setOnionSkin,
+  setOnionRange: (range: number) => void,
+  setOnionSkin: (enable: boolean) => void,
   setShowBulkTexturePanel,
   setShowEntitiesPanel,
   setShowPresets,
@@ -44,16 +53,17 @@ interface Props {
   showRandomPanel: boolean,
   showSaves: boolean,
   showStructuresPanel: boolean,
-  tool: string,
-  toolBtn: (id:string, label:string, title:string)=>React.JSX.Element,
   totalHeight: number,
-  undo,
-  viewMode,
+  undo: () => boolean,
+  redo: () => boolean,
+  viewMode: string,
   zoom: number,
   zoomRef,
 }
 
 export default function ToolbarRow({
+  setTool,
+  currentTool,
   cameraMode,
   clearLayer,
   clipboardInfo,
@@ -97,8 +107,6 @@ export default function ToolbarRow({
   showRandomPanel,
   showSaves,
   showStructuresPanel,
-  tool,
-  toolBtn,
   totalHeight,
   undo,
   viewMode,
@@ -106,6 +114,29 @@ export default function ToolbarRow({
   zoomRef,
 }:Props) {
   const t = STRINGS.en;
+
+  const toolsUni:Tool[] = [
+    {id: "pencil", label: t.pencil, title: t.pencilTitle},
+    {id: "eraser", label: t.eraser, title: t.eraserTitle},
+    {id: "paint", label: t.paint, title: t.paintTitle}
+  ];
+
+  const tools2D:Tool[] = [
+    {id: "rect-fill", label: t.rectFill, title: t.rectFillTitle},
+    {id: "rect-hollow", label: t.rectHollow, title: t.rectHollowTitle},
+    {id: "rect-erase", label: t.rectErase, title: t.rectEraseTitle},
+    {id: "eyedropper", label: t.eyedropper, title: t.eyedropperTitle},
+    {id: "bucket", label: t.bucket, title: t.bucketTitle},
+    {id: "copy", label: t.copyArea, title: t.copyAreaTitle},
+    {id: "road", label: t.roadTool, title: t.roadToolTitle},
+  ];
+
+  const clipboardTool:Tool = {
+    id: "paste",
+    label: t.pasteArea, 
+    title: t.pasteAreaTitle
+  }
+
   return (
     <div
       style={{
@@ -118,21 +149,16 @@ export default function ToolbarRow({
       }}
     >
       {(viewMode === "2d" || (viewMode === "3d" && cameraMode === "orbit")) && (
-        <>
-          {toolBtn("pencil", t.pencil, t.pencilTitle)}
-          {toolBtn("eraser", t.eraser, t.eraserTitle)}
-          {toolBtn("paint", t.paint, t.paintTitle)}
-        </>
+        toolsUni.map((tool) => (
+          <ToolButton tool={tool} setTool={setTool} currentTool={currentTool}/>
+        ))
       )}
       {viewMode === "2d" && (
         <>
-          {toolBtn("rect-fill", t.rectFill, t.rectFillTitle)}
-          {toolBtn("rect-hollow", t.rectHollow, t.rectHollowTitle)}
-          {toolBtn("rect-erase", t.rectErase, t.rectEraseTitle)}
-          {toolBtn("eyedropper", t.eyedropper, t.eyedropperTitle)}
-          {toolBtn("bucket", t.bucket, t.bucketTitle)}
-          {toolBtn("copy", t.copyArea, t.copyAreaTitle)}
-          {tool === "copy" && (
+          {tools2D.map((tool) => (
+            <ToolButton tool={tool} setTool={setTool} currentTool={currentTool}/>
+          ))}
+          {currentTool === "copy" && (
             <>
               <label
                 style={{ fontSize: 11, display: "flex", gap: 4, alignItems: "center" }}
@@ -162,9 +188,9 @@ export default function ToolbarRow({
               </label>
             </>
           )}
-          {clipboardInfo && toolBtn("paste", t.pasteArea, t.pasteAreaTitle)}
-          {toolBtn("road", t.roadTool, t.roadToolTitle)}
-          {tool === "road" && (
+          {clipboardInfo && <ToolButton tool={clipboardTool} setTool={setTool} currentTool={currentTool}/>}
+
+          {currentTool === "road" && (
             <>
               <label
                 style={{ fontSize: 11, display: "flex", gap: 4, alignItems: "center" }}
