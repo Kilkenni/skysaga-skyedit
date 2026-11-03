@@ -1,7 +1,7 @@
 import { STRINGS } from "../i18n/strings";
 import { inputStyle, actionBtn } from "../styles/inline";
 import { colorForId } from "../lib/colors";
-import { clamp } from "../lib/numbers";
+import { clamp, clampBlockId } from "../lib/numbers";
 import { RoadParams } from "./TerrainEditor";
 
 interface Props {
