@@ -8,26 +8,45 @@ import { getRotatedStructure, Structure } from "./structures";
 
 // HELPER FUNCTIONS
 
-type PlantedVeg = {
+export type PlantedVeg = {
   x: number,
   z: number
 }[]
 
-export function canPlantVeg(tx: number, tz: number, plantedVeg:PlantedVeg, spacing: number):boolean {
-  const spacing2 = spacing * spacing;
-  for (const p of plantedVeg) {
-    const dx = tx - p.x;
-    const dz = tz - p.z;
-    if (dx * dx + dz * dz < spacing2)
-      return false;
+/**
+ * Vegetation spacing index, used for bookkeeping to avoid collisions
+ */
+export class VegSpacingIndex {
+  #points: PlantedVeg = [];
+  readonly #spacing: number;
+
+  constructor(spacing: number) {
+    this.#spacing = spacing;
   }
-  return true;
+  canPlant(x: number, z: number): boolean {
+    const s2 = this.#spacing * this.#spacing;
+    return this.#points.every(p => (x - p.x) ** 2 + (z - p.z) ** 2 >= s2);
+  }
+  add(x: number, z: number): void { 
+    this.#points.push({ x, z });
+  }
 }
+
+// export function canPlantVeg(tx: number, tz: number, plantedVeg:PlantedVeg, spacing: number):boolean {
+//   const spacing2 = spacing * spacing;
+//   for (const p of plantedVeg) {
+//     const dx = tx - p.x;
+//     const dz = tz - p.z;
+//     if (dx * dx + dz * dz < spacing2)
+//       return false;
+//   }
+//   return true;
+// }
 
 /**
  * @param skipCenter tree: don't overwrite the trunk column
  */
-function stampFoliageLayer(
+export function stampFoliageLayer(
   target: Pick<VoxelGrid, "set">,
   rand:()=>number, 
   centerX: number, layerY: number, centerZ: number, 
@@ -54,7 +73,7 @@ function stampFoliageLayer(
   }
 }
 
-export function plantTree(target:Pick<VoxelGrid, "set">, trees: PlantedVeg, rand: ()=> number, tx: number, groundY: number, tz: number, params: TreeParams, dims: MapDimensions): boolean {
+export function plantTree(target:Pick<VoxelGrid, "set">, rand: ()=> number, tx: number, groundY: number, tz: number, params: TreeParams, dims: MapDimensions): boolean {
   const trunkHeight = params.minH + Math.floor(rand() * (params.maxH - params.minH + 1));
   const trunkTop = groundY + trunkHeight - 1;
   if (trunkTop + 3 >= dims.totalHeight)
@@ -78,11 +97,10 @@ export function plantTree(target:Pick<VoxelGrid, "set">, trees: PlantedVeg, rand
       dims, ly <= trunkTop
     )
   }
-  trees.push({ x: tx, z: tz });
   return true;
 }
 
-export function plantBush(target:Pick<VoxelGrid, "set">, bushes: PlantedVeg, rand: ()=> number, tx: number, groundY: number, tz: number, params: VegParams, dims: MapDimensions):boolean {
+export function plantBush(target:Pick<VoxelGrid, "set">, rand: ()=> number, tx: number, groundY: number, tz: number, params: VegParams, dims: MapDimensions):boolean {
   const layers = [
     { dy: 0, radius: 1 },
     { dy: 1, radius: 1 },
@@ -94,7 +112,6 @@ export function plantBush(target:Pick<VoxelGrid, "set">, bushes: PlantedVeg, ran
       layer.radius, 0.3, params.leavesBlock,
       dims, false);
   }
-  bushes.push({ x: tx, z: tz });
   return true;
 }
 
@@ -320,12 +337,11 @@ function generateTerrain(
     // Let the witchcraft commence
     const grid = new VoxelGrid({ width, depth, height: totalHeight })
 
-    
 
     // VEGETATION - TREES and BUSHES made of blocks
     
-    const plantedTrees:PlantedVeg = [];
-    const plantedBushes:PlantedVeg = [];
+    const plantedTrees = new VegSpacingIndex(normParams.veg.trees.spacing);
+    const plantedBushes = new VegSpacingIndex(normParams.veg.bushes.spacing);
 
     // Generating
     for (let x = 0; x < width; x++) {
@@ -399,8 +415,10 @@ function generateTerrain(
           if (normParams.veg.trees.isForests && forestMask) {
             effectiveTreeChance = forestMask(x, z) > 0.55 ? normParams.veg.trees.forestDensity : 0;
           }
-          if (effectiveTreeChance > 0 && rand() < effectiveTreeChance && canPlantVeg(x, z, plantedTrees, normParams.veg.trees.spacing)) {
-            plantTree(grid, plantedTrees, rand, x, height, z, normParams.veg.trees, mapDimensions);
+          if (effectiveTreeChance > 0 && rand() < effectiveTreeChance && plantedTrees.canPlant(x, z)) {
+            const planted = plantTree(grid, rand, x, height, z, normParams.veg.trees, mapDimensions);
+            if (planted) 
+              plantedTrees.add(x, z);
             // intentional, preserves old behaviour: a tree that doesn't fit still blocks
             // bush and deco in this column. Revisit in step 3.
             treePlanted = true;
@@ -416,9 +434,10 @@ function generateTerrain(
           normParams.veg.bushes.isEnabled &&
           normParams.veg.bushes.chance > 0 &&
           rand() < normParams.veg.bushes.chance &&
-          canPlantVeg(x, z,  plantedBushes, normParams.veg.bushes.spacing)
+          plantedBushes.canPlant(x, z)
         ) {
-          bushPlanted = plantBush(grid, plantedBushes, rand, x, height, z, normParams.veg.bushes, mapDimensions);
+          bushPlanted = plantBush(grid, rand, x, height, z, normParams.veg.bushes, mapDimensions);
+          plantedBushes.add(x, z);
         }
 
         if (
