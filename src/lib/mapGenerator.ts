@@ -94,6 +94,7 @@ interface NormalizedParams {
   },
   island: {
     isEnabled: boolean,
+    size: string,
     isArchipelago: boolean,
     islandCount: number,
     isFloating: boolean,
@@ -142,14 +143,14 @@ interface NormalizedParams {
     seaLevel: number,
     seaBlock: number,
   },
-  river: {
+  rivers: {
     isEnabled: boolean,
     threshold: number,
     isWaterfallEnabled: boolean,
     waterfallDropThreshold: number,
     block: number,
   },
-  lake: {
+  lakes: {
     isEnabled: boolean,
     threshold: number,
     block: number,
@@ -160,14 +161,14 @@ interface NormalizedParams {
     threshold: number,
     block: number,
   },
-  cave: {
+  caves: {
     isEnabled: boolean,
     threshold: number,
     isGlow: boolean,
     glowChance: number,
     glowBlock: number,
   },
-  vegetation: {
+  veg: {
     trees: {
       isEnabled: boolean,
       isForests: boolean,
@@ -214,6 +215,7 @@ function normalizeRngParameters(params:RngParams, width: number, depth: number, 
     },
     island: {
       isEnabled: params.randIsland,
+      size: params.randIslandSize,
       isArchipelago: params.randArchipelago,
       islandCount: clamp(params.randIslandCount, 1, 8),
       isFloating: isFloating,
@@ -264,14 +266,14 @@ function normalizeRngParameters(params:RngParams, width: number, depth: number, 
       seaLevel: seaLevel,
       seaBlock: clampBlockId(params.randSeaBlock),
     },
-    river: {
+    rivers: {
       isEnabled: params.randRivers,
       threshold: clamp(params.randRiverWidth, 1, 40) / 100,
       isWaterfallEnabled: params.randWaterfalls,
       waterfallDropThreshold: clamp(params.randWaterfallDrop, 2, 30),
       block: clampBlockId(params.randRiverBlock),
     },
-    lake: {
+    lakes: {
       isEnabled: params.randLakes,
       threshold: 1 - clamp(params.randLakeSize, 1, 10) / 12,
       block: clampBlockId(params.randLakeBlock),
@@ -282,14 +284,14 @@ function normalizeRngParameters(params:RngParams, width: number, depth: number, 
       threshold: 1 - clamp(params.randShoreCoverage, 0, 100) / 100,
       block: clampBlockId(params.randShoreBlock),
     },
-    cave: {
+    caves: {
       isEnabled: params.randCaves,
       threshold: 1 - clamp(params.randCaveDensity, 0, 100) / 100,
       isGlow: params.randCaveGlow && params.randCaves,
       glowChance: clamp(params.randCaveGlowChance, 0, 100) / 100,
       glowBlock: clampBlockId(params.randCaveGlowBlock),
     },
-    vegetation: {
+    veg: {
       trees: {
         isEnabled: params.randTrees,
         isForests: params.randForests,
