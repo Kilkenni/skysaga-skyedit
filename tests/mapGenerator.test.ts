@@ -1,7 +1,7 @@
 // tests/generateTerrain.test.ts
 import { describe, it, expect } from "vitest";
 import { AIR } from "../src/constants";
-import { generateTerrain } from "../src/lib/mapGenerator";
+import { generateTerrain, isPlantableColumn } from "../src/lib/mapGenerator";
 import { normalizeRngParameters, type RngParams } from "../src/lib/mapParamNormalizer";
 import { DEFAULT_RNG_PARAMS } from "../src/components/TerrainEditor"; 
 import { type Structure } from "../src/lib/structures";
@@ -89,4 +89,15 @@ describe("generateTerrain", () => {
     // First run writes the value into this snapshot. Review it, then commit it.
     expect(hashCells(run(2024, EVERYTHING, [TEST_STRUCTURE]).grid)).toMatchInlineSnapshot(`1073302016`);
   });
+});
+
+describe("isPlantableColumn", () => {
+  const ok = (h: number, water = false, floating = false) =>
+    isPlantableColumn(h, water, 48, 10, floating);
+  it("rejects columns without ground", () => { expect(ok(0)).toBe(false); });
+  it("rejects the top of the grid", () => { expect(ok(48)).toBe(false); });
+  it("rejects water", () => { expect(ok(20, true)).toBe(false); });
+  it("rejects submerged ground", () => { expect(ok(5)).toBe(false); });
+  it("allows low ground on a floating island", () => { expect(ok(5, false, true)).toBe(true); });
+  it("accepts ordinary ground", () => { expect(ok(20)).toBe(true); });
 });

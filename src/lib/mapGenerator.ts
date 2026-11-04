@@ -175,6 +175,29 @@ function placeOres(
   }
 }
 
+function placeDecoration(
+  target: Pick<VoxelGrid, "set">,
+  rand: () => number,
+  x: number, y: number, z: number,
+  deco: NormalizedParams["deco"],
+): boolean {
+  if (!(deco.chance > 0) || !(rand() < deco.chance))
+    return false;
+  target.set(x, y, z, pickWeighted(deco.weightedList, rand));
+  return true;
+}
+
+function isSubmerged(h: number, seaLevel: number, isFloating: boolean) {
+  return !isFloating && h < seaLevel;
+}
+
+function isPlantableColumn(
+  h: number, isWater: boolean, totalHeight: number, seaLevel: number, isFloating: boolean,
+) {
+  return (h > 0 && h < totalHeight && !isWater 
+    && !isSubmerged(h, seaLevel, isFloating));
+}
+
 
 function generateTerrain(
     mapDimensions: MapDimensions,
@@ -417,6 +440,7 @@ function generateTerrain(
 
         const isWater = !!isWaterMap[idx];
         const waterBlock = waterBlockMap[idx];
+        const isPlantable = isPlantableColumn(height, isWater, totalHeight, normParams.water.seaLevel, normParams.island.isFloating);
 
         let columnSurfaceBlock = normParams.block.surface;
         if (normParams.altitude.isEnabled) {
@@ -442,6 +466,7 @@ function generateTerrain(
           bottomY = Math.max(0, Math.min(bottomY, height - 2));
         }
 
+        // Caves
         for (let y = bottomY; y < height; y++) {
           if (
             caveNoise &&
@@ -459,8 +484,7 @@ function generateTerrain(
           grid.set(x, y, z, block);
         }
 
-        const isSubmerged = !normParams.island.isFloating && height < normParams.water.seaLevel;
-        if (isSubmerged) {
+        if (isSubmerged(height, normParams.water.seaLevel, normParams.island.isFloating)) {
           for (let y = height; y < normParams.water.seaLevel && y < totalHeight; y++) {
             grid.set(x, y, z, normParams.water.seaBlock);
           }
@@ -468,7 +492,7 @@ function generateTerrain(
 
         // Vegetation pass: trees and bushes made of blocks
         let treePlanted = false;
-        if (!isWater && !isSubmerged && height < totalHeight && normParams.veg.trees.isEnabled) {
+        if (isPlantable && normParams.veg.trees.isEnabled) {
           let effectiveTreeChance = normParams.veg.trees.chance;
           if (normParams.veg.trees.isForests && forestMask) {
             effectiveTreeChance = forestMask(x, z) > 0.55 ? normParams.veg.trees.forestDensity : 0;
@@ -486,9 +510,7 @@ function generateTerrain(
         let bushPlanted = false;
         if (
           !treePlanted &&
-          !isWater &&
-          !isSubmerged &&
-          height < totalHeight &&
+          isPlantable &&
           normParams.veg.bushes.isEnabled &&
           normParams.veg.bushes.chance > 0 &&
           rand() < normParams.veg.bushes.chance &&
@@ -498,18 +520,14 @@ function generateTerrain(
           plantedBushes.add(x, z);
         }
 
+        // Decorations
         if (
           !treePlanted &&
           !bushPlanted &&
-          !isWater &&
-          !isSubmerged &&
-          height < totalHeight &&
+          isPlantable &&
           normParams.deco.weightedList.length
         ) {
-          if (normParams.deco.chance > 0 && rand() < normParams.deco.chance) {
-            const pick = pickWeighted(normParams.deco.weightedList, rand);
-            grid.set(x, height, z, pick);
-          }
+          placeDecoration(grid, rand, x, height, z, normParams.deco);
         }
       }
     }
@@ -640,7 +658,9 @@ function generateTerrain(
   export {
     generateTerrain,
     VegSpacingIndex,
+    isPlantableColumn,
     plantTree,
     plantBush,
     placeOres,
+    placeDecoration,
   }

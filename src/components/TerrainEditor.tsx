@@ -31,7 +31,7 @@ import PaletteHotbar from "./PaletteHotbar.tsx";
 import { NormalizedParams, normalizeRngParameters, RngParams, TreeParams, VegParams } from "../lib/mapParamNormalizer.ts";
 import { hotkeyLabel, isFreehand, PAN_KEYS, TOOL_BY_CODE, TOOL_BY_ID } from "../lib/tools.ts";
 import { VoxelGrid } from "../VoxelGrid.ts";
-import { VegSpacingIndex, generateTerrain, placeOres, plantBush, plantTree } from "../lib/mapGenerator.ts";
+import { VegSpacingIndex, generateTerrain, isPlantableColumn, placeDecoration, placeOres, plantBush, plantTree } from "../lib/mapGenerator.ts";
 
 
 export interface MapData {
@@ -1258,13 +1258,13 @@ export default function TerrainEditor() {
     const normP = normalizeRngParameters(params, width, depth, totalHeight);
     const { grid, heightMap, isWaterMap } = generateTerrain(dimensions, seed, normP, structures);
 
-    terrain.transaction((w) => {
+    terrain.transaction((store) => {
       // Clear
       for (const cell of Array.from(terrain.cells()))
-        w.set(cell.x, cell.y, cell.z, AIR);
+        store.set(cell.x, cell.y, cell.z, AIR);
       // Rewrite with newly generated terrain
       for (const cell of grid.cells())
-        w.set(cell.x, cell.y, cell.z, cell.block, cell.meta);
+        store.set(cell.x, cell.y, cell.z, cell.block, cell.meta);
     });
     
     setStatus(STRINGS.en.generatedSeed(seed));
@@ -1279,20 +1279,6 @@ export default function TerrainEditor() {
   }
 
   // ---- targeted regeneration (decor / trees / ore only, reuses last heightMap) ----
-
-  // replace everywhere with clearBlocksById, then delete
-  function clearVoxelsByBlockIds(idSet: Set<number>) {
-    const toRemove:VoxelCell[] = [];
-    for (const voxel of Array.from(terrain.cells())) {
-      if (idSet.has(voxel.block))
-        toRemove.push(voxel);
-    }
-    
-    for (const voxel of toRemove) {
-      setVoxel(voxel.x, voxel.y, voxel.z, AIR, 0);
-    }
-  }
-
   function clearBlocksById(
     target: Pick<VoxelWriter, "set">,
     cells: Iterable<VoxelCell>,
@@ -1311,30 +1297,30 @@ export default function TerrainEditor() {
       return;
     }
     const rand = mulberry32(Math.floor(Math.random() * 1e9));
-    const decoWeightedList = parseWeightedIdList(params.randDecoBlocks);
-    const decoChance = clamp(params.randDecoChance, 0, 100) / 100;
-    if (!decoWeightedList.length || decoChance <= 0) {
+    const normParams = normalizeRngParameters(params, snap.width, snap.depth, snap.totalHeight);
+    const {deco} = normParams;
+    if (!deco.weightedList.length || deco.chance <= 0) {
       setStatus(STRINGS.en.regenNothingToDo);
       return;
     }
-    const idSet = new Set(decoWeightedList
-      .filter((e) => e !== null)
-      .map((e) => e.id ));
-    beginStroke();
-    clearVoxelsByBlockIds(idSet);
-    for (let x = 0; x < width; x++) {
-      for (let z = 0; z < depth; z++) {
-        const idx = x * depth + z;
-        const h = snap.heightMap[idx];
-        if (h <= 0 || h >= totalHeight || snap.isWaterMap[idx]) continue;
-        if (rand() < decoChance) {
-          const pick = pickWeighted(decoWeightedList, rand);
-          setVoxel(x, h, z, pick, 0);
+    const decoIdSet = new Set(deco.weightedList
+      .filter((entity) => entity !== null)
+      .map((entity) => entity.id ));
+    terrain.transaction((store) => {
+      clearBlocksById(store, Array.from(terrain.cells()), decoIdSet);
+      for (let x = 0; x < width; x++) {
+        for (let z = 0; z < depth; z++) {
+          const idx = x * depth + z;
+          const h = snap.heightMap[idx];
+          const isWater = !!snap.isWaterMap[idx];
+          if (!isPlantableColumn(h, isWater, totalHeight, normParams.water.seaLevel, normParams.island.isFloating))
+            continue;
+          if (rand() < deco.chance) {
+            placeDecoration(store, rand, x, h, z, deco);
+          }
         }
       }
-    }
-    commitStroke();
-
+    })
     setStatus(STRINGS.en.regenDone);
   }
 
@@ -1345,14 +1331,25 @@ export default function TerrainEditor() {
       return;
     }
     const normParams = normalizeRngParameters(params, width, depth, totalHeight);
-    if (!normParams.veg.trees.isEnabled && !normParams.veg.bushes.isEnabled) {
+
+    // NOTE: clearing is id-based, so with shared leaf blocks regenerating either kind strips all
+    // foliage. Proper fix = record planted cells. Revisit after A10 tree mechanics.
+    const idSet = new Set<number>();
+    if (normParams.veg.trees.isEnabled) {
+      idSet.add(normParams.veg.trees.woodBlock);
+      idSet.add(normParams.veg.trees.leavesBlock);
+    }
+    if (normParams.veg.bushes.isEnabled) {
+      idSet.add(normParams.veg.bushes.leavesBlock);
+    }
+    if (idSet.size === 0) {
       setStatus(STRINGS.en.regenNothingToDo);
       return;
     }
     const rand = mulberry32(Math.floor(Math.random() * 1e9));
     
     const forestMask = normParams.veg.trees.isForests ? makeValueNoise(rand, width, depth, 20) : null;
-    const idSet = new Set([normParams.veg.trees.woodBlock, normParams.veg.trees.leavesBlock, normParams.veg.bushes.leavesBlock]);
+    
     const plantedTrees = new VegSpacingIndex(normParams.veg.trees.spacing);
     const plantedBushes = new VegSpacingIndex(normParams.veg.bushes.spacing);
     const dims: MapDimensions = {width, depth, totalHeight};
@@ -1363,7 +1360,8 @@ export default function TerrainEditor() {
         for (let z = 0; z < depth; z++) {
           const idx = x * depth + z;
           const h = snap.heightMap[idx];
-          if (h <= 0 || h >= totalHeight || snap.isWaterMap[idx]) 
+          const isWater = !!snap.isWaterMap[idx];
+          if (!isPlantableColumn(h, isWater, totalHeight, normParams.water.seaLevel, normParams.island.isFloating)) 
             continue;
 
           let treePlanted = false;
