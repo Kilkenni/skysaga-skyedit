@@ -8,7 +8,7 @@ import { getRotatedStructure, Structure } from "./structures";
 
 // HELPER FUNCTIONS
 
-export type PlantedVeg = {
+type PlantedVeg = {
   x: number,
   z: number
 }[]
@@ -16,7 +16,7 @@ export type PlantedVeg = {
 /**
  * Vegetation spacing index, used for bookkeeping to avoid collisions
  */
-export class VegSpacingIndex {
+class VegSpacingIndex {
   #points: PlantedVeg = [];
   readonly #spacing: number;
 
@@ -32,21 +32,10 @@ export class VegSpacingIndex {
   }
 }
 
-// export function canPlantVeg(tx: number, tz: number, plantedVeg:PlantedVeg, spacing: number):boolean {
-//   const spacing2 = spacing * spacing;
-//   for (const p of plantedVeg) {
-//     const dx = tx - p.x;
-//     const dz = tz - p.z;
-//     if (dx * dx + dz * dz < spacing2)
-//       return false;
-//   }
-//   return true;
-// }
-
 /**
  * @param skipCenter tree: don't overwrite the trunk column
  */
-export function stampFoliageLayer(
+function stampFoliageLayer(
   target: Pick<VoxelGrid, "set">,
   rand:()=>number, 
   centerX: number, layerY: number, centerZ: number, 
@@ -73,7 +62,7 @@ export function stampFoliageLayer(
   }
 }
 
-export function plantTree(target:Pick<VoxelGrid, "set">, rand: ()=> number, tx: number, groundY: number, tz: number, params: TreeParams, dims: MapDimensions): boolean {
+function plantTree(target:Pick<VoxelGrid, "set">, rand: ()=> number, tx: number, groundY: number, tz: number, params: TreeParams, dims: MapDimensions): boolean {
   const trunkHeight = params.minH + Math.floor(rand() * (params.maxH - params.minH + 1));
   const trunkTop = groundY + trunkHeight - 1;
   if (trunkTop + 3 >= dims.totalHeight)
@@ -100,7 +89,7 @@ export function plantTree(target:Pick<VoxelGrid, "set">, rand: ()=> number, tx: 
   return true;
 }
 
-export function plantBush(target:Pick<VoxelGrid, "set">, rand: ()=> number, tx: number, groundY: number, tz: number, params: VegParams, dims: MapDimensions):boolean {
+function plantBush(target:Pick<VoxelGrid, "set">, rand: ()=> number, tx: number, groundY: number, tz: number, params: VegParams, dims: MapDimensions):boolean {
   const layers = [
     { dy: 0, radius: 1 },
     { dy: 1, radius: 1 },
@@ -113,6 +102,77 @@ export function plantBush(target:Pick<VoxelGrid, "set">, rand: ()=> number, tx: 
       dims, false);
   }
   return true;
+}
+
+function placeOres(
+  target: Pick<VoxelGrid, "set" | "getBlock">,
+  heightMap: ArrayLike<number>,
+  rand: () => number,
+  ore: NormalizedParams["ore"],
+  groundDepth: number,
+  dims: MapDimensions,
+): void {
+
+  function placeOreBlob(cx: number, cy: number, cz: number, oreBlock: number, r: number) {
+    for (let dx = -r; dx <= r; dx++) {
+      for (let dy = -r; dy <= r; dy++) {
+        for (let dz = -r; dz <= r; dz++) {
+          const d2 = dx * dx + dy * dy + dz * dz;
+          if (d2 > r * r + rand() * 1.5) 
+            continue;
+          if (rand() < 0.3) 
+            continue;
+          const wx = cx + dx;
+          const wy = cy + dy;
+          const wz = cz + dz;
+          if (wx < 0 || wx >= dims.width || wy < 0 || wy >= dims.totalHeight || wz < 0 || wz >= dims.depth)
+            continue;
+          if (target.getBlock(wx, wy, wz) === AIR) 
+            continue;
+          target.set(wx, wy, wz, oreBlock);
+        }
+      }
+    }
+  }
+
+  for (let i = 0; i < ore.countScaled; i++) {
+    const ox = Math.floor(rand() * dims.width);
+    const oz = Math.floor(rand() * dims.depth);
+    const colH = heightMap[ox * dims.depth + oz];
+    if (colH < 3) 
+      continue;
+    const maxY = Math.min(colH - 2, groundDepth - 1);
+    if (maxY < 1) 
+      continue;
+    const oy = 1 + Math.floor(rand() * maxY);
+    const oreBlock = ore.blockList[Math.floor(rand() * ore.blockList.length)];
+
+    if (rand() < ore.bigVeinChance) {
+      // rare jackpot: a chain of overlapping blobs forming one large,
+      // irregular deposit instead of a single small vein
+      const blobCount = 3 + Math.floor(rand() * 4);
+      let cx = ox;
+      let cy = oy;
+      let cz = oz;
+      for (let b = 0; b < blobCount; b++) {
+        placeOreBlob(cx, cy, cz, oreBlock, ore.bigVeinSize);
+        cx = Math.max(
+          0,
+          Math.min(dims.width - 1, cx + Math.round((rand() - 0.5) * ore.bigVeinSize))
+        );
+        cy = Math.max(
+          1,
+          Math.min(maxY, cy + Math.round((rand() - 0.5) * ore.bigVeinSize * 0.6))
+        );
+        cz = Math.max(
+          0,
+          Math.min(dims.depth - 1, cz + Math.round((rand() - 0.5) * ore.bigVeinSize))
+        );
+      }
+    } else {
+      placeOreBlob(ox, oy, oz, oreBlock, ore.bigVeinSize);
+    }
+  }
 }
 
 
@@ -336,9 +396,6 @@ function generateTerrain(
 
     // Let the witchcraft commence
     const grid = new VoxelGrid({ width, depth, height: totalHeight })
-
-
-    // VEGETATION - TREES and BUSHES made of blocks
     
     const plantedTrees = new VegSpacingIndex(normParams.veg.trees.spacing);
     const plantedBushes = new VegSpacingIndex(normParams.veg.bushes.spacing);
@@ -409,6 +466,7 @@ function generateTerrain(
           }
         }
 
+        // Vegetation pass: trees and bushes made of blocks
         let treePlanted = false;
         if (!isWater && !isSubmerged && height < totalHeight && normParams.veg.trees.isEnabled) {
           let effectiveTreeChance = normParams.veg.trees.chance;
@@ -491,66 +549,7 @@ function generateTerrain(
 
     // ORES
     if (normParams.ore.isEnabled && normParams.ore.blockList.length && normParams.ore.countScaled > 0) {
-      function placeOreBlob(cx: number, cy: number, cz: number, oreBlock: number, r: number) {
-        for (let dx = -r; dx <= r; dx++) {
-          for (let dy = -r; dy <= r; dy++) {
-            for (let dz = -r; dz <= r; dz++) {
-              const d2 = dx * dx + dy * dy + dz * dz;
-              if (d2 > r * r + rand() * 1.5) 
-                continue;
-              if (rand() < 0.3) 
-                continue;
-              const wx = cx + dx;
-              const wy = cy + dy;
-              const wz = cz + dz;
-              if (wx < 0 || wx >= width || wy < 0 || wy >= totalHeight || wz < 0 || wz >= depth)
-                continue;
-              if (grid.getBlock(wx, wy, wz) === AIR) 
-                continue;
-              grid.set(wx, wy, wz, oreBlock);
-            }
-          }
-        }
-      }
-
-      for (let i = 0; i < normParams.ore.countScaled; i++) {
-        const ox = Math.floor(rand() * width);
-        const oz = Math.floor(rand() * depth);
-        const colH = heightMap[ox * depth + oz];
-        if (colH < 3) 
-          continue;
-        const maxY = Math.min(colH - 2, normParams.island.groundDepth - 1);
-        if (maxY < 1) 
-          continue;
-        const oy = 1 + Math.floor(rand() * maxY);
-        const oreBlock = normParams.ore.blockList[Math.floor(rand() * normParams.ore.blockList.length)];
-
-        if (rand() < normParams.ore.bigVeinChance) {
-          // rare jackpot: a chain of overlapping blobs forming one large,
-          // irregular deposit instead of a single small vein
-          const blobCount = 3 + Math.floor(rand() * 4);
-          let cx = ox;
-          let cy = oy;
-          let cz = oz;
-          for (let b = 0; b < blobCount; b++) {
-            placeOreBlob(cx, cy, cz, oreBlock, normParams.ore.bigVeinSize);
-            cx = Math.max(
-              0,
-              Math.min(width - 1, cx + Math.round((rand() - 0.5) * normParams.ore.bigVeinSize))
-            );
-            cy = Math.max(
-              1,
-              Math.min(maxY, cy + Math.round((rand() - 0.5) * normParams.ore.bigVeinSize * 0.6))
-            );
-            cz = Math.max(
-              0,
-              Math.min(depth - 1, cz + Math.round((rand() - 0.5) * normParams.ore.bigVeinSize))
-            );
-          }
-        } else {
-          placeOreBlob(ox, oy, oz, oreBlock, normParams.ore.bigVeinSize);
-        }
-      }
+      placeOres(grid, heightMap, rand, normParams.ore, normParams.island.groundDepth, mapDimensions);
     }
 
     // STRUCTURES
@@ -640,4 +639,8 @@ function generateTerrain(
 
   export {
     generateTerrain,
+    VegSpacingIndex,
+    plantTree,
+    plantBush,
+    placeOres,
   }

@@ -1,17 +1,32 @@
 import { STRINGS } from "../i18n/strings";
+import { RngParams } from "../lib/mapParamNormalizer";
 import { inputStyle, actionBtn } from "../styles/inline";
+
+interface Props {
+  deletePreset: (name:string) => Promise<void>,
+  loadPreset: (name:string) => Promise<void>,
+  newPresetName: string,
+  presets,
+  rngParameters: RngParams,
+  regenerateDecorations,
+  regenerateOre: (params: RngParams) => void,
+  regenerateTrees: (params: RngParams) => void,
+  savePreset: (name:string) => Promise<void>,
+  setNewPresetName: (name: string) => void,
+}
 
 export default function PresetsPanel({
   deletePreset,
   loadPreset,
   newPresetName,
   presets,
+  rngParameters,
   regenerateDecorations,
   regenerateOre,
   regenerateTrees,
   savePreset,
   setNewPresetName,
-}) {
+}: Props) {
   const t = STRINGS.en;
   return (
     <div
@@ -81,10 +96,10 @@ export default function PresetsPanel({
           <button style={actionBtn} onClick={regenerateDecorations}>
             {t.regenDeco}
           </button>
-          <button style={actionBtn} onClick={regenerateTrees}>
+          <button style={actionBtn} onClick={() => regenerateTrees(rngParameters)}>
             {t.regenTrees}
           </button>
-          <button style={actionBtn} onClick={regenerateOre}>
+          <button style={actionBtn} onClick={() => regenerateOre(rngParameters)}>
             {t.regenOre}
           </button>
         </div>

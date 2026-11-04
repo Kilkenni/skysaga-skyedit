@@ -31,7 +31,7 @@ import PaletteHotbar from "./PaletteHotbar.tsx";
 import { NormalizedParams, normalizeRngParameters, RngParams, TreeParams, VegParams } from "../lib/mapParamNormalizer.ts";
 import { hotkeyLabel, isFreehand, PAN_KEYS, TOOL_BY_CODE, TOOL_BY_ID } from "../lib/tools.ts";
 import { VoxelGrid } from "../VoxelGrid.ts";
-import { VegSpacingIndex, generateTerrain, plantBush, PlantedVeg, plantTree, stampFoliageLayer } from "../lib/mapGenerator.ts";
+import { VegSpacingIndex, generateTerrain, placeOres, plantBush, plantTree } from "../lib/mapGenerator.ts";
 
 
 export interface MapData {
@@ -1359,7 +1359,6 @@ export default function TerrainEditor() {
 
     terrain.transaction((store) => {
       clearBlocksById(store, Array.from(terrain.cells()), idSet)
-      //clearVoxelsByBlockIds(idSet);
       for (let x = 0; x < width; x++) {
         for (let z = 0; z < depth; z++) {
           const idx = x * depth + z;
@@ -1397,75 +1396,26 @@ export default function TerrainEditor() {
     setStatus(STRINGS.en.regenDone);
   }
 
-  function regenerateOre(params:RngParams) {
+  function regenerateOre(params:RngParams):void {
+    const normParams = normalizeRngParameters(params, width, depth, totalHeight);
     const snap = lastHeightMapRef.current;
     if (!snap || snap.width !== width || snap.depth !== depth || snap.totalHeight !== totalHeight) {
       setStatus(STRINGS.en.regenNeedsGenerate);
       return;
     }
-    const oreBlockList = parseIdList(params.randOreBlocks);
-    const oreCountScaled = Math.round(
-      clamp(params.randOreCount, 0, 500) * ((width * depth) / (128 * 128))
-    );
-    if (!oreBlockList.length || oreCountScaled <= 0) {
+    const {ore} = normParams;
+    if (!ore.blockList.length || ore.countScaled <= 0) {
       setStatus(STRINGS.en.regenNothingToDo);
       return;
     }
-    const groundDepth = clamp(params.randGroundDepth, 0, totalHeight);
-    const oreVeinR = clamp(params.randOreVeinSize, 1, 5);
-    const oreBigChance = clamp(params.randOreBigChance, 0, 100) / 100;
-    const oreBigR = clamp(params.randOreBigSize, 1, 10);
+    
     const rand = mulberry32(Math.floor(Math.random() * 1e9));
-    const idSet = new Set(oreBlockList);
+    const oreIdSet = new Set(ore.blockList);
 
-    function placeOreBlob(cx, cy, cz, oreBlock, r) {
-      for (let dx = -r; dx <= r; dx++) {
-        for (let dy = -r; dy <= r; dy++) {
-          for (let dz = -r; dz <= r; dz++) {
-            const d2 = dx * dx + dy * dy + dz * dz;
-            if (d2 > r * r + rand() * 1.5) continue;
-            if (rand() < 0.3) continue;
-            const wx = cx + dx;
-            const wy = cy + dy;
-            const wz = cz + dz;
-            if (wx < 0 || wx >= width || wy < 0 || wy >= totalHeight || wz < 0 || wz >= depth)
-              continue;
-            const existing = terrain.get(wx, wy, wz);
-            if (!existing || existing.block === AIR)
-              continue;
-            setVoxel(wx, wy, wz, oreBlock, 0);
-          }
-        }
-      }
-    }
-
-    beginStroke();
-    clearVoxelsByBlockIds(idSet);
-    for (let i = 0; i < oreCountScaled; i++) {
-      const ox = Math.floor(rand() * width);
-      const oz = Math.floor(rand() * depth);
-      const colH = snap.heightMap[ox * depth + oz];
-      if (colH < 3) continue;
-      const maxY = Math.min(colH - 2, groundDepth - 1);
-      if (maxY < 1) continue;
-      const oy = 1 + Math.floor(rand() * maxY);
-      const oreBlock = oreBlockList[Math.floor(rand() * oreBlockList.length)];
-      if (rand() < oreBigChance) {
-        const blobCount = 3 + Math.floor(rand() * 4);
-        let cx = ox;
-        let cy = oy;
-        let cz = oz;
-        for (let b = 0; b < blobCount; b++) {
-          placeOreBlob(cx, cy, cz, oreBlock, oreBigR);
-          cx = Math.max(0, Math.min(width - 1, cx + Math.round((rand() - 0.5) * oreBigR)));
-          cy = Math.max(1, Math.min(maxY, cy + Math.round((rand() - 0.5) * oreBigR * 0.6)));
-          cz = Math.max(0, Math.min(depth - 1, cz + Math.round((rand() - 0.5) * oreBigR)));
-        }
-      } else {
-        placeOreBlob(ox, oy, oz, oreBlock, oreVeinR);
-      }
-    }
-    commitStroke();
+    terrain.transaction((store) => {
+      clearBlocksById(store, Array.from(terrain.cells()), oreIdSet);
+      placeOres(store, snap.heightMap, rand, ore, normParams.island.groundDepth, {width, depth, totalHeight});
+    });
 
     setStatus(STRINGS.en.regenDone);
   }
@@ -3515,6 +3465,7 @@ export default function TerrainEditor() {
               loadPreset={loadPreset}
               newPresetName={newPresetName}
               presets={presets}
+              rngParameters={rngParameters}
               regenerateDecorations={regenerateDecorations}
               regenerateOre={regenerateOre}
               regenerateTrees={regenerateTrees}
