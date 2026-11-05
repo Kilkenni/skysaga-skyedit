@@ -76,7 +76,7 @@ export interface LevelData {
 export interface MapDimensions {
   width: number,
   depth: number,
-  totalHeight: number,
+  height: number,
 }
 
 type DeepReadonly<T> =
@@ -275,7 +275,7 @@ export default function TerrainEditor() {
   const lastHeightMapRef = useRef<{
     width: number,
     depth: number,
-    totalHeight: number,
+    height: number,
     heightMap: Int16Array,
     isWaterMap: Uint8Array
   }>(null);
@@ -354,7 +354,7 @@ export default function TerrainEditor() {
   const canvas3dRef = useRef<HTMLCanvasElement>(null);
   const toolRef = useRef(tool);
   
-  const dimsRef = useRef({ width: 0, depth: 0, totalHeight: 0 });
+  const dimsRef = useRef<MapDimensions>({ width: 0, depth: 0, height: 0 });
   
   const cameraModeRef = useRef(cameraMode);
   const moveSpeedRef = useRef(moveSpeed);
@@ -480,7 +480,7 @@ export default function TerrainEditor() {
 
   const width = mapData.gridX * CHUNK;
   const depth = mapData.gridZ * CHUNK;
-  const totalHeight = mapData.gridY * CHUNK;
+  const height = mapData.gridY * CHUNK;
   const cell = CELL_BASE * zoom;
 
   useEffect(() => {
@@ -496,8 +496,8 @@ export default function TerrainEditor() {
   }, [tool]);
   
   useEffect(() => {
-    dimsRef.current = { width, depth, totalHeight };
-  }, [width, depth, totalHeight]);
+    dimsRef.current = { width, depth, height };
+  }, [width, depth, height]);
 
   useEffect(() => {
     placingStructureRef.current = placingStructureId;
@@ -542,7 +542,7 @@ export default function TerrainEditor() {
     if (viewMode === "3d" && threeRef.current.renderer) {
       rebuildInstances();
     }
-  }, [width, depth, totalHeight]);
+  }, [width, depth, height]);
 
   // ---- persistence: load on mount ----
   useEffect(() => {
@@ -903,7 +903,7 @@ export default function TerrainEditor() {
       const wx = anchorX + v.x;
       const wy = anchorY + v.y;
       const wz = anchorZ + v.z;
-      if (wx < 0 || wx >= dims.width || wy < 0 || wy >= dims.totalHeight || wz < 0 || wz >= dims.depth)
+      if (wx < 0 || wx >= dims.width || wy < 0 || wy >= dims.height || wz < 0 || wz >= dims.depth)
         continue;
       const key = keyOf(wx, wy, wz);
       //const oldEntry = voxelsRef.current.get(key);
@@ -917,7 +917,7 @@ export default function TerrainEditor() {
   // ---- entity placement (not voxels - separate marker list) ----
   function placeEntityAt(name:string, x:number, y:number, z:number) {
     const dims = dimsRef.current;
-    if (x < 0 || x >= dims.width || y < 0 || y >= dims.totalHeight || z < 0 || z >= dims.depth)
+    if (x < 0 || x >= dims.width || y < 0 || y >= dims.height || z < 0 || z >= dims.depth)
       return;
     if (
       SINGLETON_ENTITY_NAMES.has(name) &&
@@ -978,7 +978,7 @@ export default function TerrainEditor() {
         for (const ed of edits) {
           if (!Array.isArray(ed) || ed.length < 4) continue;
           const [x, y, z, block] = ed.map(Number);
-          if (x < 0 || x >= dims.width || y < 0 || y >= dims.totalHeight || z < 0 || z >= dims.depth) continue;
+          if (x < 0 || x >= dims.width || y < 0 || y >= dims.height || z < 0 || z >= dims.depth) continue;
           setVoxel(x, y, z, block, 0);
           n++;
         }
@@ -1142,7 +1142,7 @@ export default function TerrainEditor() {
     const minZ = Math.max(0, Math.min(z0, z1));
     const maxZ = Math.min(depth - 1, Math.max(z0, z1));
     const minY = Math.max(0, Math.min(copyYFrom, copyYTo));
-    const maxY = Math.min(totalHeight - 1, Math.max(copyYFrom, copyYTo));
+    const maxY = Math.min(height - 1, Math.max(copyYFrom, copyYTo));
     const cells:{
       dx: number,
       dy: number,
@@ -1182,7 +1182,7 @@ export default function TerrainEditor() {
       const x = x0 + c.dx;
       const y = currentLayer + c.dy;
       const z = z0 + c.dz;
-      if (x < 0 || x >= width || y < 0 || y >= totalHeight || z < 0 || z >= depth) continue;
+      if (x < 0 || x >= width || y < 0 || y >= height || z < 0 || z >= depth) continue;
       setVoxelMirrored(x, y, z, c.block, c.meta);
     }
     commitStroke();
@@ -1190,7 +1190,7 @@ export default function TerrainEditor() {
 
   // ---- road / path tool ----
   function findSurfaceY(x: number, z: number) {
-    for (let y = totalHeight - 1; y >= 0; y--) {
+    for (let y = height - 1; y >= 0; y--) {
       // const v = voxelsRef.current.get(keyOf(x, y, z));
       const v = terrain.get(x, y, z);
       if (v && v.block !== AIR) return y;
@@ -1254,8 +1254,8 @@ export default function TerrainEditor() {
 
   function generateRandomTerrain(params:RngParams) {
     const seed = Number(randSeed) || Math.floor(Math.random() * 1e9);
-    const dimensions = { width, depth, totalHeight };
-    const normP = normalizeRngParameters(params, width, depth, totalHeight);
+    const dimensions = { width, depth, height };
+    const normP = normalizeRngParameters(params, width, depth, height);
     const { grid, heightMap, isWaterMap } = generateTerrain(dimensions, seed, normP, structures);
 
     terrain.transaction((store) => {
@@ -1272,7 +1272,7 @@ export default function TerrainEditor() {
     lastHeightMapRef.current = {
       width,
       depth,
-      totalHeight,
+      height,
       heightMap/*: heightMap.slice()*/,
       isWaterMap/*: Array.from(isWaterMap)*/,
     };
@@ -1292,12 +1292,12 @@ export default function TerrainEditor() {
 
   function regenerateDecorations(params:RngParams) {
     const snap = lastHeightMapRef.current;
-    if (!snap || snap.width !== width || snap.depth !== depth || snap.totalHeight !== totalHeight) {
+    if (!snap || snap.width !== width || snap.depth !== depth || snap.height !== height) {
       setStatus(STRINGS.en.regenNeedsGenerate);
       return;
     }
     const rand = mulberry32(Math.floor(Math.random() * 1e9));
-    const normParams = normalizeRngParameters(params, snap.width, snap.depth, snap.totalHeight);
+    const normParams = normalizeRngParameters(params, snap.width, snap.depth, snap.height);
     const {deco} = normParams;
     if (!deco.weightedList.length || deco.chance <= 0) {
       setStatus(STRINGS.en.regenNothingToDo);
@@ -1311,12 +1311,12 @@ export default function TerrainEditor() {
       for (let x = 0; x < width; x++) {
         for (let z = 0; z < depth; z++) {
           const idx = x * depth + z;
-          const h = snap.heightMap[idx];
+          const groundH = snap.heightMap[idx];
           const isWater = !!snap.isWaterMap[idx];
-          if (!isPlantableColumn(h, isWater, totalHeight, normParams.water.seaLevel, normParams.island.isFloating))
+          if (!isPlantableColumn(groundH, isWater, height, normParams.water.seaLevel, normParams.island.isFloating))
             continue;
           if (rand() < deco.chance) {
-            placeDecoration(store, rand, x, h, z, deco);
+            placeDecoration(store, rand, x, groundH, z, deco);
           }
         }
       }
@@ -1326,11 +1326,11 @@ export default function TerrainEditor() {
 
   function regenerateTrees(params:RngParams) {
     const snap = lastHeightMapRef.current;
-    if (!snap || snap.width !== width || snap.depth !== depth || snap.totalHeight !== totalHeight) {
+    if (!snap || snap.width !== width || snap.depth !== depth || snap.height !== height) {
       setStatus(STRINGS.en.regenNeedsGenerate);
       return;
     }
-    const normParams = normalizeRngParameters(params, width, depth, totalHeight);
+    const normParams = normalizeRngParameters(params, width, depth, height);
 
     // NOTE: clearing is id-based, so with shared leaf blocks regenerating either kind strips all
     // foliage. Proper fix = record planted cells. Revisit after A10 tree mechanics.
@@ -1352,16 +1352,16 @@ export default function TerrainEditor() {
     
     const plantedTrees = new VegSpacingIndex(normParams.veg.trees.spacing);
     const plantedBushes = new VegSpacingIndex(normParams.veg.bushes.spacing);
-    const dims: MapDimensions = {width, depth, totalHeight};
+    const dims: MapDimensions = {width, depth, height};
 
     terrain.transaction((store) => {
       clearBlocksById(store, Array.from(terrain.cells()), idSet)
       for (let x = 0; x < width; x++) {
         for (let z = 0; z < depth; z++) {
           const idx = x * depth + z;
-          const h = snap.heightMap[idx];
+          const groundH = snap.heightMap[idx];
           const isWater = !!snap.isWaterMap[idx];
-          if (!isPlantableColumn(h, isWater, totalHeight, normParams.water.seaLevel, normParams.island.isFloating)) 
+          if (!isPlantableColumn(groundH, isWater, height, normParams.water.seaLevel, normParams.island.isFloating)) 
             continue;
 
           let treePlanted = false;
@@ -1370,7 +1370,7 @@ export default function TerrainEditor() {
             if (normParams.veg.trees.isForests && forestMask)
               chance = forestMask(x, z) > 0.55 ? normParams.veg.trees.forestDensity : 0;
             if (chance > 0 && rand() < chance && plantedTrees.canPlant(x, z)) {
-              const planted = plantTree(store, rand, x, h, z, normParams.veg.trees, dims);
+              const planted = plantTree(store, rand, x, groundH, z, normParams.veg.trees, dims);
               if(planted) 
                 plantedTrees.add(x, z);
               treePlanted = true; // intentional for now
@@ -1384,7 +1384,7 @@ export default function TerrainEditor() {
             rand() < normParams.veg.bushes.chance &&
             plantedBushes.canPlant(x, z)
           ) {
-            plantBush(store, rand, x, h, z, normParams.veg.bushes, dims);
+            plantBush(store, rand, x, groundH, z, normParams.veg.bushes, dims);
             plantedBushes.add(x, z);
           }
         }
@@ -1395,9 +1395,9 @@ export default function TerrainEditor() {
   }
 
   function regenerateOre(params:RngParams):void {
-    const normParams = normalizeRngParameters(params, width, depth, totalHeight);
+    const normParams = normalizeRngParameters(params, width, depth, height);
     const snap = lastHeightMapRef.current;
-    if (!snap || snap.width !== width || snap.depth !== depth || snap.totalHeight !== totalHeight) {
+    if (!snap || snap.width !== width || snap.depth !== depth || snap.height !== height) {
       setStatus(STRINGS.en.regenNeedsGenerate);
       return;
     }
@@ -1412,7 +1412,7 @@ export default function TerrainEditor() {
 
     terrain.transaction((store) => {
       clearBlocksById(store, Array.from(terrain.cells()), oreIdSet);
-      placeOres(store, snap.heightMap, rand, ore, normParams.island.groundDepth, {width, depth, totalHeight});
+      placeOres(store, snap.heightMap, rand, ore, normParams.island.groundDepth, {width, depth, height});
     });
 
     setStatus(STRINGS.en.regenDone);
@@ -1563,23 +1563,23 @@ export default function TerrainEditor() {
 
     st.orbit.target.set(
       dims.width / 2,
-      Math.min(dims.totalHeight, 20) / 2,
+      Math.min(dims.height, 20) / 2,
       dims.depth / 2,
     );
     st.orbit.targetGoal = st.orbit.target.clone();
     if (!st.orbit.initialized) {
       st.orbit.radius =
-        Math.max(dims.width, dims.depth, dims.totalHeight, 4) * 1.3 + 10;
+        Math.max(dims.width, dims.depth, dims.height, 4) * 1.3 + 10;
       st.orbit.targetRadius = st.orbit.radius;
       st.orbit.initialized = true;
     }
 
     if (!st.fly.initialized) {
       const cx = dims.width / 2;
-      const cy = Math.min(dims.totalHeight, 20) / 2;
+      const cy = Math.min(dims.height, 20) / 2;
       const cz = dims.depth / 2;
       const dist =
-        Math.max(dims.width, dims.depth, dims.totalHeight, 4) * 0.9 + 12;
+        Math.max(dims.width, dims.depth, dims.height, 4) * 0.9 + 12;
       const px = cx;
       const py = cy + dist * 0.45;
       const pz = cz + dist;
@@ -1890,7 +1890,7 @@ export default function TerrainEditor() {
       cz < 0 ||
       cz >= dims.depth ||
       cy < 0 ||
-      cy >= dims.totalHeight
+      cy >= dims.height
     )
       return;
 
@@ -1957,7 +1957,7 @@ export default function TerrainEditor() {
       cz < 0 ||
       cz >= dims.depth ||
       cy < 0 ||
-      cy >= dims.totalHeight
+      cy >= dims.height
     )
       return;
     setVoxel(cx, cy, cz, AIR, 0);
@@ -1987,7 +1987,7 @@ export default function TerrainEditor() {
       cz < 0 ||
       cz >= dims.depth ||
       cy < 0 ||
-      cy >= dims.totalHeight
+      cy >= dims.height
     )
       return;
 
@@ -2061,7 +2061,7 @@ export default function TerrainEditor() {
       const delta = event.deltaY || event.deltaX; // some browsers report Shift+wheel as horizontal
         if (delta === 0) return;
       const dims = dimsRef.current;
-      const maxR = Math.max(dims.width, dims.depth, dims.totalHeight, 4) * 4 + 20;
+      const maxR = Math.max(dims.width, dims.depth, dims.height, 4) * 4 + 20;
       const oldR = st.orbit.targetRadius;
       const step = Math.pow(DEFAULT_SETTINGS.ZOOM_ORBIT_STEP, event.shiftKey ? DEFAULT_SETTINGS.ZOOM_SHIFT_MULT : 1);
       const newR = Math.max(1, Math.min(maxR, oldR * (delta > 0 ? step : 1 / step)));
@@ -2459,7 +2459,8 @@ export default function TerrainEditor() {
 
   function copyLayer(direction: number) {
     const target = currentLayer + direction;
-    if (target < 0 || target >= totalHeight) return;
+    if (target < 0 || target >= height)
+      return;
     beginStroke();
     for (let x = 0; x < width; x++) {
       for (let z = 0; z < depth; z++) {
@@ -2510,7 +2511,7 @@ export default function TerrainEditor() {
         if (off === 0)
           continue;
         const ly = currentLayer + off;
-        if (ly < 0 || ly >= totalHeight)
+        if (ly < 0 || ly >= height)
           continue;
         const alpha = 0.15 / Math.abs(off);
         ctx.globalAlpha = alpha;
@@ -2671,7 +2672,7 @@ export default function TerrainEditor() {
 
     // const ms = performance.now() - t0;
     // if (ms > 1) console.log(`draw ${ms.toFixed(1)} ms, voxels: ${terrain.size}`);
-  }, [width, depth, cell, currentLayer, mirrorX, mirrorZ, roadParams.roadPending, roadParams.roadWidth, onionSkin, onionRange, totalHeight, entityInstances]);
+  }, [width, depth, cell, currentLayer, mirrorX, mirrorZ, roadParams.roadPending, roadParams.roadWidth, onionSkin, onionRange, height, entityInstances]);
 
   const viewRef = useRef({ panX: 0, panY: 0 }); // screen position of the grid's top-left corner
   const drawRef = useRef(draw);
@@ -2981,7 +2982,7 @@ export default function TerrainEditor() {
             if (orbit3d) {
               panOrbitByUnits(0, 0, dir * n); // In 3D, pan the camera up/down
             } else if (!isDrawingRef.current) {
-              setCurrentLayer((prevLayer) => clamp(prevLayer + dir * n, 0, dimsRef.current.totalHeight - 1)); // In 2D, switch layers up/down
+              setCurrentLayer((prevLayer) => clamp(prevLayer + dir * n, 0, dimsRef.current.height - 1)); // In 2D, switch layers up/down
             }
             return;
           }
@@ -3078,7 +3079,7 @@ export default function TerrainEditor() {
     }
     const fits = (x: number, y: number, z: number) => {
       return (x + dx >= 0 && x + dx < width &&
-        y + dy >= 0 && y + dy < totalHeight &&
+        y + dy >= 0 && y + dy < height &&
         z + dz >= 0 && z + dz < depth);
     }
     if (!cells.every((c) => fits(c.x, c.y, c.z)) || !entities.every((ent) => fits(ent.x, ent.y, ent.z))) {
@@ -3090,7 +3091,7 @@ export default function TerrainEditor() {
     setEntityInstances(movedEntities);
     terrain.replaceAll(cells.map((c) => ({ x: c.x + dx, y: c.y + dy, z: c.z + dz, block: c.block, meta: c.meta })));
     lastHeightMapRef.current = null; // the "regenerate trees/ore" snapshot no longer matches
-    setCurrentLayer((layer) => clamp(layer + dy, 0, totalHeight - 1)); // Follow the Y layer if it shifts
+    setCurrentLayer((layer) => clamp(layer + dy, 0, height - 1)); // Follow the Y layer if it shifts
     setStatus(STRINGS.en.shiftDone(dx, dy, dz));
   }
 
@@ -3107,12 +3108,15 @@ export default function TerrainEditor() {
     for (let r = 0; r <= Math.max(dims.width, dims.depth) && !spot; r++) {
       for (let dx = -r; dx <= r && !spot; dx++) {
         for (let dz = -r; dz <= r && !spot; dz++) {
-          if (Math.max(Math.abs(dx), Math.abs(dz)) !== r) continue;
+          if (Math.max(Math.abs(dx), Math.abs(dz)) !== r) 
+            continue;
           const x = startX + dx;
           const z = startZ + dz;
-          if (x < 0 || x >= dims.width || z < 0 || z >= dims.depth) continue;
+          if (x < 0 || x >= dims.width || z < 0 || z >= dims.depth) 
+            continue;
           const y = findSurfaceY(x, z);
-          if (y >= 0 && y + 1 < dims.totalHeight) spot = { x, y: y + 1, z };
+          if (y >= 0 && y + 1 < dims.height)
+            spot = { x, y: y + 1, z };
         }
       }
     }
@@ -3394,7 +3398,7 @@ export default function TerrainEditor() {
             showStructuresPanel={showStructuresPanel}
             tool={tool}
             toolBtn={toolBtn}
-            totalHeight={totalHeight}
+            totalHeight={height}
             undo={()=>terrain.undo()}
             viewMode={viewMode}
             zoom={zoom}
@@ -3407,7 +3411,7 @@ export default function TerrainEditor() {
               setRandSeed={setRandSeed}
               rngParams={rngParameters}
               onParamChange={updateRngParameter}
-              totalHeight={totalHeight}
+              totalHeight={height}
               generateRandomTerrain={generateRandomTerrain}
               randomizeAllParams={randomizeAllParams}
             />
@@ -3643,7 +3647,7 @@ export default function TerrainEditor() {
             gridY={mapData.gridY}
             localY={localY}
             setCurrentLayer={setCurrentLayer}
-            totalHeight={totalHeight}
+            totalHeight={height}
           />
         )}
       </div>

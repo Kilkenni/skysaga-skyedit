@@ -40,7 +40,7 @@ function stampFoliageLayer(
   rand:()=>number, 
   centerX: number, layerY: number, centerZ: number, 
   layerR: number, tolerance: number, leavesBlock: number, dims: MapDimensions, skipCenter = false):void {  
-  if (layerY < 0 || layerY >= dims.totalHeight) 
+  if (layerY < 0 || layerY >= dims.height) 
     return;
   for (let dx = -layerR; dx <= layerR; dx++) {
     for (let dz = -layerR; dz <= layerR; dz++) {
@@ -65,7 +65,7 @@ function stampFoliageLayer(
 function plantTree(target:Pick<VoxelGrid, "set">, rand: ()=> number, tx: number, groundY: number, tz: number, params: TreeParams, dims: MapDimensions): boolean {
   const trunkHeight = params.minH + Math.floor(rand() * (params.maxH - params.minH + 1));
   const trunkTop = groundY + trunkHeight - 1;
-  if (trunkTop + 3 >= dims.totalHeight)
+  if (trunkTop + 3 >= dims.height)
     return false;
   // trunk
   for (let ty = 0; ty < trunkHeight; ty++) {
@@ -125,7 +125,7 @@ function placeOres(
           const wx = cx + dx;
           const wy = cy + dy;
           const wz = cz + dz;
-          if (wx < 0 || wx >= dims.width || wy < 0 || wy >= dims.totalHeight || wz < 0 || wz >= dims.depth)
+          if (wx < 0 || wx >= dims.width || wy < 0 || wy >= dims.height || wz < 0 || wz >= dims.depth)
             continue;
           if (target.getBlock(wx, wy, wz) === AIR) 
             continue;
@@ -187,15 +187,15 @@ function placeDecoration(
   return true;
 }
 
-function isSubmerged(h: number, seaLevel: number, isFloating: boolean) {
-  return !isFloating && h < seaLevel;
+function isSubmerged(surfaceH: number, seaLevel: number, isFloating: boolean) {
+  return !isFloating && surfaceH < seaLevel;
 }
 
 function isPlantableColumn(
-  h: number, isWater: boolean, totalHeight: number, seaLevel: number, isFloating: boolean,
+  surfaceH: number, isWater: boolean, height: number, seaLevel: number, isFloating: boolean,
 ) {
-  return (h > 0 && h < totalHeight && !isWater 
-    && !isSubmerged(h, seaLevel, isFloating));
+  return (surfaceH > 0 && surfaceH < height && !isWater 
+    && !isSubmerged(surfaceH, seaLevel, isFloating));
 }
 
 
@@ -210,7 +210,7 @@ function generateTerrain(
     isWaterMap: Uint8Array,
   }
   {
-    const {width, depth, totalHeight} = mapDimensions;
+    const {width, depth, height} = mapDimensions;
     const rand = mulberry32(seed);
     const noiseCoarse = makeValueNoise(rand, width, depth, 18);
     const noiseFine = makeValueNoise(rand, width, depth, 6);
@@ -230,7 +230,7 @@ function generateTerrain(
       : null;
     const bottomNoiseFine = raggedBottom ? makeValueNoise(rand, width, depth, 6) : null;
     const caveNoise = normParams.caves.isEnabled ? 
-      makeValueNoise3D(rand, width, totalHeight, depth, 8) : null;
+      makeValueNoise3D(rand, width, height, depth, 8) : null;
 
     const islandMarginFactor =
       { small: 0.42, medium: 0.7, large: 0.96 }[normParams.island.size] || 0.96;
@@ -344,7 +344,7 @@ function generateTerrain(
           heightMap[idx] = 0;
           continue;
         }
-        heightMap[idx] = Math.min(h, totalHeight);
+        heightMap[idx] = Math.min(h, height);
         isWaterMap[idx] = isWater ? 1 : 0;
         waterBlockMap[idx] = waterBlock;
       }
@@ -418,7 +418,7 @@ function generateTerrain(
     }
 
     // Let the witchcraft commence
-    const grid = new VoxelGrid({ width, depth, height: totalHeight })
+    const grid = new VoxelGrid({ width, depth, height: height })
     
     const plantedTrees = new VegSpacingIndex(normParams.veg.trees.spacing);
     const plantedBushes = new VegSpacingIndex(normParams.veg.bushes.spacing);
@@ -427,12 +427,12 @@ function generateTerrain(
     for (let x = 0; x < width; x++) {
       for (let z = 0; z < depth; z++) {
         const idx = x * depth + z;
-        const height = heightMap[idx];
+        const groundH = heightMap[idx];
 
-        if (height <= 0) {
+        if (groundH <= 0) {
           if (normParams.island.isFloating)
             continue;
-          for (let y = 0; y < normParams.water.seaLevel && y < totalHeight; y++) {
+          for (let y = 0; y < normParams.water.seaLevel && y < height; y++) {
             grid.set(x, y, z, normParams.water.seaBlock);
           }
           continue;
@@ -440,13 +440,13 @@ function generateTerrain(
 
         const isWater = !!isWaterMap[idx];
         const waterBlock = waterBlockMap[idx];
-        const isPlantable = isPlantableColumn(height, isWater, totalHeight, normParams.water.seaLevel, normParams.island.isFloating);
+        const isPlantable = isPlantableColumn(groundH, isWater, height, normParams.water.seaLevel, normParams.island.isFloating);
 
         let columnSurfaceBlock = normParams.block.surface;
         if (normParams.altitude.isEnabled) {
-          if (height >= normParams.altitude.snowLevel)
+          if (groundH >= normParams.altitude.snowLevel)
             columnSurfaceBlock = normParams.altitude.snowBlock;
-          else if (height <= normParams.altitude.beachLevel)
+          else if (groundH <= normParams.altitude.beachLevel)
             columnSurfaceBlock = normParams.altitude.beachBlock;
         }
         if (shoreMap && shoreMap[idx] && !isWater) {
@@ -460,17 +460,17 @@ function generateTerrain(
             const bn = bottomNoiseCoarse(x, z) * 0.6 + bottomNoiseFine(x, z) * 0.4;
             bottomY = Math.round(bn * normParams.island.bottomRoughness * f);
           }
-          const minBottomForCap = height - normParams.island.maxThickness;
+          const minBottomForCap = groundH - normParams.island.maxThickness;
           if (bottomY < minBottomForCap)
             bottomY = minBottomForCap;
-          bottomY = Math.max(0, Math.min(bottomY, height - 2));
+          bottomY = Math.max(0, Math.min(bottomY, groundH - 2));
         }
 
         // Caves
-        for (let y = bottomY; y < height; y++) {
+        for (let y = bottomY; y < groundH; y++) {
           if (
             caveNoise &&
-            y < height - 1 &&
+            y < groundH - 1 &&
             y > bottomY &&
             caveNoise(x, y, z) > normParams.caves.threshold
           ) {
@@ -479,13 +479,13 @@ function generateTerrain(
             }
             continue;
           }
-          const isSurface = y === height - 1;
+          const isSurface = y === groundH - 1;
           const block = isSurface ? (isWater ? waterBlock : columnSurfaceBlock) : normParams.block.base;
           grid.set(x, y, z, block);
         }
 
-        if (isSubmerged(height, normParams.water.seaLevel, normParams.island.isFloating)) {
-          for (let y = height; y < normParams.water.seaLevel && y < totalHeight; y++) {
+        if (isSubmerged(groundH, normParams.water.seaLevel, normParams.island.isFloating)) {
+          for (let y = groundH; y < normParams.water.seaLevel && y < height; y++) {
             grid.set(x, y, z, normParams.water.seaBlock);
           }
         }
@@ -498,7 +498,7 @@ function generateTerrain(
             effectiveTreeChance = forestMask(x, z) > 0.55 ? normParams.veg.trees.forestDensity : 0;
           }
           if (effectiveTreeChance > 0 && rand() < effectiveTreeChance && plantedTrees.canPlant(x, z)) {
-            const planted = plantTree(grid, rand, x, height, z, normParams.veg.trees, mapDimensions);
+            const planted = plantTree(grid, rand, x, groundH, z, normParams.veg.trees, mapDimensions);
             if (planted) 
               plantedTrees.add(x, z);
             // intentional, preserves old behaviour: a tree that doesn't fit still blocks
@@ -516,7 +516,7 @@ function generateTerrain(
           rand() < normParams.veg.bushes.chance &&
           plantedBushes.canPlant(x, z)
         ) {
-          bushPlanted = plantBush(grid, rand, x, height, z, normParams.veg.bushes, mapDimensions);
+          bushPlanted = plantBush(grid, rand, x, groundH, z, normParams.veg.bushes, mapDimensions);
           plantedBushes.add(x, z);
         }
 
@@ -527,7 +527,7 @@ function generateTerrain(
           isPlantable &&
           normParams.deco.weightedList.length
         ) {
-          placeDecoration(grid, rand, x, height, z, normParams.deco);
+          placeDecoration(grid, rand, x, groundH, z, normParams.deco);
         }
       }
     }
@@ -556,7 +556,7 @@ function generateTerrain(
             if (nH <= 0) 
               continue;
             if (riverH - nH >= normParams.rivers.waterfallDropThreshold) {
-              for (let y = nH; y < riverH && y < totalHeight; y++) {
+              for (let y = nH; y < riverH && y < height; y++) {
                 grid.set(nx, y, nz, normParams.rivers.block);
               }
             }
@@ -618,7 +618,7 @@ function generateTerrain(
             }
 
             const ay = surfaceH;
-            if (ay + rotated.sizeY > totalHeight) 
+            if (ay + rotated.sizeY > height) 
               continue;
 
             const box = {
@@ -637,7 +637,7 @@ function generateTerrain(
               const wx = ax + v.x;
               const wy = ay + v.y;
               const wz = az + v.z;
-              if (wx < 0 || wx >= width || wy < 0 || wy >= totalHeight || wz < 0 || wz >= depth)
+              if (wx < 0 || wx >= width || wy < 0 || wy >= height || wz < 0 || wz >= depth)
                 continue;
               grid.set(wx, wy, wz, v.block, v.meta || 0);
             }

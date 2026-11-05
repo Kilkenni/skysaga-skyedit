@@ -7,11 +7,11 @@ import { DEFAULT_RNG_PARAMS } from "../src/components/TerrainEditor";
 import { type Structure } from "../src/lib/structures";
 
 
-const DIMS = { width: 64, depth: 64, totalHeight: 48 };
+const DIMS = { width: 64, depth: 64, height: 48 };
 
 function run(seed: number, overrides: Partial<RngParams> = {}, structures: Structure[] = []) {
   const params = { ...DEFAULT_RNG_PARAMS, ...overrides };
-  const norm = normalizeRngParameters(params, DIMS.width, DIMS.depth, DIMS.totalHeight);
+  const norm = normalizeRngParameters(params, DIMS.width, DIMS.depth, DIMS.height);
   return generateTerrain(DIMS, seed, norm, structures);
 }
 
@@ -77,7 +77,7 @@ describe("generateTerrain", () => {
         const idx = x * DIMS.depth + z;
         const h = heightMap[idx];
         expect(h).toBeGreaterThanOrEqual(0);
-        expect(h).toBeLessThanOrEqual(DIMS.totalHeight);
+        expect(h).toBeLessThanOrEqual(DIMS.height);
         expect(isWaterMap[idx] === 0 || isWaterMap[idx] === 1).toBe(true);
         // the top voxel of every column with ground is never skipped
         if (h > 0) expect(grid.getBlock(x, h - 1, z)).not.toBe(AIR);
