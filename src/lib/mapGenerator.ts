@@ -1,6 +1,7 @@
-import { MapDimensions } from "../components/TerrainEditor";
+import { MapDimensions, RngSnapshot } from "../components/TerrainEditor";
 import { AIR } from "../constants";
 import { VoxelGrid } from "../VoxelGrid";
+import { BlockId, VoxelCell, VoxelStore, VoxelWriter } from "../VoxelStore";
 import { NormalizedParams, TreeParams, VegParams } from "./mapParamNormalizer";
 import { makeValueNoise, makeValueNoise3D, mulberry32 } from "./noise";
 import { pickWeighted } from "./numbers";
@@ -198,6 +199,140 @@ function isPlantableColumn(
     && !isSubmerged(surfaceH, seaLevel, isFloating));
 }
 
+function clearBlocksById(
+  target: Pick<VoxelWriter, "set">,
+  cells: Iterable<VoxelCell>,
+  ids: ReadonlySet<BlockId>,
+) {
+  for (const cell of cells) {
+    if (ids.has(cell.block)) 
+      target.set(cell.x, cell.y, cell.z, AIR)
+  };
+}
+
+// REGENERATE functions
+
+function regenerateDeco(
+  dims: MapDimensions,
+  seed: number,
+  normParams: NormalizedParams,
+  snapshot: RngSnapshot,
+  store: Pick<VoxelStore, "transaction" | "cells">,
+):boolean {
+  const {deco} = normParams;
+  if (!deco.weightedList.length || deco.chance <= 0) {
+    return false;
+  }
+  const rand = mulberry32(seed);
+  const {width, depth, height} = dims;
+  const decoIdSet = new Set(deco.weightedList
+    .filter((entity) => entity !== null)
+    .map((entity) => entity.id ));
+  store.transaction((writer) => {
+    clearBlocksById(writer, Array.from(store.cells()), decoIdSet);
+    for (let x = 0; x < width; x++) {
+      for (let z = 0; z < depth; z++) {
+        const idx = x * depth + z;
+        const groundH = snapshot.heightMap[idx];
+        const isWater = !!snapshot.isWaterMap[idx];
+        if (!isPlantableColumn(groundH, isWater, height, normParams.water.seaLevel, normParams.island.isFloating))
+          continue;
+        placeDecoration(writer, rand, x, groundH, z, deco);
+      }
+    }
+  });
+  return true;
+}
+
+function regenerateVeg(
+  dims: MapDimensions,
+  seed: number,
+  normParams: NormalizedParams,
+  snapshot: RngSnapshot,
+  store: Pick<VoxelStore, "transaction" | "cells">,
+): boolean {
+  // NOTE: clearing is id-based, so with shared leaf blocks regenerating either kind strips all
+  // foliage. Proper fix = record planted cells. Revisit after A10 tree mechanics.
+  const idSet = new Set<number>();
+  if (normParams.veg.trees.isEnabled) {
+    idSet.add(normParams.veg.trees.woodBlock);
+    idSet.add(normParams.veg.trees.leavesBlock);
+  }
+  if (normParams.veg.bushes.isEnabled) {
+    idSet.add(normParams.veg.bushes.leavesBlock);
+  }
+  if (idSet.size === 0) {
+    return false;
+  }
+  const rand = mulberry32(seed);
+  
+  const forestMask = normParams.veg.trees.isForests ? makeValueNoise(rand, dims.width, dims.depth, 20) : null;
+  
+  const plantedTrees = new VegSpacingIndex(normParams.veg.trees.spacing);
+  const plantedBushes = new VegSpacingIndex(normParams.veg.bushes.spacing);
+
+  store.transaction((writer) => {
+    clearBlocksById(writer, Array.from(store.cells()), idSet)
+    for (let x = 0; x < dims.width; x++) {
+      for (let z = 0; z < dims.depth; z++) {
+        const idx = x * dims.depth + z;
+        const groundH = snapshot.heightMap[idx];
+        const isWater = !!snapshot.isWaterMap[idx];
+        if (!isPlantableColumn(groundH, isWater, dims.height, normParams.water.seaLevel, normParams.island.isFloating)) 
+          continue;
+
+        let treePlanted = false;
+        if (normParams.veg.trees.isEnabled) {
+          let chance = normParams.veg.trees.chance;
+          if (normParams.veg.trees.isForests && forestMask)
+            chance = forestMask(x, z) > 0.55 ? normParams.veg.trees.forestDensity : 0;
+          if (chance > 0 && rand() < chance && plantedTrees.canPlant(x, z)) {
+            const planted = plantTree(writer, rand, x, groundH, z, normParams.veg.trees, dims);
+            if(planted) 
+              plantedTrees.add(x, z);
+            treePlanted = true; // intentional for now
+          }
+        }
+
+        if (
+          !treePlanted &&
+          normParams.veg.bushes.isEnabled &&
+          normParams.veg.bushes.chance > 0 &&
+          rand() < normParams.veg.bushes.chance &&
+          plantedBushes.canPlant(x, z)
+        ) {
+          plantBush(writer, rand, x, groundH, z, normParams.veg.bushes, dims);
+          plantedBushes.add(x, z);
+        }
+      }
+    }
+  })
+  return true;
+}
+
+function regenerateOre(
+  dims: MapDimensions,
+  seed: number,
+  normParams: NormalizedParams,
+  snapshot: RngSnapshot,
+  store: Pick<VoxelStore, "transaction" | "cells">,
+):boolean {
+  const {ore} = normParams;
+  if (!ore.blockList.length || ore.countScaled <= 0) {
+    return false;
+  }
+  
+  const rand = mulberry32(seed);
+  const oreIdSet = new Set(ore.blockList);
+
+  store.transaction((writer) => {
+    clearBlocksById(writer, Array.from(store.cells()), oreIdSet);
+    placeOres(writer, snapshot.heightMap, rand, ore, normParams.island.groundDepth, dims);
+  });
+  return true;
+}
+
+// MAIN TERRAIN GENERATOR
 
 function generateTerrain(
     mapDimensions: MapDimensions,
@@ -657,10 +792,8 @@ function generateTerrain(
 
   export {
     generateTerrain,
-    VegSpacingIndex,
     isPlantableColumn,
-    plantTree,
-    plantBush,
-    placeOres,
-    placeDecoration,
+    regenerateDeco,
+    regenerateVeg,
+    regenerateOre,
   }
