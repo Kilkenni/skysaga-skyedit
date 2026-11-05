@@ -1,7 +1,7 @@
 import { MapDimensions, RngSnapshot } from "../components/TerrainEditor";
 import { AIR } from "../constants";
 import { VoxelGrid } from "../VoxelGrid";
-import { BlockId, VoxelCell, VoxelStore, VoxelWriter } from "../VoxelStore";
+import { BlockId, VoxelCell, VoxelStore, VoxelWriter } from "./VoxelStore";
 import { NormalizedParams, TreeParams, VegParams } from "./mapParamNormalizer";
 import { makeValueNoise, makeValueNoise3D, mulberry32 } from "./noise";
 import { pickWeighted } from "./numbers";
@@ -226,7 +226,6 @@ function regenerateDeco(
   const rand = mulberry32(seed);
   const {width, depth, height} = dims;
   const decoIdSet = new Set(deco.weightedList
-    .filter((entity) => entity !== null)
     .map((entity) => entity.id ));
   store.transaction((writer) => {
     clearBlocksById(writer, Array.from(store.cells()), decoIdSet);
@@ -317,6 +316,7 @@ function regenerateOre(
   snapshot: RngSnapshot,
   store: Pick<VoxelStore, "transaction" | "cells">,
 ):boolean {
+  
   const {ore} = normParams;
   if (!ore.blockList.length || ore.countScaled <= 0) {
     return false;

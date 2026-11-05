@@ -48,8 +48,8 @@ function parseWeightedIdList(str: string):WeightedList {
       const weight = parts[1] ? parseFloat(parts[1]) : 1;
       return { id, weight: weight > 0 ? weight : 1 };
     })
-    .filter(Boolean);
-  return res.filter((elem) => elem !== null);
+    .filter((elem) => elem !== null);
+  return res;
 }
 
 function pickWeighted(list: WeightedList, randFn:()=> number) {

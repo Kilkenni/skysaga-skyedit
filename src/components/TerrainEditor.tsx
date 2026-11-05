@@ -23,7 +23,7 @@ import TopBar from "./TopBar.tsx";
 import PaletteSidebar from "./PaletteSidebar";
 import ToolbarRow from "./ToolbarRow";
 import LayerNav from "./LayerNav";
-import { BlockId, VoxelCell, VoxelStore, VoxelStoreEvent } from "../VoxelStore";
+import { BlockId, VoxelCell, VoxelStore, VoxelStoreEvent } from "../lib/VoxelStore";
 import {storage, createNamedStore, writeJson, readJson } from "../lib/storage.ts";
 import {Hotbar, PaletteEntry, usePalette} from "../hooks/usePalette.ts"
 import PaletteHotbar from "./PaletteHotbar.tsx";
