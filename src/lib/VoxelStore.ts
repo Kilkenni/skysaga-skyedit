@@ -1,5 +1,5 @@
-import { AIR } from "./constants";
-import { keyOf } from "./lib/keys";
+import { AIR } from "../constants";
+import { keyOf } from "./keys";
 
 export type BlockId = number; //0..255. Air is 255
 

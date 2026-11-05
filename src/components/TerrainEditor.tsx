@@ -8,8 +8,7 @@ import {
 import { STRINGS } from "../i18n/strings";
 import { colorForId } from "../lib/colors";
 import { keyOf } from "../lib/keys";
-import { clamp, clampBlockId, parseIdList, parseWeightedIdList, pickWeighted } from "../lib/numbers";
-import { mulberry32, makeValueNoise, makeValueNoise3D } from "../lib/noise";
+import { clamp, clampBlockId, } from "../lib/numbers";
 import { rotateStructure90, getRotatedStructure, generateStructureThumbnail, Structure } from "../lib/structures";
 import { inputStyle, actionBtn } from "../styles/inline";
 import RandomPanel from "./RandomPanel";
@@ -24,15 +23,13 @@ import TopBar from "./TopBar.tsx";
 import PaletteSidebar from "./PaletteSidebar";
 import ToolbarRow from "./ToolbarRow";
 import LayerNav from "./LayerNav";
-import { VoxelCell, VoxelStore, VoxelStoreEvent } from "../VoxelStore";
+import { BlockId, VoxelCell, VoxelStore, VoxelStoreEvent } from "../lib/VoxelStore";
 import {storage, createNamedStore, writeJson, readJson } from "../lib/storage.ts";
 import {Hotbar, PaletteEntry, usePalette} from "../hooks/usePalette.ts"
 import PaletteHotbar from "./PaletteHotbar.tsx";
 import { NormalizedParams, normalizeRngParameters, RngParams, TreeParams, VegParams } from "../lib/mapParamNormalizer.ts";
 import { hotkeyLabel, isFreehand, PAN_KEYS, TOOL_BY_CODE, TOOL_BY_ID } from "../lib/tools.ts";
-import { VoxelGrid } from "../VoxelGrid.ts";
-import { canPlantVeg, generateTerrain, PlantedVeg, stampFoliageLayer } from "../lib/mapGenerator.ts";
-
+import { generateTerrain, regenerateDeco, regenerateOre, regenerateVeg } from "../lib/mapGenerator.ts";
 
 export interface MapData {
   gridX: number,
@@ -48,6 +45,14 @@ const DEFAULT_MAP_DATA:Readonly<MapData> = {
   gridZ: 6,
   biomeName: "Forest",
   gameMode: 1,
+}
+
+export interface RngSnapshot {
+  width: number,
+  depth: number,
+  height: number,
+  heightMap: Int16Array,
+  isWaterMap: Uint8Array
 }
 
 interface EntityData {
@@ -76,7 +81,7 @@ export interface LevelData {
 export interface MapDimensions {
   width: number,
   depth: number,
-  totalHeight: number,
+  height: number,
 }
 
 type DeepReadonly<T> =
@@ -272,13 +277,8 @@ export default function TerrainEditor() {
   const [showPresets, setShowPresets] = useState(false);
   const [presets, setPresets] = useState<string[]>([]);
   const [newPresetName, setNewPresetName] = useState("Preset 1");
-  const lastHeightMapRef = useRef<{
-    width: number,
-    depth: number,
-    totalHeight: number,
-    heightMap: Int16Array,
-    isWaterMap: Uint8Array
-  }>(null);
+
+  const lastHeightMapRef = useRef<RngSnapshot>(null);
 
   const [openPopover, setOpenPopover] = useState<string|null>(null);
   const popoverAnchorRef = useRef<any>(null);
@@ -354,7 +354,7 @@ export default function TerrainEditor() {
   const canvas3dRef = useRef<HTMLCanvasElement>(null);
   const toolRef = useRef(tool);
   
-  const dimsRef = useRef({ width: 0, depth: 0, totalHeight: 0 });
+  const dimsRef = useRef<MapDimensions>({ width: 0, depth: 0, height: 0 });
   
   const cameraModeRef = useRef(cameraMode);
   const moveSpeedRef = useRef(moveSpeed);
@@ -480,7 +480,7 @@ export default function TerrainEditor() {
 
   const width = mapData.gridX * CHUNK;
   const depth = mapData.gridZ * CHUNK;
-  const totalHeight = mapData.gridY * CHUNK;
+  const height = mapData.gridY * CHUNK;
   const cell = CELL_BASE * zoom;
 
   useEffect(() => {
@@ -496,8 +496,8 @@ export default function TerrainEditor() {
   }, [tool]);
   
   useEffect(() => {
-    dimsRef.current = { width, depth, totalHeight };
-  }, [width, depth, totalHeight]);
+    dimsRef.current = { width, depth, height };
+  }, [width, depth, height]);
 
   useEffect(() => {
     placingStructureRef.current = placingStructureId;
@@ -542,7 +542,7 @@ export default function TerrainEditor() {
     if (viewMode === "3d" && threeRef.current.renderer) {
       rebuildInstances();
     }
-  }, [width, depth, totalHeight]);
+  }, [width, depth, height]);
 
   // ---- persistence: load on mount ----
   useEffect(() => {
@@ -903,7 +903,7 @@ export default function TerrainEditor() {
       const wx = anchorX + v.x;
       const wy = anchorY + v.y;
       const wz = anchorZ + v.z;
-      if (wx < 0 || wx >= dims.width || wy < 0 || wy >= dims.totalHeight || wz < 0 || wz >= dims.depth)
+      if (wx < 0 || wx >= dims.width || wy < 0 || wy >= dims.height || wz < 0 || wz >= dims.depth)
         continue;
       const key = keyOf(wx, wy, wz);
       //const oldEntry = voxelsRef.current.get(key);
@@ -917,7 +917,7 @@ export default function TerrainEditor() {
   // ---- entity placement (not voxels - separate marker list) ----
   function placeEntityAt(name:string, x:number, y:number, z:number) {
     const dims = dimsRef.current;
-    if (x < 0 || x >= dims.width || y < 0 || y >= dims.totalHeight || z < 0 || z >= dims.depth)
+    if (x < 0 || x >= dims.width || y < 0 || y >= dims.height || z < 0 || z >= dims.depth)
       return;
     if (
       SINGLETON_ENTITY_NAMES.has(name) &&
@@ -978,7 +978,7 @@ export default function TerrainEditor() {
         for (const ed of edits) {
           if (!Array.isArray(ed) || ed.length < 4) continue;
           const [x, y, z, block] = ed.map(Number);
-          if (x < 0 || x >= dims.width || y < 0 || y >= dims.totalHeight || z < 0 || z >= dims.depth) continue;
+          if (x < 0 || x >= dims.width || y < 0 || y >= dims.height || z < 0 || z >= dims.depth) continue;
           setVoxel(x, y, z, block, 0);
           n++;
         }
@@ -1142,7 +1142,7 @@ export default function TerrainEditor() {
     const minZ = Math.max(0, Math.min(z0, z1));
     const maxZ = Math.min(depth - 1, Math.max(z0, z1));
     const minY = Math.max(0, Math.min(copyYFrom, copyYTo));
-    const maxY = Math.min(totalHeight - 1, Math.max(copyYFrom, copyYTo));
+    const maxY = Math.min(height - 1, Math.max(copyYFrom, copyYTo));
     const cells:{
       dx: number,
       dy: number,
@@ -1182,7 +1182,7 @@ export default function TerrainEditor() {
       const x = x0 + c.dx;
       const y = currentLayer + c.dy;
       const z = z0 + c.dz;
-      if (x < 0 || x >= width || y < 0 || y >= totalHeight || z < 0 || z >= depth) continue;
+      if (x < 0 || x >= width || y < 0 || y >= height || z < 0 || z >= depth) continue;
       setVoxelMirrored(x, y, z, c.block, c.meta);
     }
     commitStroke();
@@ -1190,7 +1190,7 @@ export default function TerrainEditor() {
 
   // ---- road / path tool ----
   function findSurfaceY(x: number, z: number) {
-    for (let y = totalHeight - 1; y >= 0; y--) {
+    for (let y = height - 1; y >= 0; y--) {
       // const v = voxelsRef.current.get(keyOf(x, y, z));
       const v = terrain.get(x, y, z);
       if (v && v.block !== AIR) return y;
@@ -1254,17 +1254,17 @@ export default function TerrainEditor() {
 
   function generateRandomTerrain(params:RngParams) {
     const seed = Number(randSeed) || Math.floor(Math.random() * 1e9);
-    const dimensions = { width, depth, totalHeight };
-    const normP = normalizeRngParameters(params, width, depth, totalHeight);
+    const dimensions = { width, depth, height };
+    const normP = normalizeRngParameters(params, width, depth, height);
     const { grid, heightMap, isWaterMap } = generateTerrain(dimensions, seed, normP, structures);
 
-    terrain.transaction((w) => {
+    terrain.transaction((store) => {
       // Clear
       for (const cell of Array.from(terrain.cells()))
-        w.set(cell.x, cell.y, cell.z, AIR);
+        store.set(cell.x, cell.y, cell.z, AIR);
       // Rewrite with newly generated terrain
       for (const cell of grid.cells())
-        w.set(cell.x, cell.y, cell.z, cell.block, cell.meta);
+        store.set(cell.x, cell.y, cell.z, cell.block, cell.meta);
     });
     
     setStatus(STRINGS.en.generatedSeed(seed));
@@ -1272,223 +1272,60 @@ export default function TerrainEditor() {
     lastHeightMapRef.current = {
       width,
       depth,
-      totalHeight,
+      height,
       heightMap/*: heightMap.slice()*/,
       isWaterMap/*: Array.from(isWaterMap)*/,
     };
   }
 
   // ---- targeted regeneration (decor / trees / ore only, reuses last heightMap) ----
-  function clearVoxelsByBlockIds(idSet: Set<number>) {
-    const toRemove:VoxelCell[] = [];
-    for (const voxel of Array.from(terrain.cells())) {
-      if (idSet.has(voxel.block))
-        toRemove.push(voxel);
+
+  function regenerateDecoHandler(params:RngParams) {
+    const snap = lastHeightMapRef.current;
+    if (!snap || snap.width !== width || snap.depth !== depth || snap.height !== height) {
+      setStatus(STRINGS.en.regenNeedsGenerate);
+      return;
     }
+    const seed = Math.floor(Math.random() * 1e9);
+    const normParams = normalizeRngParameters(params, snap.width, snap.depth, snap.height);
+    const regenerated = regenerateDeco({width, depth, height}, seed, normParams, snap, terrain);
+    if(!regenerated)
+      setStatus(STRINGS.en.regenNothingToDo);
+    else
+      setStatus(STRINGS.en.regenDone);
+  }
+
+  function regenerateVegHandler(params:RngParams) {
+    const snap = lastHeightMapRef.current;
+    if (!snap || snap.width !== width || snap.depth !== depth || snap.height !== height) {
+      setStatus(STRINGS.en.regenNeedsGenerate);
+      return;
+    }
+    const seed = Math.floor(Math.random() * 1e9);
+    const normParams = normalizeRngParameters(params, width, depth, height);
+
+    const regenerated = regenerateVeg({width, depth, height}, seed, normParams, snap, terrain);
+    if(!regenerated)
+      setStatus(STRINGS.en.regenNothingToDo);
+    else
+      setStatus(STRINGS.en.regenDone);
+  }
+
+  function regenerateOreHandler(params:RngParams):void {
     
-    for (const voxel of toRemove) {
-      setVoxel(voxel.x, voxel.y, voxel.z, AIR, 0);
-    }
-  }
-
-  function plantTreeStandalone(rand: ()=> number, tx: number, groundY: number, tz: number, opts: TreeParams, dims: MapDimensions):void {
-    const { woodBlock, leavesBlock, minH, maxH} = opts;
-    const trunkHeight = minH + Math.floor(rand() * (maxH - minH + 1));
-    const trunkTop = groundY + trunkHeight - 1;
-    if (trunkTop + 3 >= totalHeight) return;
-    for (let ty = 0; ty < trunkHeight; ty++) {
-      setVoxel(tx, groundY + ty, tz, woodBlock, 0);
-    }
-    const layers = [
-      { dy: -1, radius: 2 },
-      { dy: 0, radius: 2 },
-      { dy: 1, radius: 1 },
-      { dy: 2, radius: 0 },
-    ];
-    for (const layer of layers) {
-      const ly = trunkTop + layer.dy;
-      stampFoliageLayer(terrain, rand,
-        tx, ly, tz,
-        layer.radius, 0.4, leavesBlock,
-        dims, ly <= trunkTop);
-    }
-  }
-
-  function plantBushStandalone(rand: ()=> number, tx: number, groundY: number, tz: number, opts: VegParams, dims: MapDimensions):void {
-    const { leavesBlock } = opts;
-    const layers = [
-      { dy: 0, radius: 1 },
-      { dy: 1, radius: 1 },
-    ];
-    for (const layer of layers) {
-      const ly = groundY + layer.dy;
-      stampFoliageLayer(terrain, rand,
-        tx, ly, tz,
-        layer.radius, 0.4, leavesBlock,
-        dims, false);
-    }
-  }
-
-  function regenerateDecorations(params:RngParams) {
     const snap = lastHeightMapRef.current;
-    if (!snap || snap.width !== width || snap.depth !== depth || snap.totalHeight !== totalHeight) {
+    if (!snap || snap.width !== width || snap.depth !== depth || snap.height !== height) {
       setStatus(STRINGS.en.regenNeedsGenerate);
       return;
     }
-    const rand = mulberry32(Math.floor(Math.random() * 1e9));
-    const decoWeightedList = parseWeightedIdList(params.randDecoBlocks);
-    const decoChance = clamp(params.randDecoChance, 0, 100) / 100;
-    if (!decoWeightedList.length || decoChance <= 0) {
+    const seed = Math.floor(Math.random() * 1e9);
+    const normParams = normalizeRngParameters(params, width, depth, height);
+
+    const regenerated = regenerateOre({width, depth, height}, seed, normParams, snap, terrain);
+    if(!regenerated)
       setStatus(STRINGS.en.regenNothingToDo);
-      return;
-    }
-    const idSet = new Set(decoWeightedList
-      .filter((e) => e !== null)
-      .map((e) => e.id ));
-    beginStroke();
-    clearVoxelsByBlockIds(idSet);
-    for (let x = 0; x < width; x++) {
-      for (let z = 0; z < depth; z++) {
-        const idx = x * depth + z;
-        const h = snap.heightMap[idx];
-        if (h <= 0 || h >= totalHeight || snap.isWaterMap[idx]) continue;
-        if (rand() < decoChance) {
-          const pick = pickWeighted(decoWeightedList, rand);
-          setVoxel(x, h, z, pick, 0);
-        }
-      }
-    }
-    commitStroke();
-
-    setStatus(STRINGS.en.regenDone);
-  }
-
-  function regenerateTrees(params:RngParams) {
-    const snap = lastHeightMapRef.current;
-    if (!snap || snap.width !== width || snap.depth !== depth || snap.totalHeight !== totalHeight) {
-      setStatus(STRINGS.en.regenNeedsGenerate);
-      return;
-    }
-    if (!params.randTrees && !params.randBushes) {
-      setStatus(STRINGS.en.regenNothingToDo);
-      return;
-    }
-    const rand = mulberry32(Math.floor(Math.random() * 1e9));
-    const normParams = normalizeRngParameters(params, width, depth, totalHeight)
-    
-    const forestMask = normParams.veg.trees.isForests ? makeValueNoise(rand, width, depth, 20) : null;
-    const idSet = new Set([normParams.veg.trees.woodBlock, normParams.veg.trees.leavesBlock, normParams.veg.bushes.leavesBlock]);
-    const plantedT: PlantedVeg = [];
-    const plantedB: PlantedVeg = [];
-
-    beginStroke();
-    clearVoxelsByBlockIds(idSet);
-    for (let x = 0; x < width; x++) {
-      for (let z = 0; z < depth; z++) {
-        const idx = x * depth + z;
-        const h = snap.heightMap[idx];
-        if (h <= 0 || h >= totalHeight || snap.isWaterMap[idx]) continue;
-
-        let treePlanted = false;
-        if (normParams.veg.trees.isEnabled) {
-          let chance = normParams.veg.trees.chance;
-          if (normParams.veg.trees.isForests && forestMask)
-            chance = forestMask(x, z) > 0.55 ? normParams.veg.trees.forestDensity : 0;
-          if (chance > 0 && rand() < chance && canPlantVeg(x, z, plantedT, normParams.veg.trees.spacing)) {
-            plantTreeStandalone(rand, x, h, z, normParams.veg.trees, {width, depth, totalHeight});
-            plantedT.push({ x, z });
-            treePlanted = true;
-          }
-        }
-
-        if (
-          !treePlanted &&
-          normParams.veg.bushes.isEnabled &&
-          normParams.veg.bushes.chance > 0 &&
-          rand() < normParams.veg.bushes.chance &&
-          canPlantVeg(x, z, plantedB, normParams.veg.bushes.spacing)
-        ) {
-          plantBushStandalone(rand, x, h, z, normParams.veg.bushes, {width, depth, totalHeight });
-          plantedB.push({ x, z });
-        }
-      }
-    }
-    commitStroke();
-
-    setStatus(STRINGS.en.regenDone);
-  }
-
-  function regenerateOre(params:RngParams) {
-    const snap = lastHeightMapRef.current;
-    if (!snap || snap.width !== width || snap.depth !== depth || snap.totalHeight !== totalHeight) {
-      setStatus(STRINGS.en.regenNeedsGenerate);
-      return;
-    }
-    const oreBlockList = parseIdList(params.randOreBlocks);
-    const oreCountScaled = Math.round(
-      clamp(params.randOreCount, 0, 500) * ((width * depth) / (128 * 128))
-    );
-    if (!oreBlockList.length || oreCountScaled <= 0) {
-      setStatus(STRINGS.en.regenNothingToDo);
-      return;
-    }
-    const groundDepth = clamp(params.randGroundDepth, 0, totalHeight);
-    const oreVeinR = clamp(params.randOreVeinSize, 1, 5);
-    const oreBigChance = clamp(params.randOreBigChance, 0, 100) / 100;
-    const oreBigR = clamp(params.randOreBigSize, 1, 10);
-    const rand = mulberry32(Math.floor(Math.random() * 1e9));
-    const idSet = new Set(oreBlockList);
-
-    function placeOreBlob(cx, cy, cz, oreBlock, r) {
-      for (let dx = -r; dx <= r; dx++) {
-        for (let dy = -r; dy <= r; dy++) {
-          for (let dz = -r; dz <= r; dz++) {
-            const d2 = dx * dx + dy * dy + dz * dz;
-            if (d2 > r * r + rand() * 1.5) continue;
-            if (rand() < 0.3) continue;
-            const wx = cx + dx;
-            const wy = cy + dy;
-            const wz = cz + dz;
-            if (wx < 0 || wx >= width || wy < 0 || wy >= totalHeight || wz < 0 || wz >= depth)
-              continue;
-            const existing = terrain.get(wx, wy, wz);
-            if (!existing || existing.block === AIR)
-              continue;
-            setVoxel(wx, wy, wz, oreBlock, 0);
-          }
-        }
-      }
-    }
-
-    beginStroke();
-    clearVoxelsByBlockIds(idSet);
-    for (let i = 0; i < oreCountScaled; i++) {
-      const ox = Math.floor(rand() * width);
-      const oz = Math.floor(rand() * depth);
-      const colH = snap.heightMap[ox * depth + oz];
-      if (colH < 3) continue;
-      const maxY = Math.min(colH - 2, groundDepth - 1);
-      if (maxY < 1) continue;
-      const oy = 1 + Math.floor(rand() * maxY);
-      const oreBlock = oreBlockList[Math.floor(rand() * oreBlockList.length)];
-      if (rand() < oreBigChance) {
-        const blobCount = 3 + Math.floor(rand() * 4);
-        let cx = ox;
-        let cy = oy;
-        let cz = oz;
-        for (let b = 0; b < blobCount; b++) {
-          placeOreBlob(cx, cy, cz, oreBlock, oreBigR);
-          cx = Math.max(0, Math.min(width - 1, cx + Math.round((rand() - 0.5) * oreBigR)));
-          cy = Math.max(1, Math.min(maxY, cy + Math.round((rand() - 0.5) * oreBigR * 0.6)));
-          cz = Math.max(0, Math.min(depth - 1, cz + Math.round((rand() - 0.5) * oreBigR)));
-        }
-      } else {
-        placeOreBlob(ox, oy, oz, oreBlock, oreVeinR);
-      }
-    }
-    commitStroke();
-
-    setStatus(STRINGS.en.regenDone);
+    else
+      setStatus(STRINGS.en.regenDone);
   }
 
   // ---- 3D view / builder (Three.js) ----
@@ -1636,23 +1473,23 @@ export default function TerrainEditor() {
 
     st.orbit.target.set(
       dims.width / 2,
-      Math.min(dims.totalHeight, 20) / 2,
+      Math.min(dims.height, 20) / 2,
       dims.depth / 2,
     );
     st.orbit.targetGoal = st.orbit.target.clone();
     if (!st.orbit.initialized) {
       st.orbit.radius =
-        Math.max(dims.width, dims.depth, dims.totalHeight, 4) * 1.3 + 10;
+        Math.max(dims.width, dims.depth, dims.height, 4) * 1.3 + 10;
       st.orbit.targetRadius = st.orbit.radius;
       st.orbit.initialized = true;
     }
 
     if (!st.fly.initialized) {
       const cx = dims.width / 2;
-      const cy = Math.min(dims.totalHeight, 20) / 2;
+      const cy = Math.min(dims.height, 20) / 2;
       const cz = dims.depth / 2;
       const dist =
-        Math.max(dims.width, dims.depth, dims.totalHeight, 4) * 0.9 + 12;
+        Math.max(dims.width, dims.depth, dims.height, 4) * 0.9 + 12;
       const px = cx;
       const py = cy + dist * 0.45;
       const pz = cz + dist;
@@ -1963,7 +1800,7 @@ export default function TerrainEditor() {
       cz < 0 ||
       cz >= dims.depth ||
       cy < 0 ||
-      cy >= dims.totalHeight
+      cy >= dims.height
     )
       return;
 
@@ -2030,7 +1867,7 @@ export default function TerrainEditor() {
       cz < 0 ||
       cz >= dims.depth ||
       cy < 0 ||
-      cy >= dims.totalHeight
+      cy >= dims.height
     )
       return;
     setVoxel(cx, cy, cz, AIR, 0);
@@ -2060,7 +1897,7 @@ export default function TerrainEditor() {
       cz < 0 ||
       cz >= dims.depth ||
       cy < 0 ||
-      cy >= dims.totalHeight
+      cy >= dims.height
     )
       return;
 
@@ -2134,7 +1971,7 @@ export default function TerrainEditor() {
       const delta = event.deltaY || event.deltaX; // some browsers report Shift+wheel as horizontal
         if (delta === 0) return;
       const dims = dimsRef.current;
-      const maxR = Math.max(dims.width, dims.depth, dims.totalHeight, 4) * 4 + 20;
+      const maxR = Math.max(dims.width, dims.depth, dims.height, 4) * 4 + 20;
       const oldR = st.orbit.targetRadius;
       const step = Math.pow(DEFAULT_SETTINGS.ZOOM_ORBIT_STEP, event.shiftKey ? DEFAULT_SETTINGS.ZOOM_SHIFT_MULT : 1);
       const newR = Math.max(1, Math.min(maxR, oldR * (delta > 0 ? step : 1 / step)));
@@ -2532,7 +2369,8 @@ export default function TerrainEditor() {
 
   function copyLayer(direction: number) {
     const target = currentLayer + direction;
-    if (target < 0 || target >= totalHeight) return;
+    if (target < 0 || target >= height)
+      return;
     beginStroke();
     for (let x = 0; x < width; x++) {
       for (let z = 0; z < depth; z++) {
@@ -2583,7 +2421,7 @@ export default function TerrainEditor() {
         if (off === 0)
           continue;
         const ly = currentLayer + off;
-        if (ly < 0 || ly >= totalHeight)
+        if (ly < 0 || ly >= height)
           continue;
         const alpha = 0.15 / Math.abs(off);
         ctx.globalAlpha = alpha;
@@ -2744,7 +2582,7 @@ export default function TerrainEditor() {
 
     // const ms = performance.now() - t0;
     // if (ms > 1) console.log(`draw ${ms.toFixed(1)} ms, voxels: ${terrain.size}`);
-  }, [width, depth, cell, currentLayer, mirrorX, mirrorZ, roadParams.roadPending, roadParams.roadWidth, onionSkin, onionRange, totalHeight, entityInstances]);
+  }, [width, depth, cell, currentLayer, mirrorX, mirrorZ, roadParams.roadPending, roadParams.roadWidth, onionSkin, onionRange, height, entityInstances]);
 
   const viewRef = useRef({ panX: 0, panY: 0 }); // screen position of the grid's top-left corner
   const drawRef = useRef(draw);
@@ -3054,7 +2892,7 @@ export default function TerrainEditor() {
             if (orbit3d) {
               panOrbitByUnits(0, 0, dir * n); // In 3D, pan the camera up/down
             } else if (!isDrawingRef.current) {
-              setCurrentLayer((prevLayer) => clamp(prevLayer + dir * n, 0, dimsRef.current.totalHeight - 1)); // In 2D, switch layers up/down
+              setCurrentLayer((prevLayer) => clamp(prevLayer + dir * n, 0, dimsRef.current.height - 1)); // In 2D, switch layers up/down
             }
             return;
           }
@@ -3151,7 +2989,7 @@ export default function TerrainEditor() {
     }
     const fits = (x: number, y: number, z: number) => {
       return (x + dx >= 0 && x + dx < width &&
-        y + dy >= 0 && y + dy < totalHeight &&
+        y + dy >= 0 && y + dy < height &&
         z + dz >= 0 && z + dz < depth);
     }
     if (!cells.every((c) => fits(c.x, c.y, c.z)) || !entities.every((ent) => fits(ent.x, ent.y, ent.z))) {
@@ -3163,7 +3001,7 @@ export default function TerrainEditor() {
     setEntityInstances(movedEntities);
     terrain.replaceAll(cells.map((c) => ({ x: c.x + dx, y: c.y + dy, z: c.z + dz, block: c.block, meta: c.meta })));
     lastHeightMapRef.current = null; // the "regenerate trees/ore" snapshot no longer matches
-    setCurrentLayer((layer) => clamp(layer + dy, 0, totalHeight - 1)); // Follow the Y layer if it shifts
+    setCurrentLayer((layer) => clamp(layer + dy, 0, height - 1)); // Follow the Y layer if it shifts
     setStatus(STRINGS.en.shiftDone(dx, dy, dz));
   }
 
@@ -3180,12 +3018,15 @@ export default function TerrainEditor() {
     for (let r = 0; r <= Math.max(dims.width, dims.depth) && !spot; r++) {
       for (let dx = -r; dx <= r && !spot; dx++) {
         for (let dz = -r; dz <= r && !spot; dz++) {
-          if (Math.max(Math.abs(dx), Math.abs(dz)) !== r) continue;
+          if (Math.max(Math.abs(dx), Math.abs(dz)) !== r) 
+            continue;
           const x = startX + dx;
           const z = startZ + dz;
-          if (x < 0 || x >= dims.width || z < 0 || z >= dims.depth) continue;
+          if (x < 0 || x >= dims.width || z < 0 || z >= dims.depth) 
+            continue;
           const y = findSurfaceY(x, z);
-          if (y >= 0 && y + 1 < dims.totalHeight) spot = { x, y: y + 1, z };
+          if (y >= 0 && y + 1 < dims.height)
+            spot = { x, y: y + 1, z };
         }
       }
     }
@@ -3447,7 +3288,7 @@ export default function TerrainEditor() {
             showRandomPanel={showRandomPanel}
             showSaves={showSaves}
             showStructuresPanel={showStructuresPanel}
-            totalHeight={totalHeight}
+            totalHeight={height}
             undo={()=>terrain.undo()}
             redo={()=> terrain.redo()}
             viewMode={viewMode}
@@ -3461,7 +3302,7 @@ export default function TerrainEditor() {
               setRandSeed={setRandSeed}
               rngParams={rngParameters}
               onParamChange={updateRngParameter}
-              totalHeight={totalHeight}
+              totalHeight={height}
               generateRandomTerrain={generateRandomTerrain}
               randomizeAllParams={randomizeAllParams}
             />
@@ -3517,9 +3358,10 @@ export default function TerrainEditor() {
               loadPreset={loadPreset}
               newPresetName={newPresetName}
               presets={presets}
-              regenerateDecorations={regenerateDecorations}
-              regenerateOre={regenerateOre}
-              regenerateTrees={regenerateTrees}
+              rngParameters={rngParameters}
+              regenerateDecorations={regenerateDecoHandler}
+              regenerateOre={regenerateOreHandler}
+              regenerateTrees={regenerateVegHandler}
               savePreset={savePreset}
               setNewPresetName={setNewPresetName}
             />
@@ -3696,7 +3538,7 @@ export default function TerrainEditor() {
             gridY={mapData.gridY}
             localY={localY}
             setCurrentLayer={setCurrentLayer}
-            totalHeight={totalHeight}
+            totalHeight={height}
           />
         )}
       </div>
