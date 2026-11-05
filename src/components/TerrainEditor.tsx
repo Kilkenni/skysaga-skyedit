@@ -540,7 +540,7 @@ export default function TerrainEditor() {
 
   useEffect(() => {
     if (viewMode === "3d" && threeRef.current.renderer) {
-      rebuildInstances();
+      rebuildInstances(true);
     }
   }, [width, depth, height]);
 
@@ -1257,6 +1257,8 @@ export default function TerrainEditor() {
     const dimensions = { width, depth, height };
     const normP = normalizeRngParameters(params, width, depth, height);
     const { grid, heightMap, isWaterMap } = generateTerrain(dimensions, seed, normP, structures);
+    threeRef.current.orbit.initialized = false; // the rebuild below re-frames the orbit camera
+    threeRef.current.fly.initialized = false;   // and the fly camera
 
     terrain.transaction((store) => {
       // Clear
@@ -1266,6 +1268,7 @@ export default function TerrainEditor() {
       for (const cell of grid.cells())
         store.set(cell.x, cell.y, cell.z, cell.block, cell.meta);
     });
+    
     
     setStatus(STRINGS.en.generatedSeed(seed));
 
@@ -1381,7 +1384,7 @@ export default function TerrainEditor() {
     st.camera.position.set(st.fly.position.x, st.fly.position.y, st.fly.position.z);
   }
 
-  function rebuildInstances() {
+  function rebuildInstances(resetCamera = false) {
     function disposeMesh(mesh: THREE.Mesh) {
       mesh.geometry.dispose();
       const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
@@ -1471,12 +1474,15 @@ export default function TerrainEditor() {
     st.planeMesh = planeMesh;
     st.gridHelper = gridHelper;
 
-    st.orbit.target.set(
-      dims.width / 2,
-      Math.min(dims.height, 20) / 2,
-      dims.depth / 2,
-    );
-    st.orbit.targetGoal = st.orbit.target.clone();
+    // Camera change
+    if(resetCamera || !st.orbit.initialized) {
+      st.orbit.target.set(
+        dims.width / 2,
+        Math.min(dims.height, 20) / 2,
+        dims.depth / 2,
+      );
+      st.orbit.targetGoal = st.orbit.target.clone();
+    }
     if (!st.orbit.initialized) {
       st.orbit.radius =
         Math.max(dims.width, dims.depth, dims.height, 4) * 1.3 + 10;
@@ -1714,6 +1720,23 @@ export default function TerrainEditor() {
     const hits = st.raycaster.intersectObjects(raycastTargets(), false);
     const hit = hits.find((h) => h.object !== st.planeMesh); // ignore the invisible ground plane
     return hit ? hit.point.clone() : null;
+  }
+
+  function pickBlockAtCenter(): { coord: THREE.Vector3; dist: number } | null {
+    const st = threeRef.current;
+    if (!st.camera || !st.raycaster)
+      return null;
+    st.camera.updateMatrixWorld(); // the render loop is stopped by now
+    st.raycaster.setFromCamera(new THREE.Vector2(0, 0), st.camera);
+    const hits = st.raycaster.intersectObjects(raycastTargets(), false);
+    for (const hit of hits) {
+      if (hit.object === st.planeMesh)
+        continue;
+      const cell = coordFromHit(hit);
+      if (cell)
+        return { coord: new THREE.Vector3(cell.x, cell.y, cell.z), dist: hit.distance };
+    }
+    return null;
   }
 
   // cursor first, then the center of the view, else null (= keep the current pivot)
@@ -2158,7 +2181,8 @@ export default function TerrainEditor() {
   }, []);
 
   useEffect(() => {
-    if (viewMode !== "3d") return undefined;
+    if (viewMode !== "3d")
+      return undefined;
     initThree();
     rebuildInstances();
     rebuildEntityMarkers();
@@ -2182,7 +2206,7 @@ export default function TerrainEditor() {
         mode === "orbit" ? attachOrbitListeners(canvas) : attachFlyListeners(canvas)
       ) : undefined;
 
-    let raf;
+    let raf: number;
     let lastTime = performance.now();
     function loop() {
       raf = requestAnimationFrame(loop);
@@ -2282,6 +2306,20 @@ export default function TerrainEditor() {
     // eslint-disable-next-line
   }, [viewMode, cameraMode]);
 
+  const prevViewModeRef = useRef(viewMode);
+  const syncSnapshotRef = useRef<number[] | null>(null);
+
+  useEffect(() => {
+    const prev = prevViewModeRef.current;
+    prevViewModeRef.current = viewMode;
+    if (cameraModeRef.current !== "orbit") // only for 2D and 3D-orbit
+      return;
+    if (prev === "2d" && viewMode === "3d")
+      syncOrbitFrom2D();
+    else if (prev === "3d" && viewMode === "2d")
+      syncViewFrom3D();
+  }, [viewMode]);
+
   function setOrbitPivot(p: THREE.Vector3):void {
     const st = threeRef.current;
     if(!st.camera)
@@ -2297,6 +2335,85 @@ export default function TerrainEditor() {
     o.targetRadius = r;
     o.phi = clampPhi(Math.acos(off.y / r));
     o.theta = Math.atan2(off.x, off.z);
+  }
+
+  function syncOrbitFrom2D() {
+    const st = threeRef.current;
+    const host = containerRef.current;
+    if (!st.camera || !host)
+      return;
+    const dims = dimsRef.current;
+    const cell = CELL_BASE * zoomRef.current;
+    const { panX, panY } = viewRef.current;
+    const o = st.orbit;
+
+    // the center of the 2D view, kept inside the grid, at the middle of the layer being viewed
+    const cx = clamp((host.clientWidth / 2 - panX) / cell, 0, dims.width);
+    const cz = clamp((host.clientHeight / 2 - panY) / cell, 0, dims.depth);
+    const cy = currentLayer + 0.5;
+
+    // a block's on-screen size at the target is viewportH / (2 * tan(fov/2) * distance)
+    const fov = (st.camera.fov * Math.PI) / 180;
+    const maxR = Math.max(dims.width, dims.depth, dims.height, 4) * 4 + 20;
+    const r = clamp(host.clientHeight / (2 * Math.tan(fov / 2) * cell), 1, maxR);
+
+    o.target.set( cx, cy, cz );
+    o.targetGoal.set(cx, cy, cz);
+    o.theta = 0;                       // camera on the +z side: top = -z, right = +x, same as 2D
+    o.thetaDelta = 0;                  // cancel leftover rotation inertia
+    o.phiDelta = 0;                    // phi, the tilt, stays as it was
+    o.radius = r;
+
+    // do not place the camera inside a block: step outward along its view ray
+    const maxRadius = maxR;
+    for (let i = 0; i < 400 && o.radius < maxRadius; i++) {
+      const px = o.target.x + o.radius * Math.sin(o.phi) * Math.sin(o.theta);
+      const py = o.target.y + o.radius * Math.cos(o.phi);
+      const pz = o.target.z + o.radius * Math.sin(o.phi) * Math.cos(o.theta);
+      if (!terrain.get(Math.floor(px), Math.floor(py), Math.floor(pz)))
+        break;
+      o.radius += 1;
+    }
+    o.targetRadius = o.radius;
+    o.initialized = true;
+    syncSnapshotRef.current = [o.target.x, o.target.y, o.target.z, o.theta, o.phi, o.radius];
+    updateCameraFromOrbit();
+  }
+
+  function syncViewFrom3D() {
+    const st = threeRef.current;
+    const host = containerRef.current;
+    if (!st.camera || !host)
+      return;
+    const o = st.orbit;
+
+    // Camera untouched since the 2D→3D sync? Then the 2D view is still exactly as it was left.
+    const snap = syncSnapshotRef.current;
+    syncSnapshotRef.current = null;
+    if (snap) {
+      const now = [o.target.x, o.target.y, o.target.z, o.theta, o.phi, o.radius];
+      if (now.every((v, i) => Math.abs(v - snap[i]) < 1e-3))
+        return;
+    }
+
+    const dims = dimsRef.current;
+    const hit = pickBlockAtCenter();
+    const cx = hit ? hit.coord.x + 0.5 : o.target.x; // fallback: orbit target
+    const cz = hit ? hit.coord.z + 0.5 : o.target.z;
+    const layer = hit ? hit.coord.y : Math.floor(o.target.y);
+    const dist = hit ? hit.dist : o.radius;
+
+    // the inverse of the '2D to 3D': size of a block on screen at that distance
+    const fov = (st.camera.fov * Math.PI) / 180;
+    const cellPx = host.clientHeight / (2 * Math.tan(fov / 2) * Math.max(dist, 0.5));
+    const zoom = Math.round(clamp(cellPx / CELL_BASE, 0.4, 3) * 100) / 100;
+
+    zoomRef.current = zoom; // zoom first, so setPan clamps with the new cell size
+    setZoom(zoom);
+    const c = CELL_BASE * zoom;
+    setPan(host.clientWidth / 2 - cx * c, host.clientHeight / 2 - cz * c);
+    setCurrentLayer(clamp(layer, 0, dims.height - 1));
+    drawRef.current();
   }
 
   function resetCameraView() {
