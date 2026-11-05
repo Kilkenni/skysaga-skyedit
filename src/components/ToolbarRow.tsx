@@ -150,13 +150,13 @@ export default function ToolbarRow({
     >
       {(viewMode === "2d" || (viewMode === "3d" && cameraMode === "orbit")) && (
         toolsUni.map((tool) => (
-          <ToolButton tool={tool} setTool={setTool} currentTool={currentTool}/>
+          <ToolButton tool={tool} setTool={setTool} currentTool={currentTool} key={tool.id}/>
         ))
       )}
       {viewMode === "2d" && (
         <>
           {tools2D.map((tool) => (
-            <ToolButton tool={tool} setTool={setTool} currentTool={currentTool}/>
+            <ToolButton tool={tool} setTool={setTool} currentTool={currentTool} key={tool.id}/>
           ))}
           {currentTool === "copy" && (
             <>
