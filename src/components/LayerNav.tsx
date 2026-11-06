@@ -2,6 +2,15 @@ import { STRINGS } from "../i18n/strings";
 import { actionBtn } from "../styles/inline";
 import { CHUNK } from "../constants";
 
+interface Props {
+  chunkY: number,
+  currentLayer: number,
+  gridY: number,
+  localY: number,
+  setCurrentLayer: (layer: number) => void,
+  totalHeight: number,
+}
+
 export default function LayerNav({
   chunkY,
   currentLayer,
@@ -9,7 +18,7 @@ export default function LayerNav({
   localY,
   setCurrentLayer,
   totalHeight,
-}) {
+}:Props) {
   const t = STRINGS.en;
   return (
     <div

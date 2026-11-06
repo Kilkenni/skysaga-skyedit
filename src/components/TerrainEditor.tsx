@@ -3352,16 +3352,6 @@ export default function TerrainEditor() {
       />
 
       <div style={{ display: "flex", flex: 1, minHeight: 0 }}>
-        <PaletteSidebar
-          paletteObj={paletteObj}
-          clearTexture={clearTexture}
-          handleTextureFile={handleTextureFile}
-          setTextureTargetId={setTextureTargetId}
-          textureTargetId={textureTargetId}
-          textureVersion={textureVersion}
-          texturesRef={texturesRef}
-        />
-
         <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0, minHeight: 0 }}>
           <ToolbarRow
             setTool={setTool}
@@ -3648,16 +3638,34 @@ export default function TerrainEditor() {
           </div>
         </div>
 
-        {viewMode === "2d" && (
-          <LayerNav
-            chunkY={chunkY}
-            currentLayer={currentLayer}
-            gridY={mapData.gridY}
-            localY={localY}
-            setCurrentLayer={setCurrentLayer}
-            totalHeight={height}
+        <div style={{
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden",
+          maxHeight: "100%",
+          width: "320px",
+          paddingBottom: 10,
+        }}>
+          {viewMode === "2d" && (
+            <LayerNav
+              chunkY={chunkY}
+              currentLayer={currentLayer}
+              gridY={mapData.gridY}
+              localY={localY}
+              setCurrentLayer={setCurrentLayer}
+              totalHeight={height}
+            />
+          )}
+          <PaletteSidebar
+            paletteObj={paletteObj}
+            clearTexture={clearTexture}
+            handleTextureFile={handleTextureFile}
+            setTextureTargetId={setTextureTargetId}
+            textureTargetId={textureTargetId}
+            textureVersion={textureVersion}
+            texturesRef={texturesRef}
           />
-        )}
+        </div>
       </div>
 
       {showHelp && (
