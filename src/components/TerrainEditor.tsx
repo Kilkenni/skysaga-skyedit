@@ -30,6 +30,7 @@ import PaletteHotbar from "./PaletteHotbar.tsx";
 import { NormalizedParams, normalizeRngParameters, RngParams, TreeParams, VegParams } from "../lib/mapParamNormalizer.ts";
 import { hotkeyLabel, isFreehand, PAN_KEYS, TOOL_BY_CODE, TOOL_BY_ID } from "../lib/tools.ts";
 import { generateTerrain, regenerateDeco, regenerateOre, regenerateVeg } from "../lib/mapGenerator.ts";
+import Toolbar from "./tools/Toolbar.tsx";
 
 export interface MapData {
   gridX: number,
@@ -3357,13 +3358,10 @@ export default function TerrainEditor() {
             setTool={setTool}
             currentTool={tool}
             cameraMode={cameraMode}
-            clearLayer={clearLayer}
             clipboardInfo={clipboardInfo}
             computeMapStats={computeMapStats}
-            copyLayer={copyLayer}
             copyYFrom={copyYFrom}
             copyYTo={copyYTo}
-            fillLayer={fillLayer}
             mirrorX={mirrorX}
             mirrorZ={mirrorZ}
             moveSpeed={moveSpeed}
@@ -3490,12 +3488,49 @@ export default function TerrainEditor() {
               setPlacingEntityName={setPlacingEntityName}
             />
           )}
-          <div style={{ flex: 1, minHeight: 0, position: "relative" }}>
+          <div style={{
+            display: "flex",
+            flex: 1, 
+            minHeight: 0,
+            width: "full",
+            position: "relative",
+          }}>
+            <Toolbar
+              setTool={setTool}
+              currentTool={tool}
+              cameraMode={cameraMode}
+              clearLayer={clearLayer}
+              copyLayer={copyLayer}
+              copyYFrom={copyYFrom}
+              copyYTo={copyYTo}
+              fillLayer={fillLayer}
+              mirrorX={mirrorX}
+              mirrorZ={mirrorZ}
+              shiftMap={shiftMap}
+
+              roadParams={roadParams}
+              updateRoadParams={updateRoadParams}
+
+              setMirrorX={setMirrorX}
+              setMirrorZ={setMirrorZ}
+              totalHeight={height}
+              viewMode={viewMode}
+
+              style= {{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                width: 310,
+                gap: 8,
+                padding: "8px 12px",
+                borderBottom: "1px solid #1e222b",
+                flexWrap: "wrap",            
+              }}
+            />
             <div
               ref={containerRef}
               style={{
-                position: "absolute",
-                inset: 0,
+                flexGrow: 1,
                 overflow: "hidden",
                 padding: 0,
                 background: "#08090c",
