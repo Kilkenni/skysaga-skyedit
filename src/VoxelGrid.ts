@@ -24,7 +24,7 @@ Next action: write VoxelGrid on its own and check it in the console, as we did w
 */
 
 import { AIR } from "./constants";
-import { BlockId, VoxelCell } from "./VoxelStore";
+import { BlockId, VoxelCell } from "./lib/VoxelStore";
 
 interface GridDimensions {
   width: number,

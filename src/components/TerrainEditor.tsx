@@ -8,7 +8,7 @@ import {
 import { STRINGS } from "../i18n/strings";
 import { colorForId } from "../lib/colors";
 import { keyOf } from "../lib/keys";
-import { clamp, clampBlockId, } from "../lib/numbers";
+import { clamp, clampBlockId, isNum, } from "../lib/numbers";
 import { rotateStructure90, getRotatedStructure, generateStructureThumbnail, Structure } from "../lib/structures";
 import { inputStyle, actionBtn } from "../styles/inline";
 import RandomPanel from "./RandomPanel";
@@ -30,6 +30,7 @@ import PaletteHotbar from "./PaletteHotbar.tsx";
 import { NormalizedParams, normalizeRngParameters, RngParams, TreeParams, VegParams } from "../lib/mapParamNormalizer.ts";
 import { hotkeyLabel, isFreehand, PAN_KEYS, TOOL_BY_CODE, TOOL_BY_ID } from "../lib/tools.ts";
 import { generateTerrain, regenerateDeco, regenerateOre, regenerateVeg } from "../lib/mapGenerator.ts";
+import { EntityData, EntityDataId, parseEntities, exportEntity, findAirshipSpot } from "../lib/entities.ts";
 
 export interface MapData {
   gridX: number,
@@ -53,18 +54,6 @@ export interface RngSnapshot {
   height: number,
   heightMap: Int16Array,
   isWaterMap: Uint8Array
-}
-
-interface EntityData {
-  name: string,
-  x: number,
-  y: number,
-  z: number,
-  items?: string[] // container contents
-}
-
-interface EntityDataId extends EntityData {
-  id: number,
 }
 
 export interface LevelData {
@@ -595,7 +584,7 @@ export default function TerrainEditor() {
   }, []);
 
   // ---- export / import ----
-  function buildExportData(terrainVoxels:VoxelCell[], entities: any[], mapData: MapData):LevelData {
+  function buildExportData(terrainVoxels:VoxelCell[], entities: EntityDataId[], mapData: MapData):LevelData {
     const voxels:VoxelCell[] = [];
     for (const voxel of terrainVoxels) {
       voxels.push({...voxel});
@@ -605,19 +594,11 @@ export default function TerrainEditor() {
       biomeName: mapData.biomeName,
       gameMode: mapData.gameMode,
       voxels: voxels,
-      entities: entities.map((entity) => {
-        return entity.items && entity.items.length
-          ? { name: entity.name, x: entity.x, y: entity.y, z: entity.z, items: entity.items }
-          : { name: entity.name, x: entity.x, y: entity.y, z: entity.z }
-      }),
+      entities: entities.map((entity) => exportEntity(entity)),
     };
   }
 
   function parseLevelData(raw: unknown): LevelData {
-    function isNum(something:any):boolean {
-      return (typeof something === "number" && Number.isFinite(something));
-    }
-
     const data:LevelData = getDefaultLevelData();
     if(raw === null || typeof raw === "string")
       return data; // shouldn't we throw here instead?
@@ -642,13 +623,7 @@ export default function TerrainEditor() {
       }
     }
 
-    if (Array.isArray(dataPart.entities)) {
-      for (const entity of dataPart.entities) {
-        const {x, y, z, name, items} = entity;
-        if(typeof name === "string" && isNum(x) && isNum(y) && isNum(z)) // broken entities are silently skipped for now
-          data.entities.push({...entity, items: Array.isArray(entity.items) ? entity.items.map(String) : undefined})
-      }
-    }
+    data.entities = parseEntities(dataPart.entities);
 
     if (Array.isArray(dataPart.paletteLabels)) {
       data.paletteLabels = [];
@@ -1189,15 +1164,6 @@ export default function TerrainEditor() {
   }
 
   // ---- road / path tool ----
-  function findSurfaceY(x: number, z: number) {
-    for (let y = height - 1; y >= 0; y--) {
-      // const v = voxelsRef.current.get(keyOf(x, y, z));
-      const v = terrain.get(x, y, z);
-      if (v && v.block !== AIR) return y;
-    }
-    return -1;
-  }
-
   function drawRoad(x0: number, z0: number, x1: number, z1: number, widthBlocks: number, pathBlock: number, followSurface = false) {
     const steps = Math.max(Math.abs(x1 - x0), Math.abs(z1 - z0), 1);
     const r = Math.max(0, Math.floor(widthBlocks / 2));
@@ -1212,7 +1178,7 @@ export default function TerrainEditor() {
           const wx = cx + dx;
           const wz = cz + dz;
           if (wx < 0 || wx >= width || wz < 0 || wz >= depth) continue;
-          const wy = followSurface ? findSurfaceY(wx, wz) : currentLayer;
+          const wy = followSurface ? terrain.surfaceY(wx, wz, height - 1) : currentLayer;
           if (wy < 0)
             continue;
           setVoxelMirrored(wx, wy, wz, pathBlock, 0);
@@ -2804,7 +2770,7 @@ export default function TerrainEditor() {
     const { x, z } = cellFromEvent(event);
     if (x < 0 || x >= width || z < 0 || z >= depth) return;
     if (placingEntityName) {
-      const surfaceY = findSurfaceY(x, z);
+      const surfaceY = terrain.surfaceY(x, z, height - 1);
       const y = surfaceY >= 0 ? surfaceY + 1 : currentLayer;
       placeEntityAt(placingEntityName, x, y, z);
       return;
@@ -3123,36 +3089,14 @@ export default function TerrainEditor() {
   }
 
   function ensureAirship() {
-    if (entityInstancesRef.current.some((e) => e.name === "Airship")) return true;
-    const dims = dimsRef.current;
-    const insetX = Math.round(dims.width * 0.3);
-    const insetZ = Math.round(dims.depth * 0.3);
-    const side = Math.floor(Math.random() * 4);
-    const along = 0.3 + Math.random() * 0.4;
-    const startX = side === 0 ? insetX : side === 1 ? dims.width - 1 - insetX : Math.round(dims.width * along);
-    const startZ = side === 2 ? insetZ : side === 3 ? dims.depth - 1 - insetZ : Math.round(dims.depth * along);
-    let spot:any = null;
-    for (let r = 0; r <= Math.max(dims.width, dims.depth) && !spot; r++) {
-      for (let dx = -r; dx <= r && !spot; dx++) {
-        for (let dz = -r; dz <= r && !spot; dz++) {
-          if (Math.max(Math.abs(dx), Math.abs(dz)) !== r) 
-            continue;
-          const x = startX + dx;
-          const z = startZ + dz;
-          if (x < 0 || x >= dims.width || z < 0 || z >= dims.depth) 
-            continue;
-          const y = findSurfaceY(x, z);
-          if (y >= 0 && y + 1 < dims.height)
-            spot = { x, y: y + 1, z };
-        }
-      }
-    }
-    if (!spot) {
+    if (entityInstancesRef.current.some((e) => e.name === "Airship"))
+      return true;
+    const airship = findAirshipSpot(dimsRef.current, (x, z, fromY) => terrain.surfaceY(x, z, fromY), randSeed); // important: keep *this* in method
+    if (airship === null) {
       setStatus(STRINGS.en.airshipNoGround);
       return false;
     }
-    const instance = { id: Date.now() + Math.floor(Math.random() * 1000), name: "Airship", ...spot, items: [] };
-    entityInstancesRef.current = [...entityInstancesRef.current, instance];
+    entityInstancesRef.current = [...entityInstancesRef.current, {id: Date.now() + Math.floor(Math.random() * 1000), ...airship}];
     setEntityInstances(entityInstancesRef.current);
     draw();
     return true;
@@ -3180,7 +3124,8 @@ export default function TerrainEditor() {
       setStatus(STRINGS.en.compressionUnsupported);
       return;
     }
-    if (!ensureAirship()) return;
+    if (!ensureAirship())
+      return;
     const data = buildExportData(Array.from(terrain.cells()), entityInstancesRef.current, mapData);
     const json = JSON.stringify(data);
     const rawBlob = new Blob([json], { type: "application/json" });

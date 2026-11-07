@@ -1,5 +1,9 @@
 import { AIR } from "../constants";
 
+function isNum(something:any):boolean {
+  return (typeof something === "number" && Number.isFinite(something));
+}
+
 function clamp(v:string|number, min:number, max:number):number {
   v = Number(v);
   if (isNaN(v))
@@ -63,6 +67,7 @@ function pickWeighted(list: WeightedList, randFn:()=> number) {
 }
 
 export {
+  isNum,
   clamp,
   clampBlockId,
   WeightedList,
