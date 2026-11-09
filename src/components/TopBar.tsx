@@ -9,7 +9,7 @@ interface Props {
   applyGridResize,
   applyServerEdits,
   cameraMode: string,
-  entityInstances,
+  hasAirship: boolean,
   newMap: () => void
   importJson: (event:React.ChangeEvent<HTMLInputElement, HTMLInputElement> )=> void,
   exportJson: () => void,
@@ -29,7 +29,7 @@ export default function TopBar({
   applyGridResize,
   applyServerEdits,
   cameraMode,
-  entityInstances,
+  hasAirship,
   newMap,
   importJson,
   exportJson,
@@ -256,7 +256,7 @@ export default function TopBar({
         }}
         style={{ display: "none" }}
       />
-      {!entityInstances.some((e) => e.name === "Airship") && (
+      {!hasAirship && (
         <span style={{ fontSize: 12, color: "#ffb86b" }} title={t.airshipRequired}>
           {t.airshipMissing}
         </span>

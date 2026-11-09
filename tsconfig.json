@@ -6,6 +6,7 @@
     "lib": ["ES2022", "DOM", "DOM.Iterable"], 
     "strict": true, 
     "noImplicitAny": false,
+    "noUncheckedIndexedAccess": true,
     "strictNullChecks": true,
     "allowImportingTsExtensions": true,
     "noEmit": true,

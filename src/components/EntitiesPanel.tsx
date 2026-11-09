@@ -1,22 +1,43 @@
 import { STRINGS } from "../i18n/strings";
 import { inputStyle, actionBtn } from "../styles/inline";
 import { ENTITIES, ENTITY_CATEGORIES, ENTITY_COLORS, ENTITY_CATEGORY, SINGLETON_ENTITY_NAMES } from "../constants";
+import { useEntityList } from "../hooks/useEntityList";
+import { EntityStore } from "../lib/EntityStore";
+import { useMemo, useState } from "react";
+
+interface Props {
+  entities: EntityStore,
+  placingEntityName: string | null,
+  setPlacingEntityName: (name: string | null) => void,
+}
 
 export default function EntitiesPanel({
-  clearAllEntityInstances,
-  entityCategory,
-  entityInstances,
-  entitySearchQuery,
-  openItemsId,
+  entities,
   placingEntityName,
-  removeEntityInstance,
-  setEntityCategory,
-  setEntityItems,
-  setEntitySearchQuery,
-  setOpenItemsId,
   setPlacingEntityName,
-}) {
+}: Props) {
+  const [entityCategory, setEntityCategory] = useState("all");
+  const [entitySearchQuery, setEntitySearchQuery] = useState("");
+  const [openItemsId, setOpenItemsId] = useState<number|null>(null);
+  const entityInstances = useEntityList(entities);
   const t = STRINGS.en;
+
+  const filteredEntities = useMemo(() => {
+    const query = entitySearchQuery.toLowerCase(); // once, not once per entity
+    return ENTITIES.filter((entity) => {
+        return (entityCategory === "all" || entity.category === entityCategory) &&
+        entity.name.toLowerCase().includes(query);
+    });
+  }, [entityCategory, entitySearchQuery]);
+
+  function setEntityItems(id: number, text: string) {
+    const items = text
+      .split("\n")
+      .map((s) => s.trim())
+      .filter(Boolean);
+    entities.update(id, {items});
+  }
+
   return (
     <div
       style={{
@@ -65,6 +86,7 @@ export default function EntitiesPanel({
             }}
           >
             {c === "all" ? t.entityCategoryAll : t.entityCategoryNames[c]} (
+              {/* //todo : compute once at module level, outside the component */}
             {c === "all" ? ENTITIES.length : ENTITIES.filter((en) => en.category === c).length})
           </button>
         ))}
@@ -89,11 +111,7 @@ export default function EntitiesPanel({
           padding: 4,
         }}
       >
-        {ENTITIES.filter(
-          (en) =>
-            (entityCategory === "all" || en.category === entityCategory) &&
-            en.name.toLowerCase().includes(entitySearchQuery.toLowerCase())
-        )
+        {filteredEntities
           .slice(0, 200)
           .map((en) => {
             const n = en.name;
@@ -139,11 +157,7 @@ export default function EntitiesPanel({
               </div>
             );
           })}
-        {ENTITIES.filter(
-          (en) =>
-            (entityCategory === "all" || en.category === entityCategory) &&
-            en.name.toLowerCase().includes(entitySearchQuery.toLowerCase())
-        ).length === 0 && (
+        {filteredEntities.length === 0 && (
           <div style={{ fontSize: 12, color: "#5c6272", padding: 4 }}>
             {t.noEntityMatches}
           </div>
@@ -164,7 +178,7 @@ export default function EntitiesPanel({
           {t.entitiesPlacedCount(entityInstances.length)}
         </div>
         {entityInstances.length > 0 && (
-          <button style={actionBtn} onClick={clearAllEntityInstances}>
+          <button style={actionBtn} onClick={() => entities.clear()}>
             {t.clearAll}
           </button>
         )}
@@ -189,7 +203,7 @@ export default function EntitiesPanel({
               height: 10,
               borderRadius: 2,
               background: ENTITY_CATEGORY.has(inst.name)
-                ? "#" + ENTITY_COLORS[ENTITY_CATEGORY.get(inst.name)].toString(16).padStart(6, "0")
+                ? "#" + ENTITY_COLORS[ENTITY_CATEGORY.get(inst.name) || "service"].toString(16).padStart(6, "0")
                 : "#ff5fa2",
               flexShrink: 0,
             }}
@@ -208,13 +222,13 @@ export default function EntitiesPanel({
           >
             {t.entityItems} ({(inst.items || []).length})
           </button>
-          <button style={actionBtn} onClick={() => removeEntityInstance(inst.id)}>
+          <button style={actionBtn} onClick={() => entities.remove(inst.id)}>
             {t.slotDelete}
           </button>
           {openItemsId === inst.id && (
             <textarea
               defaultValue={(inst.items || []).join("\n")}
-              onBlur={(e) => setEntityItems(inst.id, e.target.value)}
+              onBlur={(event) => setEntityItems(inst.id, event.target.value)}
               placeholder={t.entityItemsHint}
               rows={6}
               style={{ ...inputStyle, width: "100%", boxSizing: "border-box", flexBasis: "100%", fontSize: 11 }}

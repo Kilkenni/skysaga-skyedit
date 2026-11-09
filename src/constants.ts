@@ -16,12 +16,14 @@ export function mapSizeKey(x: number, y: number, z: number) {
   return x + "x" + y + "x" + z;
 }
 
-export const ENTITIES = entities;
+type EntityCategory = "creature" | "npc" | "device" | "object" | "service";
+
+export const ENTITIES = entities as {name: string, category: EntityCategory}[];
 export const ENTITY_CATEGORY = new Map(ENTITIES.map((e) => [e.name, e.category]));
 export const SERVICE_ENTITY_NAMES = new Set(serviceEntities);
 export const DEVICE_CELLS = deviceCells;
-export const ENTITY_CATEGORIES = ["creature", "npc", "device", "object"];
-export const ENTITY_COLORS = { creature: 0xff5f5f, npc: 0xffd166, device: 0x5fa8ff, object: 0xb0b6c3 };
+export const ENTITY_CATEGORIES = ["creature", "npc", "device", "object"] as const;
+export const ENTITY_COLORS:Record<EntityCategory, number> = { creature: 0xff5f5f, npc: 0xffd166, device: 0x5fa8ff, object: 0xb0b6c3 , service: 0xff9ff9};
 
 export const SINGLETON_ENTITY_NAMES = new Set(["Airship"]);
 

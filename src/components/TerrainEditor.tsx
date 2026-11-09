@@ -31,6 +31,8 @@ import { NormalizedParams, normalizeRngParameters, RngParams, TreeParams, VegPar
 import { hotkeyLabel, isFreehand, PAN_KEYS, TOOL_BY_CODE, TOOL_BY_ID } from "../lib/tools.ts";
 import { generateTerrain, regenerateDeco, regenerateOre, regenerateVeg } from "../lib/mapGenerator.ts";
 import { EntityData, EntityDataId, parseEntities, exportEntity, findAirshipSpot } from "../lib/entities.ts";
+import { EntityStore, EntityStoreEvent } from "../lib/EntityStore.ts";
+import { useEntityList } from "../hooks/useEntityList.ts";
 
 export interface MapData {
   gridX: number,
@@ -285,14 +287,12 @@ export default function TerrainEditor() {
   const structureThumbsRef = useRef(new Map());
   const [thumbVersion, setThumbVersion] = useState(0);
 
-  const [entityInstances, setEntityInstances] = useState<EntityDataId[]>([]);
-  const entityInstancesRef = useRef<EntityDataId[]>([]);
   const [placingEntityName, setPlacingEntityName] = useState<string|null>(null);
   const placingEntityRef = useRef<string|null>(null);
   const [showEntitiesPanel, setShowEntitiesPanel] = useState(false);
-  const [entitySearchQuery, setEntitySearchQuery] = useState("");
-  const [openItemsId, setOpenItemsId] = useState(null);
-  const [entityCategory, setEntityCategory] = useState("all");
+  
+  
+  
   // Search filter for the block palette - needed once BLOCK_NAMES grew from
   // 48 (Alpha 3-era stub table) to the real 146-entry Alpha v10 36731 list;
   // an unfiltered flat scroll of 146 rows was unusable.
@@ -307,8 +307,12 @@ export default function TerrainEditor() {
   const t = STRINGS.en;
 
   // const voxelsRef = useRef(new Map<string, any>());
-  const [terrain, _] = useState<VoxelStore>(() => new VoxelStore);
+  const [terrain, ] = useState<VoxelStore>(() => new VoxelStore);
+  const [entities, ] = useState<EntityStore>(() => new EntityStore);
   const onStoreEventRef = useRef<(event: VoxelStoreEvent) => void>(() => {});
+  const onEntityEventRef = useRef<(event: EntityStoreEvent) => void>(()=>{});
+  const entityInstances = useEntityList(entities);
+
   const BULK_REBUILD_THRESHOLD = 100; // tune by feel
   onStoreEventRef.current = (event) => {
     // fresh closure every render, so it can use state, draw(), etc.
@@ -326,9 +330,13 @@ export default function TerrainEditor() {
     }
     draw();
   };
+  onEntityEventRef.current = () => {
+     scheduleSave();
+  };
+  useEffect(() => entities.subscribe((event) => onEntityEventRef.current(event)), []);
 
   useEffect(() => {
-    return terrain.subscribe((e) => onStoreEventRef.current(e)); // cleanup - unsubscribe
+    return terrain.subscribe((event) => onStoreEventRef.current(event)); // cleanup - unsubscribe
   }, [terrain]);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -501,9 +509,6 @@ export default function TerrainEditor() {
     viewModeRef.current = viewMode;
   }, [viewMode]);
   useEffect(() => {
-    entityInstancesRef.current = entityInstances;
-  }, [entityInstances]);
-  useEffect(() => {
     placingEntityRef.current = placingEntityName;
     if (placingEntityName) setPlacingStructureId(null);
   }, [placingEntityName]);
@@ -584,7 +589,7 @@ export default function TerrainEditor() {
   }, []);
 
   // ---- export / import ----
-  function buildExportData(terrainVoxels:VoxelCell[], entities: EntityDataId[], mapData: MapData):LevelData {
+  function buildExportData(terrainVoxels:VoxelCell[], entities: readonly EntityDataId[], mapData: MapData):LevelData {
     const voxels:VoxelCell[] = [];
     for (const voxel of terrainVoxels) {
       voxels.push({...voxel});
@@ -636,7 +641,7 @@ export default function TerrainEditor() {
       data.hotbar = new Array(10).fill(null);
       for (let i = 0; i < 10; i++)
         if(isNum(dataPart.hotbar[i]))
-          data.hotbar[i] = dataPart.hotbar[i];
+          data.hotbar[i] = dataPart.hotbar[i] || null;
     }
     
     return data;
@@ -649,9 +654,7 @@ export default function TerrainEditor() {
     setMapData({ gridX, gridY, gridZ, biomeName, gameMode });
  
     terrain.replaceAll(data.voxels);
-
-    setEntityInstances(data.entities.map((entity) => ({...entity, id: Date.now() + Math.floor(Math.random() * 1000000)})));
-    // todo: replace with a proper ID generator like UIID later?
+    entities.replaceAll(data.entities);
     
     if (data.paletteLabels && data.paletteLabels.length > 0) {
       setPalette([...data.paletteLabels]);
@@ -666,7 +669,7 @@ export default function TerrainEditor() {
       clearTimeout(saveTimerRef.current);
     saveTimerRef.current = setTimeout(async () => {
       try {
-        const data = buildExportData(Array.from(terrain.cells()), entityInstancesRef.current, latestRef.current.mapData);
+        const data = buildExportData(Array.from(terrain.cells()), entities.list(), latestRef.current.mapData);
         data.paletteLabels = latestRef.current.palette;
         data.hotbar = hotbarRef.current;
         data.cameraMode = latestRef.current.cameraMode;
@@ -896,7 +899,7 @@ export default function TerrainEditor() {
       return;
     if (
       SINGLETON_ENTITY_NAMES.has(name) &&
-      entityInstancesRef.current.some((e) => e.name === name)
+      entities.list().some((ent) => ent.name === name)
     ) {
       setStatus(STRINGS.en.entitySingletonBlocked(name));
       return;
@@ -906,9 +909,11 @@ export default function TerrainEditor() {
       return;
     }
     const taken = new Set();
-    for (const other of entityInstancesRef.current) {
-      if (!DEVICE_CELLS[other.name]) continue;
-      for (const [cx, cy, cz] of DEVICE_CELLS[other.name]) taken.add(keyOf(other.x + cx, other.y + cy, other.z + cz));
+    for (const other of entities.list()) {
+      if (!DEVICE_CELLS[other.name])
+        continue;
+      for (const [cx, cy, cz] of DEVICE_CELLS[other.name])
+        taken.add(keyOf(other.x + cx, other.y + cy, other.z + cz));
     }
     if (DEVICE_CELLS[name]) {
       for (const [cx, cy, cz] of DEVICE_CELLS[name]) {
@@ -926,21 +931,10 @@ export default function TerrainEditor() {
       z,
       items: [],
     };
-    setEntityInstances((prev) => [...prev, instance]);
-    // draw();
-    
+    entities.add({ name, x, y, z, items: [] });
   }
 
-  function setEntityItems(id, text) {
-    const items = text
-      .split("\n")
-      .map((s) => s.trim())
-      .filter(Boolean);
-    setEntityInstances((prev) => prev.map((e) => (e.id === id ? { ...e, items } : e)));
-
-  }
-
-  function applyServerEdits(file) {
+  function applyServerEdits(file: File) {
     const reader = new FileReader();
     reader.onload = () => {
       try {
@@ -951,8 +945,10 @@ export default function TerrainEditor() {
         beginStroke();
         let n = 0;
         for (const ed of edits) {
-          if (!Array.isArray(ed) || ed.length < 4) continue;
-          const [x, y, z, block] = ed.map(Number);
+          if (!Array.isArray(ed) || ed.length < 4)
+            continue;
+          const [x, y, z, block] = ed.map(Number) ;
+          if(!x || !y || !z || !block) continue;
           if (x < 0 || x >= dims.width || y < 0 || y >= dims.height || z < 0 || z >= dims.depth) continue;
           setVoxel(x, y, z, block, 0);
           n++;
@@ -965,18 +961,6 @@ export default function TerrainEditor() {
       }
     };
     reader.readAsText(file);
-  }
-
-  function removeEntityInstance(id) {
-    setEntityInstances((prev) => prev.filter((e) => e.id !== id));
-    // draw();
-
-  }
-
-  function clearAllEntityInstances() {
-    setEntityInstances([]);
-    // draw();
-
   }
 
   function saveCurrentMapAsStructure(name: string, category: string) {
@@ -1210,7 +1194,7 @@ export default function TerrainEditor() {
       randErosionStrength: r(20, 60),
 
       randIslandIrregularity: r(20, 80),
-      randIslandSize: (["small", "medium", "large"][Math.floor(Math.random() * 3)]),
+      randIslandSize: (["small", "medium", "large"][Math.floor(Math.random() * 3)])!,
       randBottomRoughness: r(10, 35),
       randMaxThickness: r(15, 35),
     }));
@@ -1494,8 +1478,9 @@ export default function TerrainEditor() {
       entityMarkersGroupRef.current = null;
     }
 
-    const instances = entityInstancesRef.current;
-    if (!instances.length) return;
+    if(entities.size === 0)
+      return;
+    const instances = entities.list();
 
     const group = new THREE.Group();
     const markerGeometry = new THREE.BoxGeometry(0.5, 0.9, 0.5);
@@ -1616,7 +1601,7 @@ export default function TerrainEditor() {
       return;
     const lastIdx = g.count - 1;
     if (idx !== lastIdx) {
-      const lastCoord = g.coords[lastIdx];
+      const lastCoord = g.coords[lastIdx]!;
       const m = new THREE.Matrix4();
       g.mesh.getMatrixAt(lastIdx, m);
       g.mesh.setMatrixAt(idx, m);
@@ -1758,7 +1743,7 @@ export default function TerrainEditor() {
     const hits = st.raycaster.intersectObjects(targets, false);
     if (!hits.length)
       return;
-    const hit = hits[0];
+    const hit = hits[0]!;
     const isErase = toolRef.current === "eraser";
     const isPaint = toolRef.current === "paint";
     let cx: number, cy: number, cz: number;
@@ -1829,7 +1814,7 @@ export default function TerrainEditor() {
     setCurrentLayer(cy);
   }
 
-  function raycastFromCamera() {
+  function raycastFromCamera():THREE.Intersection | null {
     const st = threeRef.current;
     if (!st.camera || !st.raycaster)
       return null;
@@ -1840,7 +1825,7 @@ export default function TerrainEditor() {
     if (!targets.length)
       return null;
     const hits = st.raycaster.intersectObjects(targets, false);
-    return hits.length ? hits[0] : null;
+    return hits.length > 0 ? hits[0]! : null;
   }
 
   function performBreak() {
@@ -2123,7 +2108,8 @@ export default function TerrainEditor() {
   }
 
   useEffect(() => {
-    if (viewMode === "3d") rebuildEntityMarkers();
+    if (viewMode === "3d")
+      rebuildEntityMarkers();
   }, [entityInstances, viewMode]);
 
   useEffect(() => {
@@ -2358,7 +2344,7 @@ export default function TerrainEditor() {
     syncSnapshotRef.current = null;
     if (snap) {
       const now = [o.target.x, o.target.y, o.target.z, o.theta, o.phi, o.radius];
-      if (now.every((v, i) => Math.abs(v - snap[i]) < 1e-3))
+      if (now.every((v, i) => Math.abs(v - snap[i]!) < 1e-3))
         return;
     }
 
@@ -2409,6 +2395,7 @@ export default function TerrainEditor() {
     while (stack.length > 0 && iterations < 200000) {
       iterations++;
       const [x, z] = stack.pop()!;
+      if (!x  || !z ) continue;
       if (x < 0 || x >= width || z < 0 || z >= depth) continue;
       const vk = x + "," + z;
       if (visited.has(vk)) continue;
@@ -2635,8 +2622,9 @@ export default function TerrainEditor() {
     }
 
     // Drawing entities
-    for (const inst of entityInstancesRef.current) {
-      if (inst.x < 0 || inst.x >= width || inst.z < 0 || inst.z >= depth) continue;
+    for (const inst of entities.list()) {
+      if (inst.x < 0 || inst.x >= width || inst.z < 0 || inst.z >= depth)
+        continue;
       const onLayer = inst.y === currentLayer;
       const cx2 = inst.x * cell + cell / 2;
       const cz2 = inst.z * cell + cell / 2;
@@ -2658,7 +2646,8 @@ export default function TerrainEditor() {
         ctx.font = `${Math.max(9, Math.floor(cell * 0.4))}px sans-serif`;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        ctx.fillText((inst.name || "?")[0].toUpperCase(), cx2, cz2 + 0.5);
+        const name = inst.name || "?";
+        ctx.fillText(name[0]!.toUpperCase(), cx2, cz2 + 0.5);
       }
       ctx.globalAlpha = 1;
     }
@@ -3065,8 +3054,7 @@ export default function TerrainEditor() {
   // move existing map within the grid limits
   function shiftMap(dx: number, dy: number, dz: number) {
     const cells = Array.from(terrain.cells()); // a snapshot, so we never walk the live map
-    const entities = entityInstancesRef.current;
-    if (cells.length === 0 && entities.length === 0) {
+    if (cells.length === 0 && entities.size === 0) {
       setStatus(STRINGS.en.shiftNothing);
       return;
     }
@@ -3075,13 +3063,11 @@ export default function TerrainEditor() {
         y + dy >= 0 && y + dy < height &&
         z + dz >= 0 && z + dz < depth);
     }
-    if (!cells.every((c) => fits(c.x, c.y, c.z)) || !entities.every((ent) => fits(ent.x, ent.y, ent.z))) {
+    if (!cells.every((c) => fits(c.x, c.y, c.z)) || !entities.list().every((ent) => fits(ent.x, ent.y, ent.z))) {
       setStatus(STRINGS.en.shiftNoRoom); // refuse; nothing changes
       return;
     }
-    const movedEntities = entities.map((ent) => ({ ...ent, x: ent.x + dx, y: ent.y + dy, z: ent.z + dz }));
-    entityInstancesRef.current = movedEntities; // the ref first, so the autosave sees the new positions
-    setEntityInstances(movedEntities);
+    entities.translateAll(dx, dy, dz);
     terrain.replaceAll(cells.map((c) => ({ x: c.x + dx, y: c.y + dy, z: c.z + dz, block: c.block, meta: c.meta })));
     lastHeightMapRef.current = null; // the "regenerate trees/ore" snapshot no longer matches
     setCurrentLayer((layer) => clamp(layer + dy, 0, height - 1)); // Follow the Y layer if it shifts
@@ -3089,22 +3075,21 @@ export default function TerrainEditor() {
   }
 
   function ensureAirship() {
-    if (entityInstancesRef.current.some((e) => e.name === "Airship"))
+    if (entities.list().some((e) => e.name === "Airship"))
       return true;
     const airship = findAirshipSpot(dimsRef.current, (x, z, fromY) => terrain.surfaceY(x, z, fromY), randSeed); // important: keep *this* in method
     if (airship === null) {
       setStatus(STRINGS.en.airshipNoGround);
       return false;
     }
-    entityInstancesRef.current = [...entityInstancesRef.current, {id: Date.now() + Math.floor(Math.random() * 1000), ...airship}];
-    setEntityInstances(entityInstancesRef.current);
-    draw();
+    entities.add(airship);
+    // draw();
     return true;
   }
 
   function exportJson() {
     if (!ensureAirship()) return;
-    const data = buildExportData(Array.from(terrain.cells()), entityInstancesRef.current, mapData);
+    const data = buildExportData(Array.from(terrain.cells()), entities.list(), mapData);
     const blob = new Blob([JSON.stringify(data, null, 2)], {
       type: "application/json",
     });
@@ -3126,7 +3111,7 @@ export default function TerrainEditor() {
     }
     if (!ensureAirship())
       return;
-    const data = buildExportData(Array.from(terrain.cells()), entityInstancesRef.current, mapData);
+    const data = buildExportData(Array.from(terrain.cells()), entities.list(), mapData);
     const json = JSON.stringify(data);
     const rawBlob = new Blob([json], { type: "application/json" });
     const cs = new CompressionStream("gzip");
@@ -3157,7 +3142,7 @@ export default function TerrainEditor() {
     if (!normName) 
       return; //do not save with an empty name
     try {
-      const data = buildExportData(Array.from(terrain.cells()), entityInstancesRef.current, mapData);
+      const data = buildExportData(Array.from(terrain.cells()), entities.list(), mapData);
       data.paletteLabels = palette;
       await mapStorage.save(normName, data);
       await refreshSaveSlots();
@@ -3237,8 +3222,7 @@ export default function TerrainEditor() {
     if (!window.confirm("Start a new empty map? The current map and its autosave will be replaced."))
       return;
     terrain.replaceAll([]);
-    entityInstancesRef.current = [];      // debounced autosave doesn't see the old entities
-    setEntityInstances([]);
+    entities.clear();      // debounced autosave doesn't see the old entities
     lastHeightMapRef.current = null;      // otherwise regenerate* would run on the old map's heightmap
     setCurrentLayer(0);
     setStatus("New map");
@@ -3282,7 +3266,7 @@ export default function TerrainEditor() {
         applyGridResize={applyGridResize}
         applyServerEdits={applyServerEdits}
         cameraMode={cameraMode}
-        entityInstances={entityInstances}
+        hasAirship = {entityInstances.some((entity) => entity.name === "Airship")}
         newMap={newMap}
         importJson={importJson}
         exportJson={exportJson}
@@ -3431,17 +3415,8 @@ export default function TerrainEditor() {
 
           {showEntitiesPanel && (
             <EntitiesPanel
-              clearAllEntityInstances={clearAllEntityInstances}
-              entityCategory={entityCategory}
-              entityInstances={entityInstances}
-              entitySearchQuery={entitySearchQuery}
-              openItemsId={openItemsId}
+              entities={entities}
               placingEntityName={placingEntityName}
-              removeEntityInstance={removeEntityInstance}
-              setEntityCategory={setEntityCategory}
-              setEntityItems={setEntityItems}
-              setEntitySearchQuery={setEntitySearchQuery}
-              setOpenItemsId={setOpenItemsId}
               setPlacingEntityName={setPlacingEntityName}
             />
           )}
