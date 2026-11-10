@@ -1,4 +1,5 @@
 import { blocks, entities, serviceEntities, deviceCells, mapSizes } from "./data";
+import { EntityCatalogue } from "./lib/placementChecks";
 
 export const CHUNK = 32;
 export const CELL_BASE = 14;
@@ -20,12 +21,14 @@ type EntityCategory = "creature" | "npc" | "device" | "object" | "service";
 
 export const ENTITIES = entities as {name: string, category: EntityCategory}[];
 export const ENTITY_CATEGORY = new Map(ENTITIES.map((e) => [e.name, e.category]));
-export const SERVICE_ENTITY_NAMES = new Set(serviceEntities);
-export const DEVICE_CELLS = deviceCells;
+
+export const ENTITY_CATALOGUE: EntityCatalogue = {
+  footprints: deviceCells as unknown as EntityCatalogue["footprints"], // trusted because we have deviceCells.test.ts for that - run it when data changes!
+  singleton: new Set(["Airship"]),
+  service: new Set(serviceEntities),
+}
 export const ENTITY_CATEGORIES = ["creature", "npc", "device", "object"] as const;
 export const ENTITY_COLORS:Record<EntityCategory, number> = { creature: 0xff5f5f, npc: 0xffd166, device: 0x5fa8ff, object: 0xb0b6c3 , service: 0xff9ff9};
-
-export const SINGLETON_ENTITY_NAMES = new Set(["Airship"]);
 
 export const BLOCK_NAMES = blocks;
 export const AIR = 255;

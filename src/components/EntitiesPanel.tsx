@@ -1,6 +1,6 @@
 import { STRINGS } from "../i18n/strings";
 import { inputStyle, actionBtn } from "../styles/inline";
-import { ENTITIES, ENTITY_CATEGORIES, ENTITY_COLORS, ENTITY_CATEGORY, SINGLETON_ENTITY_NAMES } from "../constants";
+import { ENTITIES, ENTITY_CATEGORIES, ENTITY_COLORS, ENTITY_CATEGORY, ENTITY_CATALOGUE } from "../constants";
 import { useEntityList } from "../hooks/useEntityList";
 import { EntityStore } from "../lib/EntityStore";
 import { useMemo, useState } from "react";
@@ -115,7 +115,7 @@ export default function EntitiesPanel({
           .slice(0, 200)
           .map((en) => {
             const n = en.name;
-            const isSingleton = SINGLETON_ENTITY_NAMES.has(n);
+            const isSingleton = ENTITY_CATALOGUE.singleton.has(n);
             const alreadyPlaced =
               isSingleton && entityInstances.some((e) => e.name === n);
             return (

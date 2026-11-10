@@ -1,8 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import * as THREE from "three";
 import {
-  CHUNK, CELL_BASE, REAL_BIOMES, MAX_CHUNKS, MAP_SIZES, mapSizeKey, ENTITIES, ENTITY_CATEGORY,
-  SERVICE_ENTITY_NAMES, DEVICE_CELLS, ENTITY_CATEGORIES, ENTITY_COLORS, SINGLETON_ENTITY_NAMES,
+  CHUNK, CELL_BASE, REAL_BIOMES, MAX_CHUNKS, MAP_SIZES, mapSizeKey, ENTITIES, ENTITY_CATEGORY, ENTITY_CATALOGUE, ENTITY_COLORS,
   BLOCK_NAMES, AIR, DEFAULT_PALETTE, STORAGE_KEY, TEXTURES_STORAGE_KEY, STRUCTURES_STORAGE_KEY,
 } from "../constants";
 import { STRINGS } from "../i18n/strings";
@@ -33,6 +32,7 @@ import { generateTerrain, regenerateDeco, regenerateOre, regenerateVeg } from ".
 import { EntityData, EntityDataId, parseEntities, exportEntity, findAirshipSpot } from "../lib/entities.ts";
 import { EntityStore, EntityStoreEvent } from "../lib/EntityStore.ts";
 import { useEntityList } from "../hooks/useEntityList.ts";
+import { canPlaceEntity, EntityCatalogue, PlaceCheck } from "../lib/placementChecks.ts";
 
 export interface MapData {
   gridX: number,
@@ -98,6 +98,19 @@ const DEFAULT_SETTINGS = {
   ZOOM_ORBIT_STEP: 1.05,
   ZOOM_SHIFT_MULT: 3,         // Shift + wheel zoom multiplier per notch
   ZOOM_GESTURE_MS: 500,       // wheel events closer together than this belong to one gesture, i.e. a throttle on recalc zoom parameters
+}
+
+function refusalMessage(check: Extract<PlaceCheck, { ok: false }>, name: string) {
+  switch (check.reason) {
+    case "out-of-bounds": return STRINGS.en.entityOutOfBounds(name); // silent, as today
+    case "singleton":     return STRINGS.en.entitySingletonBlocked(name);
+    case "service":       return STRINGS.en.entityService(name);
+    case "overlap":       return STRINGS.en.entityOverlap(name);
+    default: {
+      const unhandled: never = check; // a new reason makes this line a compile error
+      return unhandled;
+    }
+  }
 }
 
 export function getDefaultLevelData():LevelData {
@@ -893,45 +906,17 @@ export default function TerrainEditor() {
   }
 
   // ---- entity placement (not voxels - separate marker list) ----
-  function placeEntityAt(name:string, x:number, y:number, z:number) {
+  function placeEntity(entity: EntityData): boolean {
     const dims = dimsRef.current;
-    if (x < 0 || x >= dims.width || y < 0 || y >= dims.height || z < 0 || z >= dims.depth)
-      return;
-    if (
-      SINGLETON_ENTITY_NAMES.has(name) &&
-      entities.list().some((ent) => ent.name === name)
-    ) {
-      setStatus(STRINGS.en.entitySingletonBlocked(name));
-      return;
+
+    const check = canPlaceEntity(entity, entities.list(), dims, ENTITY_CATALOGUE);
+    if(check.ok === false) {
+      setStatus(refusalMessage(check, entity.name));
+      return false;
     }
-    if (SERVICE_ENTITY_NAMES.has(name)) {
-      setStatus(STRINGS.en.entityService(name));
-      return;
-    }
-    const taken = new Set();
-    for (const other of entities.list()) {
-      if (!DEVICE_CELLS[other.name])
-        continue;
-      for (const [cx, cy, cz] of DEVICE_CELLS[other.name])
-        taken.add(keyOf(other.x + cx, other.y + cy, other.z + cz));
-    }
-    if (DEVICE_CELLS[name]) {
-      for (const [cx, cy, cz] of DEVICE_CELLS[name]) {
-        if (taken.has(keyOf(x + cx, y + cy, z + cz))) {
-          setStatus(STRINGS.en.entityOverlap(name));
-          return;
-        }
-      }
-    }
-    const instance:EntityDataId = {
-      id: Date.now() + Math.floor(Math.random() * 1000),
-      name,
-      x,
-      y,
-      z,
-      items: [],
-    };
-    entities.add({ name, x, y, z, items: [] });
+    
+    entities.add(entity);
+    return true;
   }
 
   function applyServerEdits(file: File) {
@@ -1501,8 +1486,8 @@ export default function TerrainEditor() {
 
     for (const inst of instances) {
       const category = ENTITY_CATEGORY.get(inst.name) || "service";
-      if (DEVICE_CELLS[inst.name]) {
-        for (const [cx, cy, cz] of DEVICE_CELLS[inst.name]) {
+      if (ENTITY_CATALOGUE.footprints[inst.name]) {
+        for (const [cx, cy, cz] of ENTITY_CATALOGUE.footprints[inst.name]!) {
           const cellMesh = new THREE.Mesh(cellGeometry, materialFor(category, true));
           cellMesh.position.set(inst.x + cx + 0.5, inst.y + cy + 0.5, inst.z + cz + 0.5);
           group.add(cellMesh);
@@ -1783,7 +1768,13 @@ export default function TerrainEditor() {
         setCurrentLayer(cy);
         return;
       }
-      placeEntityAt(placingEntityRef.current, cx, cy, cz);
+      const ent: EntityData = {
+        name: placingEntityRef.current,
+        x: cx,
+        y: cy,
+        z: cz
+      }
+      placeEntity(ent);
       setCurrentLayer(cy);
       return;
     }
@@ -1876,7 +1867,13 @@ export default function TerrainEditor() {
       return;
 
     if (placingEntityRef.current) {
-      placeEntityAt(placingEntityRef.current, cx, cy, cz);
+      const ent: EntityData = {
+        name: placingEntityRef.current,
+        x: cx,
+        y: cy,
+        z: cz
+      }
+      placeEntity(ent);
       setCurrentLayer(cy);
       return;
     }
@@ -2761,7 +2758,13 @@ export default function TerrainEditor() {
     if (placingEntityName) {
       const surfaceY = terrain.surfaceY(x, z, height - 1);
       const y = surfaceY >= 0 ? surfaceY + 1 : currentLayer;
-      placeEntityAt(placingEntityName, x, y, z);
+      const ent: EntityData = {
+        name: placingEntityName,
+        x,
+        y,
+        z
+      }
+      placeEntity(ent);
       return;
     }
     if (placingStructureId) {
