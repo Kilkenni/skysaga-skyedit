@@ -100,6 +100,19 @@ class VoxelStore {
     return v ? v.block : AIR;
   }
 
+  /**
+   * 
+   * @param fromY - Y from which to search, downwards
+   * @returns the highest non-air y at or below `fromY`, or -1 if the column is empty
+   */
+  surfaceY(x: number, z: number, fromY: number): number {
+    for (let y = fromY; y >= 0; y--) {
+      if (this.getBlock(x, y, z) !== AIR)
+        return y;
+    }
+    return -1;
+  }
+
   layerCells(y: number): IterableIterator<Readonly<VoxelCell>> {
     return this.#layers.get(y)?.values() ?? [][Symbol.iterator]();
   }
