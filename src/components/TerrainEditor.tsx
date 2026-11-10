@@ -10,6 +10,7 @@ import { keyOf } from "../lib/keys";
 import { clamp, clampBlockId, isNum, } from "../lib/numbers";
 import { rotateStructure90, getRotatedStructure, generateStructureThumbnail, Structure } from "../lib/structures";
 import { inputStyle, actionBtn } from "../styles/inline";
+import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react'
 import RandomPanel from "./RandomPanel";
 import StructuresPanel from "./StructuresPanel";
 import BulkTexturePanel from "./BulkTexturePanel";
@@ -34,6 +35,7 @@ import { EntityData, EntityDataId, parseEntities, exportEntity, findAirshipSpot 
 import { EntityStore, EntityStoreEvent } from "../lib/EntityStore.ts";
 import { useEntityList } from "../hooks/useEntityList.ts";
 import { canPlaceEntity, EntityCatalogue, PlaceCheck } from "../lib/placementChecks.ts";
+import EntityInstancesList from "./EntityInstancesList.tsx";
 
 export interface MapData {
   gridX: number,
@@ -3403,14 +3405,6 @@ export default function TerrainEditor() {
               setNewPresetName={setNewPresetName}
             />
           )}
-
-          {showEntitiesPanel && (
-            <EntitiesPanel
-              entities={entities}
-              placingEntityName={placingEntityName}
-              setPlacingEntityName={setPlacingEntityName}
-            />
-          )}
           <div style={{
             display: "flex",
             flex: 1, 
@@ -3596,7 +3590,7 @@ export default function TerrainEditor() {
           </div>
         </div>
 
-        <div style={{
+        <TabGroup as="aside" style={{
           display: "flex",
           flexDirection: "column",
           overflow: "hidden",
@@ -3604,26 +3598,48 @@ export default function TerrainEditor() {
           width: "320px",
           paddingBottom: 10,
         }}>
-          {viewMode === "2d" && (
-            <LayerNav
-              chunkY={chunkY}
-              currentLayer={currentLayer}
-              gridY={mapData.gridY}
-              localY={localY}
-              setCurrentLayer={setCurrentLayer}
-              totalHeight={height}
-            />
-          )}
-          <PaletteSidebar
-            paletteObj={paletteObj}
-            clearTexture={clearTexture}
-            handleTextureFile={handleTextureFile}
-            setTextureTargetId={setTextureTargetId}
-            textureTargetId={textureTargetId}
-            textureVersion={textureVersion}
-            texturesRef={texturesRef}
-          />
-        </div>
+          <TabList>
+            <Tab>Palette</Tab>
+            <Tab>EntitiesPanel</Tab>
+            <Tab>Entity Instances</Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel>
+              {viewMode === "2d" && (
+                <LayerNav
+                  chunkY={chunkY}
+                  currentLayer={currentLayer}
+                  gridY={mapData.gridY}
+                  localY={localY}
+                  setCurrentLayer={setCurrentLayer}
+                  totalHeight={height}
+                />
+              )}
+              <PaletteSidebar
+                paletteObj={paletteObj}
+                clearTexture={clearTexture}
+                handleTextureFile={handleTextureFile}
+                setTextureTargetId={setTextureTargetId}
+                textureTargetId={textureTargetId}
+                textureVersion={textureVersion}
+                texturesRef={texturesRef}
+              />
+            </TabPanel>
+            <TabPanel>
+              <EntitiesPanel
+                entities={entities}
+                placingEntityName={placingEntityName}
+                setPlacingEntityName={setPlacingEntityName}
+              />
+            </TabPanel>
+            <TabPanel>
+              <EntityInstancesList
+                entities={entities}
+              />
+            </TabPanel>
+          </TabPanels>
+        </TabGroup>
+        
       </div>
 
       {showHelp && (
