@@ -61,12 +61,6 @@ describe("footprintCells", () => {
     cells.push([0, 0, 0]);
     expect(catalogue.footprints.Wide).toStrictEqual([[0, 0, 0], [1, 0, 0]]);
   });
-
-  // TODAY: yaw is ignored. Step 4 (rotation) changes this: yaw 90 turns (x, z) into (z, -x).
-  it("TODAY: ignores yaw", () => {
-    const rotated = { ...at("Wide", 3, 3, 3), yaw: 90 };
-    expect(footprintCells(rotated, catalogue)).toStrictEqual(footprintCells(at("Wide", 3, 3, 3), catalogue));
-  });
 });
 
 // ---------- canPlaceEntity: basics ----------

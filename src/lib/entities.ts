@@ -15,9 +15,9 @@ interface EntityDataId extends EntityData {
   id: number,
 }
 
-function getEntityYaw(entity: EntityData) {
+function getEntityYaw(entity: EntityData):number {
   if(isNum(entity.yaw))
-    return entity.yaw;
+    return entity.yaw!;
   else 
     return 0;
 }
