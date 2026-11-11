@@ -13,6 +13,8 @@ interface EntityCatalogue {
   service: ReadonlySet<string>;
 }
 
+const YAW_TOLERANCE = 0.1;
+
 /**
  * Cuts away full rotations, converts negative rotation to positive
  * @returns entity.yaw, normalized, in degrees
@@ -52,12 +54,23 @@ function footprintCells(entity: EntityData, catalogue: EntityCatalogue): Cell[] 
     return []; // no footprints for this entity
   const relFootprints = catalogue.footprints[entity.name]!; // previous line guards against undefined
   const yaw = normalizeYaw(entity);
-  if (yaw % 90 !== 0)
-    return [[entity.x, entity.y, entity.z]]; // UNVERIFIED: the client keeps one block at odd angles
+  const q = Math.round(yaw / 90);
+  // force collapse footprint, mimicking the client. Avoid doing that for voxel-dependend entities: rotate by 90
+  if (Math.abs(yaw - q * 90) > YAW_TOLERANCE) {
+    const seen = new Set<number>();
+    const collapsed: Cell[] = []
+    for (const [, dy] of relFootprints) {
+      if (seen.has(dy))
+        continue;            // this height is already in the column
+      seen.add(dy);
+      collapsed.push([entity.x, entity.y + dy, entity.z]);
+    }
+    return collapsed;
+  }
   
   const absFootprints:Cell[] = relFootprints.map((cellCoords) => {
-    const q = yaw / 90; // already comes normalized, so this is 0..3
-    const [x, y, z] = rotateYQuarter(q, cellCoords); // get rotated! 🦈
+    //const q = yaw / 90; // already comes normalized, so this is 0..3
+    const [x, y, z] = rotateYQuarter(q % 4, cellCoords); // get rotated! 🦈
     return [x + entity.x, y + entity.y, z + entity.z];
   });
   return absFootprints;
