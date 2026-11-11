@@ -349,7 +349,7 @@ export default function TerrainEditor() {
   };
   onEntityEventRef.current = () => {
      scheduleSave();
-     //shadowKeyRef.current = ""; // forget the last key, next refresh redraws even if the cell is the same (to redraw shadow after placement)
+     shadowKeyRef.current = "";
      refreshEntityShadow();
   };
   useEffect(() => {
