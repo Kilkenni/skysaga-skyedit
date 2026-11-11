@@ -1834,10 +1834,11 @@ export default function TerrainEditor() {
     return inside ? cell : null;
   }
 
-  function performMouseRaycastAction(clientX: number, clientY: number, isContinuous: boolean) {
+  function raycastHitAt(clientX: number, clientY: number): THREE.Intersection | null {
     const st = threeRef.current;
     const canvas = canvas3dRef.current;
-    if (!canvas || !st.camera || !st.raycaster) return;
+    if (!canvas || !st.camera || !st.raycaster)
+      return null;
     const dims = dimsRef.current;
     const rect = canvas.getBoundingClientRect();
     const mx = ((clientX - rect.left) / rect.width) * 2 - 1;
@@ -1846,17 +1847,36 @@ export default function TerrainEditor() {
 
     const targets = raycastTargets();
     if (!targets.length)
-      return;
+      return null;
     const hits = st.raycaster.intersectObjects(targets, false);
     if (!hits.length)
-      return;
-    const hit = hits[0]!;
+      return null;
+    return hits[0]!;
+  }
+
+  /**
+   * @param clientX 
+   * @param clientY 
+   * @returns the cell a click would act on, for the pointer position; null if nothing valid
+   */
+  function targetCellAt(clientX: number, clientY: number): GridPos | null {
+    const hit = raycastHitAt(clientX, clientY);
+    if (hit === null)
+      return null;
     const isErase = toolRef.current === "eraser";
     const isPaint = toolRef.current === "paint";
-    const cell = cellFromHit(hit, isErase || isPaint);
+    const placing = placingEntityRef.current !== null || placingStructureRef.current !== null;
+    const onHitBlock = isErase || (isPaint && !placing);
+    return cellFromHit(hit, onHitBlock);
+  }
+
+  function performMouseRaycastAction(clientX: number, clientY: number, isContinuous: boolean) {
+    const cell = targetCellAt(clientX, clientY);
     if(!cell)
       return;
     const {x: cx, y: cy, z: cz} = cell;
+    const isErase = toolRef.current === "eraser";
+    const isPaint = toolRef.current === "paint";
 
     if (!isErase && placingEntityRef.current) {
       if (isContinuous) {
