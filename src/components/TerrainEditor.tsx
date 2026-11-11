@@ -11,6 +11,7 @@ import { keyOf } from "../lib/keys";
 import { clamp, clampBlockId, isNum, } from "../lib/numbers";
 import { rotateStructure90, getRotatedStructure, generateStructureThumbnail, Structure } from "../lib/structures";
 import { inputStyle, actionBtn } from "../styles/inline";
+import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react'
 import RandomPanel from "./RandomPanel";
 import StructuresPanel from "./StructuresPanel";
 import BulkTexturePanel from "./BulkTexturePanel";
@@ -34,6 +35,8 @@ import { EntityData, EntityDataId, parseEntities, exportEntity, findAirshipSpot,
 import { EntityStore, EntityStoreEvent } from "../lib/EntityStore.ts";
 import { useEntityList } from "../hooks/useEntityList.ts";
 import { canPlaceEntity, EntityCatalogue, footprintCells, PlaceCheck } from "../lib/placementChecks.ts";
+import Toolbar from "./tools/Toolbar.tsx";
+import EntityInstancesList from "./EntityInstancesList.tsx";
 
 export interface MapData {
   gridX: number,
@@ -3508,28 +3511,15 @@ export default function TerrainEditor() {
       />
 
       <div style={{ display: "flex", flex: 1, minHeight: 0 }}>
-        <PaletteSidebar
-          paletteObj={paletteObj}
-          clearTexture={clearTexture}
-          handleTextureFile={handleTextureFile}
-          setTextureTargetId={setTextureTargetId}
-          textureTargetId={textureTargetId}
-          textureVersion={textureVersion}
-          texturesRef={texturesRef}
-        />
-
         <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0, minHeight: 0 }}>
           <ToolbarRow
             setTool={setTool}
             currentTool={tool}
             cameraMode={cameraMode}
-            clearLayer={clearLayer}
             clipboardInfo={clipboardInfo}
             computeMapStats={computeMapStats}
-            copyLayer={copyLayer}
             copyYFrom={copyYFrom}
             copyYTo={copyYTo}
-            fillLayer={fillLayer}
             mirrorX={mirrorX}
             mirrorZ={mirrorZ}
             moveSpeed={moveSpeed}
@@ -3639,20 +3629,49 @@ export default function TerrainEditor() {
               setNewPresetName={setNewPresetName}
             />
           )}
+          <div style={{
+            display: "flex",
+            flex: 1, 
+            minHeight: 0,
+            width: "full",
+            position: "relative",
+          }}>
+            <Toolbar
+              setTool={setTool}
+              currentTool={tool}
+              cameraMode={cameraMode}
+              clearLayer={clearLayer}
+              copyLayer={copyLayer}
+              copyYFrom={copyYFrom}
+              copyYTo={copyYTo}
+              fillLayer={fillLayer}
+              mirrorX={mirrorX}
+              mirrorZ={mirrorZ}
+              shiftMap={shiftMap}
 
-          {showEntitiesPanel && (
-            <EntitiesPanel
-              entities={entities}
-              placingEntityName={placingEntityName}
-              setPlacingEntityName={setPlacingEntityName}
+              roadParams={roadParams}
+              updateRoadParams={updateRoadParams}
+
+              setMirrorX={setMirrorX}
+              setMirrorZ={setMirrorZ}
+              totalHeight={height}
+              viewMode={viewMode}
+
+              style= {{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                width: 310,
+                gap: 8,
+                padding: "8px 12px",
+                borderBottom: "1px solid #1e222b",
+                flexWrap: "wrap",            
+              }}
             />
-          )}
-          <div style={{ flex: 1, minHeight: 0, position: "relative" }}>
             <div
               ref={containerRef}
               style={{
-                position: "absolute",
-                inset: 0,
+                flexGrow: 1,
                 overflow: "hidden",
                 padding: 0,
                 background: "#08090c",
@@ -3770,6 +3789,7 @@ export default function TerrainEditor() {
           </div>
           
           <div
+            className="flex gap-4 px-1.5 py-3.5"
             style={{
               display: "flex",
               gap: 16,
@@ -3795,16 +3815,56 @@ export default function TerrainEditor() {
           </div>
         </div>
 
-        {viewMode === "2d" && (
-          <LayerNav
-            chunkY={chunkY}
-            currentLayer={currentLayer}
-            gridY={mapData.gridY}
-            localY={localY}
-            setCurrentLayer={setCurrentLayer}
-            totalHeight={height}
-          />
-        )}
+        <TabGroup as="aside" className={"flex flex-col overflow-hidden max-h-full w-80 pb-2.5"} style={{
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden",
+          maxHeight: "100%",
+          width: "320px",
+          paddingBottom: 10,
+        }}>
+          <TabList>
+            <Tab>Palette</Tab>
+            <Tab>EntitiesPanel</Tab>
+            <Tab>Entity Instances</Tab>
+          </TabList>
+          <TabPanels className={"h-full min-h-0"}>
+            <TabPanel className={"flex flex-col h-full"}>
+              {viewMode === "2d" && (
+                <LayerNav
+                  chunkY={chunkY}
+                  currentLayer={currentLayer}
+                  gridY={mapData.gridY}
+                  localY={localY}
+                  setCurrentLayer={setCurrentLayer}
+                  totalHeight={height}
+                />
+              )}
+              <PaletteSidebar
+                paletteObj={paletteObj}
+                clearTexture={clearTexture}
+                handleTextureFile={handleTextureFile}
+                setTextureTargetId={setTextureTargetId}
+                textureTargetId={textureTargetId}
+                textureVersion={textureVersion}
+                texturesRef={texturesRef}
+              />
+            </TabPanel>
+            <TabPanel className={"flex flex-col h-full"}>
+              <EntitiesPanel
+                entities={entities}
+                placingEntityName={placingEntityName}
+                setPlacingEntityName={setPlacingEntityName}
+              />
+            </TabPanel>
+            <TabPanel className={"flex flex-col h-full"}>
+              <EntityInstancesList
+                entities={entities}
+              />
+            </TabPanel>
+          </TabPanels>
+        </TabGroup>
+        
       </div>
 
       {showHelp && (
