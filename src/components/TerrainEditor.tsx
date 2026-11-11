@@ -352,14 +352,16 @@ export default function TerrainEditor() {
   };
   onEntityEventRef.current = () => {
      scheduleSave();
-     shadowKeyRef.current = "";
+     shadowKeyRef.current = ""; // force redraw entity shadow on any entity event (for example, after placing)
      refreshEntityShadow();
   };
   useEffect(() => {
-    entities.subscribe((event) => onEntityEventRef.current(event));
+    const unsubscribe = entities.subscribe((event) => {
+      return onEntityEventRef.current(event);
+    });
 
     return () => {
-      const mesh = shadowMeshRef.current;
+      unsubscribe();
       if(shadowMeshRef.current) {
         (shadowMeshRef.current.material as THREE.Material).dispose();
         shadowMeshRef.current.geometry.dispose();
@@ -1968,6 +1970,7 @@ export default function TerrainEditor() {
       new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.5, depthWrite: false }),
       MAX_FOOTPRINT
     );
+    mesh.setColorAt(0, new THREE.Color(0xffffff));  // allocates the colour buffer at FULL capacity (important for older Three.js versions)
     mesh.count = 0;                // nothing drawn yet
     mesh.frustumCulled = false;    // always render, even if out of camera view
     scene.add(mesh);
@@ -1993,7 +1996,6 @@ export default function TerrainEditor() {
     if (key === shadowKeyRef.current)
       return;   // nothing relevant changed: do no work
     // console.log("shadow:", key === "" ? "(none)" : key);
-    shadowKeyRef.current = key;
     if (key === "") { 
       hideShadow(); 
       return; 
@@ -2027,9 +2029,20 @@ export default function TerrainEditor() {
       mesh.setColorAt(i, wholeRefused || badCells.has(keyOf(x, y, z)) ? red : base);
     });
     mesh.count = cells.length;
+    let m;
+    console.log("shadow draw", {
+      cells: cells.length,
+      count: mesh.count,
+      inScene: threeRef.current.scene?.children.includes(mesh),
+      visible: mesh.visible,
+      firstCell: cells[0],
+      colorLen: mesh.instanceColor?.array.length,
+    });
     mesh.instanceMatrix.needsUpdate = true;
     if (mesh.instanceColor)
       mesh.instanceColor.needsUpdate = true;
+
+    shadowKeyRef.current = key;
   }
 
   function raycastFromCamera():THREE.Intersection | null {
