@@ -101,6 +101,10 @@ const DEFAULT_SETTINGS = {
   ZOOM_GESTURE_MS: 500,       // wheel events closer together than this belong to one gesture, i.e. a throttle on recalc zoom parameters
 }
 
+// For calculating entity shadow: the biggest footprint in the catalogue (194 cells today, PVP_Post)
+const MAX_FOOTPRINT = Math.max(1, ...Object.values(ENTITY_CATALOGUE.footprints).map((f) => f.length));
+
+
 function refusalMessage(check: Extract<PlaceCheck, { ok: false }>, name: string) {
   switch (check.reason) {
     case "out-of-bounds": return STRINGS.en.entityOutOfBounds(name); // silent, as today
@@ -345,6 +349,8 @@ export default function TerrainEditor() {
   };
   onEntityEventRef.current = () => {
      scheduleSave();
+     shadowKeyRef.current = "";
+     refreshEntityShadow();
   };
   useEffect(() => entities.subscribe((event) => onEntityEventRef.current(event)), []);
 
@@ -514,6 +520,7 @@ export default function TerrainEditor() {
   }, [placingStructureId]);
   useEffect(() => {
     placingRotationRef.current = placingRotation;
+    refreshEntityShadow();
   }, [placingRotation]);
   useEffect(() => {
     structuresRef.current = structures;
@@ -527,6 +534,7 @@ export default function TerrainEditor() {
       setPlacingStructureId(null);
       setPlacingRotation(0);
     }
+    refreshEntityShadow();
   }, [placingEntityName]);
   useEffect(() => {
     if (placingStructureId) {
@@ -1451,8 +1459,14 @@ export default function TerrainEditor() {
       st.fly.initialized = true;
     }
 
-    if (cameraModeRef.current === "orbit") updateCameraFromOrbit();
-    else updateCameraFromFly();
+    if (cameraModeRef.current === "orbit")
+      updateCameraFromOrbit();
+    else
+      updateCameraFromFly();
+  }
+
+  function entityCategoryColor(category: EntityCategory):number {
+    return ENTITY_COLORS[category] ?? 0xff5fa2;
   }
 
   function rebuildEntityMarkers():void {
@@ -1496,22 +1510,19 @@ export default function TerrainEditor() {
     arrowGeometry.rotateX(Math.PI / 2);        // 90 degrees rotation, turn +Y into +Z: the cone now points along +Z (yaw 0)
 
     const materials: Map<string, THREE.Mesh> = new Map;
-    function materialFor(category: EntityCategory, cell: boolean) {
-      const key = category + (cell ? ":cell" : "");
-      if (!materials[key]) {
-        materials[key] = new THREE.MeshLambertMaterial({
-          color: ENTITY_COLORS[category] || 0xff5fa2,
-          transparent: cell,
-          opacity: cell ? 0.35 : 1,
-          depthWrite: !cell,
-        });
-      }
-      return materials[key];
-    }
+    // function materialFor(category: EntityCategory, cell: boolean) {
+    //   const key = category + (cell ? ":cell" : "");
+    //   if (!materials[key]) {
+    //     materials[key] = new THREE.MeshLambertMaterial({
+    //       color: ENTITY_COLORS[category] || 0xff5fa2,
+    //       transparent: cell,
+    //       opacity: cell ? 0.35 : 1,
+    //       depthWrite: !cell,
+    //     });
+    //   }
+    //   return materials[key];
+    // }
 
-    function categoryColor(category: EntityCategory):number {
-      return ENTITY_COLORS[category] ?? 0xff5fa2;
-    }
 
     // an InstancedMesh needs its size up front, let's calculate it
     const instancesData = instances.map((entity) => ({ entity, category: ENTITY_CATEGORY.get(entity.name) || "service", cells: footprintCells(entity, ENTITY_CATALOGUE) }));
@@ -1527,7 +1538,7 @@ export default function TerrainEditor() {
       const cellMesh = new THREE.InstancedMesh(cellGeometry, cellMaterial , cellsTotal);
       let i = 0;
       for (const { entity, category, cells } of instancesData) {
-        const c = color.setHex(categoryColor(category));
+        const c = color.setHex(entityCategoryColor(category));
         for (const [x, y, z] of cells) {
           dummyCell.position.set(x + 0.5, y + 0.5, z + 0.5); // shift the position by roughly half the dims of cellGeometry
           dummyCell.updateMatrix(); // turns position into a 4x4 matrix
@@ -1550,7 +1561,7 @@ export default function TerrainEditor() {
       const originMesh = new THREE.InstancedMesh(originGeometry, originMaterial, instancesData.length);
       const arrowMesh = new THREE.InstancedMesh(arrowGeometry, originMaterial, instancesData.length);
       instancesData.forEach(({ entity, category }, i) => {
-        const c = color.setHex(categoryColor(category));
+        const c = color.setHex(entityCategoryColor(category));
         dummyOrigin.position.set(entity.x + 0.5, entity.y + 0.5, entity.z + 0.5);
         dummyOrigin.updateMatrix();
         originMesh.setMatrixAt(i, dummyOrigin.matrix);
@@ -1922,6 +1933,90 @@ export default function TerrainEditor() {
     setCurrentLayer(cy);
   }
 
+  const lastPointerRef = useRef<{ x: number; y: number } | null>(null);
+  const shadowKeyRef = useRef<string>("");
+
+  const shadowMeshRef = useRef<THREE.InstancedMesh | null>(null);
+
+  /**
+   * Entity shadow mesh. Raycasts use a whitelist (which it is not a part of), so they should ignore it
+   * @returns 
+   */
+  function ensureEntityShadowMesh(): THREE.InstancedMesh | null {
+    const scene = threeRef.current.scene;
+    if (!scene)
+      return null;
+    if (shadowMeshRef.current)
+      return shadowMeshRef.current;
+
+    const mesh = new THREE.InstancedMesh(
+      new THREE.BoxGeometry(1, 1, 1),
+      new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.5, depthWrite: false }),
+      MAX_FOOTPRINT
+    );
+    mesh.count = 0;                // nothing drawn yet
+    mesh.frustumCulled = false;    // always render, even if out of camera view
+    scene.add(mesh);
+    shadowMeshRef.current = mesh;
+    return mesh;
+  }
+
+  function hideShadow() {
+    if (shadowMeshRef.current) 
+      shadowMeshRef.current.count = 0;
+  }
+
+  /**
+   * Recomputes entity shadow showing future position before actual placement
+   */
+  function refreshEntityShadow():void {
+    const p = lastPointerRef.current;
+    const name = placingEntityRef.current;
+    const cell = p !== null && name !== null ? targetCellAt(p.x, p.y) : null;
+    const yaw = placingRotationRef.current * 90;
+    const key = (cell !== null && name !== null) ? `${name}|${cell.x},${cell.y},${cell.z}|${yaw}` : "";
+
+    if (key === shadowKeyRef.current)
+      return;   // nothing relevant changed: do no work
+    shadowKeyRef.current = key;
+    if (key === "") { 
+      hideShadow(); 
+      return; 
+    }
+    // key !== "" means name and cell are valid - entity placement mode is active, and we have a raycast hit with a voxel
+    const projection: EntityData = { name: name!, x: cell!.x, y: cell!.y, z: cell!.z };
+    if (yaw !== 0) 
+      projection.yaw = yaw; // same rule as placeEntity - if rotation is not 0, write to our new entity as yaw
+
+    const check = canPlaceEntity(projection, entities.list(), dimsRef.current, ENTITY_CATALOGUE);
+    const cells = footprintCells(projection, ENTITY_CATALOGUE);
+
+    // We want the overlapped cells marked in red. Which ones?
+    const badCells = new Set<string>();
+    const wholeRefused = (check.ok === false) && (check.reason !== "overlap"); // if the refusal reason is not overlap, then there's no point to search
+    if (check.ok === false && check.reason === "overlap") {
+      for (const [x, y, z] of check.overlaps) {
+        badCells.add(keyOf(x, y, z));
+      }
+    }
+
+    const mesh = ensureEntityShadowMesh();
+    if (!mesh) return;
+    const base = new THREE.Color(entityCategoryColor(ENTITY_CATEGORY.get(projection.name) || "service"));     // same lookup as colorFor(...)
+    const red = new THREE.Color(0xff2020);
+    const shadowDummy = new THREE.Object3D(); // temp object to calculate transformation matrix
+    cells.forEach(([x, y, z], i) => {
+      shadowDummy.position.set(x + 0.5, y + 0.5, z + 0.5);
+      shadowDummy.updateMatrix();
+      mesh.setMatrixAt(i, shadowDummy.matrix);
+      mesh.setColorAt(i, wholeRefused || badCells.has(keyOf(x, y, z)) ? red : base);
+    });
+    mesh.count = cells.length;
+    mesh.instanceMatrix.needsUpdate = true;
+    if (mesh.instanceColor)
+      mesh.instanceColor.needsUpdate = true;
+  }
+
   function raycastFromCamera():THREE.Intersection | null {
     const st = threeRef.current;
     if (!st.camera || !st.raycaster)
@@ -2015,7 +2110,11 @@ export default function TerrainEditor() {
       }
     }
     function onMouseMove(event: MouseEvent) {
-      if (!st.drag.isDown) return;
+      lastPointerRef.current = { x: event.clientX, y: event.clientY };
+      if (!st.drag.isDown) {
+        refreshEntityShadow();
+        return;
+      }
       const dx = event.clientX - st.drag.lastX;
       const dy = event.clientY - st.drag.lastY;
       if (st.drag.button === 0) {
@@ -2029,6 +2128,13 @@ export default function TerrainEditor() {
       st.drag.lastX = event.clientX;
       st.drag.lastY = event.clientY;
     }
+
+    // mouse leaves the canvas
+    function onMouseLeave() {
+      lastPointerRef.current = null;
+      refreshEntityShadow();
+    }
+
     function onMouseUp(event: MouseEvent) {
       if (st.drag.isDown && event.button === st.drag.button) {
         if (event.button === 0) commitStroke();
@@ -2061,12 +2167,14 @@ export default function TerrainEditor() {
     }
     canvas.addEventListener("mousedown", onMouseDown);
     window.addEventListener("mousemove", onMouseMove);
+    canvas.addEventListener("mouseleave", onMouseLeave);
     window.addEventListener("mouseup", onMouseUp);
     canvas.addEventListener("wheel", onWheel, { passive: false });
     canvas.addEventListener("contextmenu", onContextMenu);
     return () => {
       canvas.removeEventListener("mousedown", onMouseDown);
       window.removeEventListener("mousemove", onMouseMove);
+      canvas.removeEventListener("mouseleave", onMouseLeave);
       window.removeEventListener("mouseup", onMouseUp);
       canvas.removeEventListener("wheel", onWheel);
       canvas.removeEventListener("contextmenu", onContextMenu);
@@ -2249,9 +2357,9 @@ export default function TerrainEditor() {
     window.addEventListener("resize", resize);
 
     const mode = cameraModeRef.current;
-      const detach = canvas? (
-        mode === "orbit" ? attachOrbitListeners(canvas) : attachFlyListeners(canvas)
-      ) : undefined;
+    const detach = canvas? (
+      mode === "orbit" ? attachOrbitListeners(canvas) : attachFlyListeners(canvas)
+    ) : undefined;
 
     let raf: number;
     let lastTime = performance.now();
@@ -2349,6 +2457,8 @@ export default function TerrainEditor() {
       window.removeEventListener("resize", resize);
       if (detach) 
         detach();
+      lastPointerRef.current = null;
+      refreshEntityShadow();         // pointer null -> key "" -> hideShadow()
     };
     // eslint-disable-next-line
   }, [viewMode, cameraMode]);
