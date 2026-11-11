@@ -3,6 +3,7 @@ import * as THREE from "three";
 import {
   CHUNK, CELL_BASE, REAL_BIOMES, MAX_CHUNKS, MAP_SIZES, mapSizeKey, ENTITIES, ENTITY_CATEGORY, ENTITY_CATALOGUE, ENTITY_COLORS,
   BLOCK_NAMES, AIR, DEFAULT_PALETTE, STORAGE_KEY, TEXTURES_STORAGE_KEY, STRUCTURES_STORAGE_KEY,
+  EntityCategory,
 } from "../constants";
 import { STRINGS } from "../i18n/strings";
 import { colorForId } from "../lib/colors";
@@ -29,10 +30,10 @@ import PaletteHotbar from "./PaletteHotbar.tsx";
 import { NormalizedParams, normalizeRngParameters, RngParams, TreeParams, VegParams } from "../lib/mapParamNormalizer.ts";
 import { hotkeyLabel, isFreehand, PAN_KEYS, TOOL_BY_CODE, TOOL_BY_ID } from "../lib/tools.ts";
 import { generateTerrain, regenerateDeco, regenerateOre, regenerateVeg } from "../lib/mapGenerator.ts";
-import { EntityData, EntityDataId, parseEntities, exportEntity, findAirshipSpot } from "../lib/entities.ts";
+import { EntityData, EntityDataId, parseEntities, exportEntity, findAirshipSpot, getEntityYaw } from "../lib/entities.ts";
 import { EntityStore, EntityStoreEvent } from "../lib/EntityStore.ts";
 import { useEntityList } from "../hooks/useEntityList.ts";
-import { canPlaceEntity, EntityCatalogue, PlaceCheck } from "../lib/placementChecks.ts";
+import { canPlaceEntity, EntityCatalogue, footprintCells, PlaceCheck } from "../lib/placementChecks.ts";
 
 export interface MapData {
   gridX: number,
@@ -309,8 +310,7 @@ export default function TerrainEditor() {
   // Search filter for the block palette - needed once BLOCK_NAMES grew from
   // 48 (Alpha 3-era stub table) to the real 146-entry Alpha v10 36731 list;
   // an unfiltered flat scroll of 146 rows was unusable.
-  const entityMarkersGroupRef = useRef<any>(null); // todo: narrow down to correctly defined THREE.Group
-
+  const entityMarkersGroupRef = useRef<THREE.Group | null>(null);
   const [viewMode, setViewMode] = useState<"2d"|"3d">("2d");
   
   const [isLocked, setIsLocked] = useState(false);
@@ -523,10 +523,16 @@ export default function TerrainEditor() {
   }, [viewMode]);
   useEffect(() => {
     placingEntityRef.current = placingEntityName;
-    if (placingEntityName) setPlacingStructureId(null);
+    if (placingEntityName)  {
+      setPlacingStructureId(null);
+      setPlacingRotation(0);
+    }
   }, [placingEntityName]);
   useEffect(() => {
-    if (placingStructureId) setPlacingEntityName(null);
+    if (placingStructureId) {
+      setPlacingEntityName(null);
+      setPlacingRotation(0);
+    }
   }, [placingStructureId]);
   useEffect(() => {
     if (!openPopover) return undefined;
@@ -1449,16 +1455,22 @@ export default function TerrainEditor() {
     else updateCameraFromFly();
   }
 
-  function rebuildEntityMarkers() {
+  function rebuildEntityMarkers():void {
     const st = threeRef.current;
     const scene = st.scene;
     if (!scene) return;
 
+    // Clear current data - geometry, material, instance buffers
     if (entityMarkersGroupRef.current) {
       scene.remove(entityMarkersGroupRef.current);
       entityMarkersGroupRef.current.traverse((obj) => {
-        if (obj.geometry) obj.geometry.dispose();
-        if (obj.material) obj.material.dispose();
+        if (obj instanceof THREE.Mesh) { // TS-related guard. InstancedMesh extends Mesh, so this is fine
+          if (obj.geometry)
+            obj.geometry.dispose();
+          if (obj.material)
+            obj.material.dispose();
+          obj.dispose(); // frees this mesh's instance buffers only
+        }
       });
       entityMarkersGroupRef.current = null;
     }
@@ -1468,10 +1480,23 @@ export default function TerrainEditor() {
     const instances = entities.list();
 
     const group = new THREE.Group();
-    const markerGeometry = new THREE.BoxGeometry(0.5, 0.9, 0.5);
-    const cellGeometry = new THREE.BoxGeometry(0.98, 0.98, 0.98);
-    const materials = {};
-    function materialFor(category: string, cell: boolean) {
+    //const markerGeometry = new THREE.BoxGeometry(0.5, 0.9, 0.5); // for entities without a footprint
+    const cellGeometry = new THREE.BoxGeometry(0.98, 0.98, 0.98); // entity footprint cell
+    // the material must be WHITE: the final colour = material colour (default) × instance colour, so a coloured material would tint every instance
+    const cellMaterial = new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+      transparent: true,
+      opacity: 0.2,
+      depthWrite: false,
+    });
+    const originGeometry = new THREE.OctahedronGeometry(0.28);   // a diamond, smaller than the cell
+    const originMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    const arrowGeometry = new THREE.ConeGeometry(0.12, 0.7, 8); // yaw pointer: base radius, height, segments
+    arrowGeometry.translate(0, 0.35, 0);       // base at the local origin, tip toward +Y
+    arrowGeometry.rotateX(Math.PI / 2);        // 90 degrees rotation, turn +Y into +Z: the cone now points along +Z (yaw 0)
+
+    const materials: Map<string, THREE.Mesh> = new Map;
+    function materialFor(category: EntityCategory, cell: boolean) {
       const key = category + (cell ? ":cell" : "");
       if (!materials[key]) {
         materials[key] = new THREE.MeshLambertMaterial({
@@ -1484,21 +1509,86 @@ export default function TerrainEditor() {
       return materials[key];
     }
 
+    function categoryColor(category: EntityCategory):number {
+      return ENTITY_COLORS[category] ?? 0xff5fa2;
+    }
+
+    // an InstancedMesh needs its size up front, let's calculate it
+    const instancesData = instances.map((entity) => ({ entity, category: ENTITY_CATEGORY.get(entity.name) || "service", cells: footprintCells(entity, ENTITY_CATALOGUE) }));
+    const cellsTotal = instancesData.reduce((prev, o) => { 
+      return prev + o.cells.length
+    }, 0);
+    const markerCount = instancesData.filter((o) => o.cells.length === 0).length;
+    
+    const color = new THREE.Color();
+    // --- footprint cells: translucent cubes, only where a footprint exists
+    if (cellsTotal > 0) {
+      const dummyCell = new THREE.Object3D(); // this will be our temporary cell instance
+      const cellMesh = new THREE.InstancedMesh(cellGeometry, cellMaterial , cellsTotal);
+      let i = 0;
+      for (const { entity, category, cells } of instancesData) {
+        const c = color.setHex(categoryColor(category));
+        for (const [x, y, z] of cells) {
+          dummyCell.position.set(x + 0.5, y + 0.5, z + 0.5); // shift the position by roughly half the dims of cellGeometry
+          dummyCell.updateMatrix(); // turns position into a 4x4 matrix
+          cellMesh.setMatrixAt(i, dummyCell.matrix);
+          cellMesh.setColorAt(i, c);
+          i++;
+        }
+      }
+      cellMesh.instanceMatrix.needsUpdate = true;
+      if (cellMesh.instanceColor)
+        cellMesh.instanceColor.needsUpdate = true;
+      group.add(cellMesh);
+    } 
+
+    // --- origin markers: one small opaque diamond per entity, always
+    // --- yaw markers: one cone opaque arrow per entity, always
+    if (instancesData.length > 0) {
+      const dummyOrigin = new THREE.Object3D();
+      const dummyArrow = new THREE.Object3D();
+      const originMesh = new THREE.InstancedMesh(originGeometry, originMaterial, instancesData.length);
+      const arrowMesh = new THREE.InstancedMesh(arrowGeometry, originMaterial, instancesData.length);
+      instancesData.forEach(({ entity, category }, i) => {
+        const c = color.setHex(categoryColor(category));
+        dummyOrigin.position.set(entity.x + 0.5, entity.y + 0.5, entity.z + 0.5);
+        dummyOrigin.updateMatrix();
+        originMesh.setMatrixAt(i, dummyOrigin.matrix);
+        originMesh.setColorAt(i, c);
+
+        dummyArrow.position.set(entity.x + 0.5, entity.y + 0.5, entity.z + 0.5); // same as origin
+        dummyArrow.rotation.set(0, (getEntityYaw(entity) * Math.PI) / 180, 0);   // degrees -> radians
+        dummyArrow.updateMatrix();
+        arrowMesh.setMatrixAt(i, dummyArrow.matrix);
+        arrowMesh.setColorAt(i, c);
+      });
+      originMesh.instanceMatrix.needsUpdate = true;  
+      if (originMesh.instanceColor)
+        originMesh.instanceColor.needsUpdate = true;
+      group.add(originMesh);
+      arrowMesh.instanceMatrix.needsUpdate = true;
+      if (arrowMesh.instanceColor)
+        arrowMesh.instanceColor.needsUpdate = true;
+      group.add(arrowMesh);
+    }
+
+ //old code
+/*
     for (const inst of instances) {
       const category = ENTITY_CATEGORY.get(inst.name) || "service";
       if (ENTITY_CATALOGUE.footprints[inst.name]) {
-        for (const [cx, cy, cz] of ENTITY_CATALOGUE.footprints[inst.name]!) {
-          const cellMesh = new THREE.Mesh(cellGeometry, materialFor(category, true));
-          cellMesh.position.set(inst.x + cx + 0.5, inst.y + cy + 0.5, inst.z + cz + 0.5);
-          group.add(cellMesh);
-        }
+        // for (const [cx, cy, cz] of ENTITY_CATALOGUE.footprints[inst.name]!) {
+        //   const cellMesh = new THREE.Mesh(cellGeometry, materialFor(category, true));
+        //   cellMesh.position.set(inst.x + cx + 0.5, inst.y + cy + 0.5, inst.z + cz + 0.5);
+        //   group.add(cellMesh);
+        // }
       } else {
         const mesh = new THREE.Mesh(markerGeometry, materialFor(category, false));
         mesh.position.set(inst.x + 0.5, inst.y + 0.45, inst.z + 0.5);
         group.add(mesh);
       }
     }
-
+*/
     scene.add(group);
     entityMarkersGroupRef.current = group;
   }
@@ -1712,6 +1802,38 @@ export default function TerrainEditor() {
     return { ...coord, blockId };
   }
 
+  type GridPos = { x: number; y: number; z: number };
+
+  /**
+   * @param hit - intersection obtained from raycast
+   * @param onHitBlock - if true, pick the hit block (erase/paint). If false, pick the block in front of it (pencil, other drawing tools).
+   * @returns postition of the cell (voxel)
+   */
+  function cellFromHit(hit: THREE.Intersection, onHitBlock: boolean): GridPos | null {
+    const dims = dimsRef.current;
+    const block = coordFromHit(hit); // null when the ground plane was hit
+    let cell: GridPos;
+
+    if (block !== null) { // we hit gold, i.e. a solid voxel
+      if (onHitBlock) {
+        cell = { x: block.x, y: block.y, z: block.z };
+      } else {
+        const n = hit.face?.normal ?? { x: 0, y: 0, z: 0 };
+        cell = { x: block.x + Math.round(n.x), y: block.y + Math.round(n.y), z: block.z + Math.round(n.z) };
+      }
+    } else { // we missed everything and landed on the bottom of the area
+      if (onHitBlock)
+        return null; // erase/paint on bare ground: nothing to do
+      cell = { x: Math.floor(hit.point.x), y: 0, z: Math.floor(hit.point.z) }; // cell of the "floor" of the area
+    }
+
+    // specifically for cells outside of the grid - for legacy maps
+    const inside = cell.x >= 0 && cell.x < dims.width &&
+                  cell.y >= 0 && cell.y < dims.height &&
+                  cell.z >= 0 && cell.z < dims.depth;
+    return inside ? cell : null;
+  }
+
   function performMouseRaycastAction(clientX: number, clientY: number, isContinuous: boolean) {
     const st = threeRef.current;
     const canvas = canvas3dRef.current;
@@ -1731,37 +1853,10 @@ export default function TerrainEditor() {
     const hit = hits[0]!;
     const isErase = toolRef.current === "eraser";
     const isPaint = toolRef.current === "paint";
-    let cx: number, cy: number, cz: number;
-
-    const hitCoord = coordFromHit(hit);
-    if (hitCoord !== null) {
-      if (isErase || isPaint) {
-        cx = hitCoord.x;
-        cy = hitCoord.y;
-        cz = hitCoord.z;
-      } else {
-        const n = hit.face?.normal || {x: 0, y:0, z:0};
-        cx = hitCoord.x + Math.round(n.x);
-        cy = hitCoord.y + Math.round(n.y);
-        cz = hitCoord.z + Math.round(n.z);
-      }
-    } else {
-      if (isErase || isPaint)
-        return;
-      cx = Math.floor(hit.point.x);
-      cz = Math.floor(hit.point.z);
-      cy = 0;
-    }
-
-    if (
-      cx < 0 ||
-      cx >= dims.width ||
-      cz < 0 ||
-      cz >= dims.depth ||
-      cy < 0 ||
-      cy >= dims.height
-    )
+    const cell = cellFromHit(hit, isErase || isPaint);
+    if(!cell)
       return;
+    const {x: cx, y: cy, z: cz} = cell;
 
     if (!isErase && placingEntityRef.current) {
       if (isContinuous) {
@@ -1774,6 +1869,9 @@ export default function TerrainEditor() {
         y: cy,
         z: cz
       }
+      const yaw = placingRotationRef.current * 90;
+      if(yaw !== 0)
+        ent.yaw = yaw;
       placeEntity(ent);
       setCurrentLayer(cy);
       return;
@@ -1785,15 +1883,14 @@ export default function TerrainEditor() {
         return;
       }
       const entry = structuresRef.current.find((s) => s.id === placingStructureRef.current);
-      if (entry) stampStructureAt(cx, cy, cz, entry, placingRotationRef.current);
+      if (entry)
+        stampStructureAt(cx, cy, cz, entry, placingRotationRef.current);
       setCurrentLayer(cy);
       return;
     }
 
     if (toolRef.current !== "pencil" && !isErase && !isPaint)
       return; // early exit if no tool is selected
-    const oldEntry = terrain.get(cx,cy,cz);
-    const oldBlock = oldEntry ? oldEntry.block : AIR;
     const newBlock = isErase ? AIR : selectedBlockRef.current;
     // separate early handler + exit for changing block
     if (isPaint) {
@@ -1843,28 +1940,10 @@ export default function TerrainEditor() {
     const hit = raycastFromCamera();
     if (hit === null)
       return;
-    const dims = dimsRef.current;
-    let cx: number, cy: number, cz: number;
-    const hitCoord = coordFromHit(hit);
-    if (hitCoord) {
-      const n = hit.face?.normal || {x:0, y:0, z:0};
-      cx = hitCoord.x + Math.round(n.x);
-      cy = hitCoord.y + Math.round(n.y);
-      cz = hitCoord.z + Math.round(n.z);
-    } else {
-      cx = Math.floor(hit.point.x);
-      cz = Math.floor(hit.point.z);
-      cy = 0;
-    }
-    if (
-      cx < 0 ||
-      cx >= dims.width ||
-      cz < 0 ||
-      cz >= dims.depth ||
-      cy < 0 ||
-      cy >= dims.height
-    )
+    const cell = cellFromHit(hit, false);
+    if(!cell)
       return;
+    const {x: cx, y: cy, z: cz} = cell;
 
     if (placingEntityRef.current) {
       const ent: EntityData = {
@@ -1873,6 +1952,9 @@ export default function TerrainEditor() {
         y: cy,
         z: cz
       }
+      const yaw = placingRotationRef.current * 90;
+      if(yaw !== 0)
+        ent.yaw = yaw;
       placeEntity(ent);
       setCurrentLayer(cy);
       return;
@@ -1885,12 +1967,8 @@ export default function TerrainEditor() {
       return;
     }
 
-    // const oldEntry = voxelsRef.current.get( keyOf(cx, cy, cz));
-    const oldEntry = terrain.get( cx, cy, cz);
-    const oldBlock = oldEntry ? oldEntry.block : AIR;
     const newBlock = selectedBlockRef.current;
     setVoxel(cx, cy, cz, newBlock, 0);
-    // syncVoxel3D(cx, cy, cz, oldBlock, newBlock);
     setCurrentLayer(cy);
   }
 
@@ -2764,6 +2842,9 @@ export default function TerrainEditor() {
         y,
         z
       }
+      const yaw = placingRotationRef.current * 90;
+      if(yaw !== 0)
+        ent.yaw = yaw;
       placeEntity(ent);
       return;
     }
@@ -2928,13 +3009,13 @@ export default function TerrainEditor() {
         terrain.redo();
         return;
       }
-      if (placingEntityRef.current) {
-        if (event.key === "Escape") {
-          event.preventDefault();
-          setPlacingEntityName(null);
-        }
-        return;
-      }
+      // if (placingEntityRef.current) {
+      //   if (event.key === "Escape") {
+      //     event.preventDefault();
+      //     setPlacingEntityName(null);
+      //   }
+      //   return;
+      // }
       const view = viewModeRef.current;
       const orbit3d = view === "3d" && cameraModeRef.current === "orbit";
 
@@ -2980,7 +3061,7 @@ export default function TerrainEditor() {
         }
       }
 
-      if (placingStructureRef.current) {
+      if (placingStructureRef.current || placingEntityRef.current) {
         const tag = (event.target && event.target instanceof HTMLElement) && event.target.tagName;
         if (tag === "INPUT" || tag === "TEXTAREA")
           return;
@@ -2990,6 +3071,7 @@ export default function TerrainEditor() {
         } else if (event.key === "Escape") {
           event.preventDefault();
           setPlacingStructureId(null);
+          setPlacingEntityName(null);
         }
         return;
       }

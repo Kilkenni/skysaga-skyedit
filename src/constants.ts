@@ -17,7 +17,7 @@ export function mapSizeKey(x: number, y: number, z: number) {
   return x + "x" + y + "x" + z;
 }
 
-type EntityCategory = "creature" | "npc" | "device" | "object" | "service";
+export type EntityCategory = "creature" | "npc" | "device" | "object" | "service";
 
 export const ENTITIES = entities as {name: string, category: EntityCategory}[];
 export const ENTITY_CATEGORY = new Map(ENTITIES.map((e) => [e.name, e.category]));
