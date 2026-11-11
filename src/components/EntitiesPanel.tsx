@@ -47,7 +47,7 @@ export default function EntitiesPanel({
         padding: "10px 12px",
         borderBottom: "1px solid #1e222b",
         background: "#1c1219",
-        //maxHeight: 340,
+        height: "100%",
         overflowY: "auto",
       }}
     >
@@ -104,7 +104,7 @@ export default function EntitiesPanel({
           display: "flex",
           flexDirection: "column",
           gap: 2,
-          maxHeight: 140,
+          // maxHeight: 140,
           overflowY: "auto",
           border: "1px solid #2a2f3a",
           borderRadius: 6,

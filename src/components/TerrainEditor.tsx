@@ -3565,6 +3565,7 @@ export default function TerrainEditor() {
           </div>
           
           <div
+            className="flex gap-4 px-1.5 py-3.5"
             style={{
               display: "flex",
               gap: 16,
@@ -3590,7 +3591,7 @@ export default function TerrainEditor() {
           </div>
         </div>
 
-        <TabGroup as="aside" style={{
+        <TabGroup as="aside" className={"flex flex-col overflow-hidden max-h-full w-80 pb-2.5"} style={{
           display: "flex",
           flexDirection: "column",
           overflow: "hidden",
@@ -3603,8 +3604,8 @@ export default function TerrainEditor() {
             <Tab>EntitiesPanel</Tab>
             <Tab>Entity Instances</Tab>
           </TabList>
-          <TabPanels>
-            <TabPanel>
+          <TabPanels className={"h-full min-h-0"}>
+            <TabPanel className={"flex flex-col h-full"}>
               {viewMode === "2d" && (
                 <LayerNav
                   chunkY={chunkY}
@@ -3625,14 +3626,14 @@ export default function TerrainEditor() {
                 texturesRef={texturesRef}
               />
             </TabPanel>
-            <TabPanel>
+            <TabPanel className={"flex flex-col h-full"}>
               <EntitiesPanel
                 entities={entities}
                 placingEntityName={placingEntityName}
                 setPlacingEntityName={setPlacingEntityName}
               />
             </TabPanel>
-            <TabPanel>
+            <TabPanel className={"flex flex-col h-full"}>
               <EntityInstancesList
                 entities={entities}
               />
