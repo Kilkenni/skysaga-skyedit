@@ -355,6 +355,26 @@ export default function TerrainEditor() {
      shadowKeyRef.current = ""; // force redraw entity shadow on any entity event (for example, after placing)
      refreshEntityShadow();
   };
+
+  function disposeShadowEntity() {
+    const s = shadowEntityRef.current;
+    if (!s)
+      return;
+    s.root.removeFromParent();
+    s.root.traverse((obj) => {
+      if (obj instanceof THREE.InstancedMesh) obj.dispose();   // instance buffers
+      if (obj instanceof THREE.Mesh || obj instanceof THREE.Line) {
+        obj.geometry.dispose();
+        const m = obj.material;
+        if (Array.isArray(m))
+          m.forEach((x) => x.dispose());
+        else
+          m.dispose();
+      }
+    });
+    shadowEntityRef.current = null;
+  }
+
   useEffect(() => {
     const unsubscribe = entities.subscribe((event) => {
       return onEntityEventRef.current(event);
@@ -362,11 +382,7 @@ export default function TerrainEditor() {
 
     return () => {
       unsubscribe();
-      if(shadowMeshRef.current) {
-        (shadowMeshRef.current.material as THREE.Material).dispose();
-        shadowMeshRef.current.geometry.dispose();
-        shadowMeshRef.current?.dispose();
-      }
+      disposeShadowEntity();
     }
   }, []);
 
@@ -1516,7 +1532,7 @@ export default function TerrainEditor() {
     const cellMaterial = new THREE.MeshBasicMaterial({
       color: 0xffffff,
       transparent: true,
-      opacity: 0.2,
+      opacity: 0.35,
       depthWrite: false,
     });
     const originGeometry = new THREE.OctahedronGeometry(0.28);   // a diamond, smaller than the cell
@@ -1525,7 +1541,7 @@ export default function TerrainEditor() {
     arrowGeometry.translate(0, 0.35, 0);       // base at the local origin, tip toward +Y
     arrowGeometry.rotateX(Math.PI / 2);        // 90 degrees rotation, turn +Y into +Z: the cone now points along +Z (yaw 0)
 
-    const materials: Map<string, THREE.Mesh> = new Map;
+    // const materials: Map<string, THREE.Mesh> = new Map;
     // function materialFor(category: EntityCategory, cell: boolean) {
     //   const key = category + (cell ? ":cell" : "");
     //   if (!materials[key]) {
@@ -1952,35 +1968,68 @@ export default function TerrainEditor() {
   const lastPointerRef = useRef<{ x: number; y: number } | null>(null);
   const shadowKeyRef = useRef<string>("");
 
-  const shadowMeshRef = useRef<THREE.InstancedMesh | null>(null);
+  interface ShadowEntity {
+    root: THREE.Group;                      // the one thing added to the scene
+    footprintCells: THREE.InstancedMesh;          // footprint cells, world space
+    pointer: THREE.Group;                   // origin marker + arrow: moved and rotated per refresh
+    originMaterial: THREE.MeshBasicMaterial;
+    arrow: THREE.ArrowHelper;
+  };
+
+  const shadowEntityRef = useRef<ShadowEntity | null>(null);
 
   /**
    * Entity shadow mesh. Raycasts use a whitelist (which it is not a part of), so they should ignore it
    * @returns 
    */
-  function ensureEntityShadowMesh(): THREE.InstancedMesh | null {
+  function ensureEntityShadow(): ShadowEntity | null {
     const scene = threeRef.current.scene;
     if (!scene)
       return null;
-    if (shadowMeshRef.current)
-      return shadowMeshRef.current;
+    if (shadowEntityRef.current)
+      return shadowEntityRef.current;
 
-    const mesh = new THREE.InstancedMesh(
+    const root = new THREE.Group();
+
+    // --- footprint cells (one InstancedMesh, capacity = biggest footprint)
+    const footprintCells = new THREE.InstancedMesh(
       new THREE.BoxGeometry(1, 1, 1),
       new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.5, depthWrite: false }),
       MAX_FOOTPRINT
     );
-    mesh.setColorAt(0, new THREE.Color(0xffffff));  // allocates the colour buffer at FULL capacity (important for older Three.js versions)
-    mesh.count = 0;                // nothing drawn yet
-    mesh.frustumCulled = false;    // always render, even if out of camera view
-    scene.add(mesh);
-    shadowMeshRef.current = mesh;
-    return mesh;
+    footprintCells.setColorAt(0, new THREE.Color(0xffffff));  // allocates the colour buffer at FULL capacity (important for older Three.js versions)
+    footprintCells.count = 0;                // nothing drawn yet
+    footprintCells.frustumCulled = false;    // always render, even if out of camera view
+    root.add(footprintCells);
+
+    // --- origin marker: diamond + arrow, both children of `pointer`
+    const pointer = new THREE.Group();
+    const originMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    pointer.add(new THREE.Mesh(new THREE.OctahedronGeometry(0.2), originMaterial));
+
+    const arrow = new THREE.ArrowHelper(
+      new THREE.Vector3(0, 0, 1),   // direction: +Z = yaw 0. Never changed; the group's rotation aims it
+      new THREE.Vector3(0, 0, 0),   // starts at the pointer's origin
+      0.7,                          // length
+      0xffffff,                     // colour, overwritten per refresh
+      0.25,                         // head length
+      0.2                           // head width
+    );
+    pointer.add(arrow);
+    root.add(pointer);
+
+    root.visible = false; // hidden by default until the first refresh
+    scene.add(root);
+
+    shadowEntityRef.current = { root, footprintCells, pointer, originMaterial, arrow };
+    return shadowEntityRef.current;
   }
 
   function hideShadow() {
-    if (shadowMeshRef.current) 
-      shadowMeshRef.current.count = 0;
+    if (shadowEntityRef.current) {
+      shadowEntityRef.current.footprintCells.count = 0;
+      shadowEntityRef.current.root.visible = false;
+    }
   }
 
   /**
@@ -1997,7 +2046,8 @@ export default function TerrainEditor() {
       return;   // nothing relevant changed: do no work
     // console.log("shadow:", key === "" ? "(none)" : key);
     if (key === "") { 
-      hideShadow(); 
+      hideShadow();
+      shadowKeyRef.current = key;
       return; 
     }
     // key !== "" means name and cell are valid - entity placement mode is active, and we have a raycast hit with a voxel
@@ -2017,30 +2067,32 @@ export default function TerrainEditor() {
       }
     }
 
-    const mesh = ensureEntityShadowMesh();
-    if (!mesh) return;
-    const base = new THREE.Color(entityCategoryColor(ENTITY_CATEGORY.get(projection.name) || "service"));     // same lookup as colorFor(...)
+    const shadow = ensureEntityShadow();
+    if (!shadow)
+      return;
+    const colorHex = entityCategoryColor(ENTITY_CATEGORY.get(projection.name) || "service");
+    const base = new THREE.Color(colorHex);
     const red = new THREE.Color(0xff2020);
     const shadowDummy = new THREE.Object3D(); // temp object to calculate transformation matrix
     cells.forEach(([x, y, z], i) => {
       shadowDummy.position.set(x + 0.5, y + 0.5, z + 0.5);
       shadowDummy.updateMatrix();
-      mesh.setMatrixAt(i, shadowDummy.matrix);
-      mesh.setColorAt(i, wholeRefused || badCells.has(keyOf(x, y, z)) ? red : base);
+      shadow.footprintCells.setMatrixAt(i, shadowDummy.matrix);
+      shadow.footprintCells.setColorAt(i, wholeRefused || badCells.has(keyOf(x, y, z)) ? red : base);
     });
-    mesh.count = cells.length;
-    let m;
-    console.log("shadow draw", {
-      cells: cells.length,
-      count: mesh.count,
-      inScene: threeRef.current.scene?.children.includes(mesh),
-      visible: mesh.visible,
-      firstCell: cells[0],
-      colorLen: mesh.instanceColor?.array.length,
-    });
-    mesh.instanceMatrix.needsUpdate = true;
-    if (mesh.instanceColor)
-      mesh.instanceColor.needsUpdate = true;
+    shadow.footprintCells.count = cells.length;
+
+    shadow.footprintCells.instanceMatrix.needsUpdate = true;
+    if (shadow.footprintCells.instanceColor)
+      shadow.footprintCells.instanceColor.needsUpdate = true;
+
+    // pointer: origin cell centre, turned by yaw
+    shadow.pointer.position.set(projection.x + 0.5, projection.y + 0.5, projection.z + 0.5);
+    shadow.pointer.rotation.y = (getEntityYaw(projection) * Math.PI) / 180;
+    shadow.originMaterial.color.setHex(colorHex);
+    shadow.arrow.setColor(colorHex);
+
+    shadow.root.visible = true;
 
     shadowKeyRef.current = key;
   }
