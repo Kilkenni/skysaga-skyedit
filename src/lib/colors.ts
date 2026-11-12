@@ -75,7 +75,13 @@ export const SPECIAL_BLOCK_COLORS = {
   Water: "#1e7fd0",
 };
 
-export function hexToHsl(hex:string) {
+type HSLColor = [number, number, number];
+
+export function cssColor(hex: number) {
+  return (`#${hex.toString(16).padStart(6, "0")}`)
+}
+
+export function hexToHsl(hex:string): HSLColor {
   const r = parseInt(hex.slice(1, 3), 16) / 255;
   const g = parseInt(hex.slice(3, 5), 16) / 255;
   const b = parseInt(hex.slice(5, 7), 16) / 255;

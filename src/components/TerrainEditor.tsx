@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import * as THREE from "three";
 import {
   CHUNK, CELL_BASE, REAL_BIOMES, MAX_CHUNKS, MAP_SIZES, mapSizeKey, ENTITIES, ENTITY_CATEGORY, ENTITY_CATALOGUE, ENTITY_COLORS,
@@ -6,7 +6,7 @@ import {
   EntityCategory,
 } from "../constants";
 import { STRINGS } from "../i18n/strings";
-import { colorForId } from "../lib/colors";
+import { colorForId, cssColor } from "../lib/colors";
 import { keyOf } from "../lib/keys";
 import { clamp, clampBlockId, isNum, } from "../lib/numbers";
 import { rotateStructure90, getRotatedStructure, generateStructureThumbnail, Structure } from "../lib/structures";
@@ -31,7 +31,7 @@ import PaletteHotbar from "./PaletteHotbar.tsx";
 import { NormalizedParams, normalizeRngParameters, RngParams, TreeParams, VegParams } from "../lib/mapParamNormalizer.ts";
 import { hotkeyLabel, isFreehand, PAN_KEYS, TOOL_BY_CODE, TOOL_BY_ID } from "../lib/tools.ts";
 import { generateTerrain, regenerateDeco, regenerateOre, regenerateVeg } from "../lib/mapGenerator.ts";
-import { EntityData, EntityDataId, parseEntities, exportEntity, findAirshipSpot, getEntityYaw } from "../lib/entities.ts";
+import { EntityData, EntityDataId, parseEntities, exportEntity, findAirshipSpot, getEntityYaw, orientationXZ } from "../lib/entities.ts";
 import { EntityStore, EntityStoreEvent } from "../lib/EntityStore.ts";
 import { useEntityList } from "../hooks/useEntityList.ts";
 import { canPlaceEntity, EntityCatalogue, footprintCells, PlaceCheck } from "../lib/placementChecks.ts";
@@ -2738,6 +2738,15 @@ export default function TerrainEditor() {
     setStatus(STRINGS.en.layerCopied(target));
   }
 
+  // to avoid recalculating footprints for each non-modifying redraw - like panning or zooming
+  const entityDrawList = useMemo(() => entityInstances.map((entity) => (
+    {
+      entity,
+      cells: footprintCells(entity, ENTITY_CATALOGUE),
+      color: cssColor(entityCategoryColor(ENTITY_CATEGORY.get(entity.name) ?? "service")),
+    }
+  )), [entityInstances] );
+
   // ---- canvas drawing (2D) ----
   const draw = useCallback(() => {
     // const t0 = performance.now();
@@ -2907,22 +2916,38 @@ export default function TerrainEditor() {
     }
 
     // Drawing entities
-    for (const inst of entities.list()) {
-      if (inst.x < 0 || inst.x >= width || inst.z < 0 || inst.z >= depth)
-        continue;
-      const onLayer = inst.y === currentLayer;
-      const cx2 = inst.x * cell + cell / 2;
-      const cz2 = inst.z * cell + cell / 2;
+    // footprint cells: faint squares, current layer only
+    ctx.globalAlpha = 0.3;
+    for (const { cells, color } of entityDrawList) {
+      ctx.fillStyle = color;
+      for (const [x, y, z] of cells) {
+        if (y === currentLayer) ctx.fillRect(x * cell, z * cell, cell, cell);
+      }
+    }
+
+    // origin: facing tick, then diamond on top
+    for (const { entity, color } of entityDrawList) {
+      if (entity.x < 0 || entity.x >= width || entity.z < 0 || entity.z >= depth)
+        continue; // skip entities that are off the grid
+      const onLayer = entity.y === currentLayer;
+      const cx2 = entity.x * cell + cell / 2;
+      const cz2 = entity.z * cell + cell / 2;
       const r = cell * 0.38;
-      ctx.globalAlpha = onLayer ? 1 : 0.35;
-      ctx.fillStyle = "#ff5fa2";
+      ctx.globalAlpha = onLayer ? 1 : 0.2;
+
+      const f = orientationXZ(getEntityYaw(entity));
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(cx2, cz2);
+      ctx.lineTo(cx2 + f.x * cell * 0.7, cz2 + f.z * cell * 0.7);
+      ctx.stroke();
+
+      ctx.fillStyle = color;
       ctx.strokeStyle = "#2a0a17";
       ctx.lineWidth = 1.5;
       ctx.beginPath();
-      ctx.moveTo(cx2, cz2 - r);
-      ctx.lineTo(cx2 + r, cz2);
-      ctx.lineTo(cx2, cz2 + r);
-      ctx.lineTo(cx2 - r, cz2);
+      ctx.moveTo(cx2, cz2 - r); ctx.lineTo(cx2 + r, cz2); ctx.lineTo(cx2, cz2 + r); ctx.lineTo(cx2 - r, cz2);
       ctx.closePath();
       ctx.fill();
       ctx.stroke();
@@ -2931,15 +2956,15 @@ export default function TerrainEditor() {
         ctx.font = `${Math.max(9, Math.floor(cell * 0.4))}px sans-serif`;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        const name = inst.name || "?";
+        const name = entity.name || "?";
         ctx.fillText(name[0]!.toUpperCase(), cx2, cz2 + 0.5);
       }
-      ctx.globalAlpha = 1;
     }
+    ctx.globalAlpha = 1;
 
     // const ms = performance.now() - t0;
     // if (ms > 1) console.log(`draw ${ms.toFixed(1)} ms, voxels: ${terrain.size}`);
-  }, [width, depth, cell, currentLayer, mirrorX, mirrorZ, roadParams.roadPending, roadParams.roadWidth, onionSkin, onionRange, height, entityInstances]);
+  }, [width, depth, cell, currentLayer, mirrorX, mirrorZ, roadParams.roadPending, roadParams.roadWidth, onionSkin, onionRange, height, entityDrawList]);
 
   const viewRef = useRef({ panX: 0, panY: 0 }); // screen position of the grid's top-left corner
   const drawRef = useRef(draw);
