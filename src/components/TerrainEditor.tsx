@@ -251,6 +251,10 @@ export default function TerrainEditor() {
   latestRef.current = { mapData, palette, cameraMode };   // refreshed on every render
 
   const [currentLayer, setCurrentLayer] = useState(0);
+  const currentLayerRef = useRef(currentLayer);
+  useEffect(() => { currentLayerRef.current = currentLayer; }, [currentLayer]);
+  // refreshes can come from effects and store events, which may hold a stale `currentLayer`: hence a ref
+
   const [zoom, setZoom] = useState(1);
   const zoomRef = useRef(1);
   const zoomAnchorRef = useRef<{ pivot: THREE.Vector3 | null; x: number; y: number; t: number } | null>(null); // Center of zooming
@@ -354,7 +358,8 @@ export default function TerrainEditor() {
   onEntityEventRef.current = () => {
      scheduleSave();
      shadowKeyRef.current = ""; // force redraw entity shadow on any entity event (for example, after placing)
-     refreshEntityShadow();
+     shadow2dKeyRef.current = ""; // same for 2D
+     refreshEntityShadows();
   };
 
   function disposeShadowEntity() {
@@ -553,7 +558,7 @@ export default function TerrainEditor() {
   }, [placingStructureId]);
   useEffect(() => {
     placingRotationRef.current = placingRotation;
-    refreshEntityShadow();
+    refreshEntityShadows();
   }, [placingRotation]);
   useEffect(() => {
     structuresRef.current = structures;
@@ -567,7 +572,7 @@ export default function TerrainEditor() {
       setPlacingStructureId(null);
       setPlacingRotation(0);
     }
-    refreshEntityShadow();
+    refreshEntityShadows();
   }, [placingEntityName]);
   useEffect(() => {
     if (placingStructureId) {
@@ -1961,6 +1966,15 @@ export default function TerrainEditor() {
   const lastPointerRef = useRef<{ x: number; y: number } | null>(null);
   const shadowKeyRef = useRef<string>("");
 
+  const lastCell2dRef = useRef<{ x: number; z: number } | null>(null);
+  const shadow2dRef = useRef<ShadowPlan | null>(null);
+  const shadow2dKeyRef = useRef("");
+
+  function targetCell2d(x: number, z: number): GridPos {
+    const surfaceY = terrain.surfaceY(x, z, dimsRef.current.height - 1);
+    return { x, y: surfaceY >= 0 ? surfaceY + 1 : currentLayerRef.current, z };
+  }
+
   interface ShadowEntity {
     root: THREE.Group;                      // the one thing added to the scene
     footprintCells: THREE.InstancedMesh;          // footprint cells, world space
@@ -2058,9 +2072,9 @@ export default function TerrainEditor() {
   }
 
   /**
-   * Recomputes entity shadow showing future position before actual placement
+   * Recomputes entity shadow for 3D showing future position before actual placement
    */
-  function refreshEntityShadow():void {
+  function refreshEntityShadow(): void {
     const p = lastPointerRef.current;
     const name = placingEntityRef.current;
     const cell = p !== null && name !== null ? targetCellAt(p.x, p.y) : null;
@@ -2106,6 +2120,38 @@ export default function TerrainEditor() {
     shadow.root.visible = true;
 
     shadowKeyRef.current = key;
+  }
+
+  // same but for 2D
+  function refreshEntityShadow2d(): void {
+    const col = lastCell2dRef.current;
+    const name = placingEntityRef.current;
+
+    // nothing to show: clear if something was showing, repaint only in that case
+    if (col === null || name === null || viewModeRef.current !== "2d") {
+      if (shadow2dRef.current !== null) {
+        shadow2dRef.current = null;
+        shadow2dKeyRef.current = "";
+        drawRef.current();
+      }
+      return;
+    }
+
+    const t = targetCell2d(col.x, col.z);
+    const key = `${name}|${t.x},${t.y},${t.z}|${placingRotationRef.current * 90}`;
+    if (key === shadow2dKeyRef.current)
+      return;      // same cell, name and yaw: no work
+    shadow2dKeyRef.current = key;
+
+    shadow2dRef.current = planShadow(createEntityDataAt(name, t.x, t.y, t.z));
+    // console.log("shadow2d:", key, shadow2dRef.current.footprintCells.length, "cells");   // debug
+    drawRef.current();
+  }
+
+  // wrapper for both
+  function refreshEntityShadows(): void {
+    refreshEntityShadow();       // 3D
+    refreshEntityShadow2d();     // 2D
   }
 
   function raycastFromCamera():THREE.Intersection | null {
@@ -2947,9 +2993,30 @@ export default function TerrainEditor() {
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         const name = entity.name || "?";
-        console.log(ctx.globalAlpha)
         ctx.fillText(name[0]!.toUpperCase(), cx2, cz2 + 0.5);
       }
+    }
+
+    // entity shadow for placement mode
+    const sh = shadow2dRef.current;
+    if (sh !== null) {
+      const color = cssColor(sh.colorHex);
+      ctx.save();
+      ctx.setLineDash([4, 3]);
+      for (const [x, y, z] of sh.footprintCells) {
+        if (y !== currentLayer)
+          continue;
+        const bad = sh.refusedAll || sh.collisionCellKeys.has(keyOf(x, y, z));
+        ctx.globalAlpha = 0.45;
+        ctx.fillStyle = bad ? "red" : color;
+        ctx.fillRect(x * cell, z * cell, cell, cell);
+        ctx.globalAlpha = 1;
+        ctx.strokeStyle = bad ? "red" : color;
+        ctx.strokeRect(x * cell + 0.5, z * cell + 0.5, cell - 1, cell - 1);
+      }
+      ctx.restore();
+      const c = sh.candidate;
+      drawEntityGlyph(ctx, cell, c.x, c.z, color, getEntityYaw(c), c.y === currentLayer ? 1 : 0.5, true);
     }
 
     // const ms = performance.now() - t0;
@@ -3047,6 +3114,7 @@ export default function TerrainEditor() {
     return true;
   }
 
+  // for 2D
   function handleMouseDown(event:React.MouseEvent<HTMLCanvasElement>) {
     // a drag can start outside the grid
     if (event.button === 1) {
@@ -3059,9 +3127,11 @@ export default function TerrainEditor() {
     const { x, z } = cellFromEvent(event);
     if (x < 0 || x >= width || z < 0 || z >= depth) return;
     if (placingEntityName) {
-      const surfaceY = terrain.surfaceY(x, z, height - 1);
-      const y = surfaceY >= 0 ? surfaceY + 1 : currentLayer;
-      const entity = createEntityDataAt(placingEntityName, x, y, z);
+      const target2D: GridPos = targetCell2d(x, z);
+      // const surfaceY = terrain.surfaceY(x, z, height - 1);
+      // const y = surfaceY >= 0 ? surfaceY + 1 : currentLayer;
+      const a = Object.values(target2D)
+      const entity = createEntityDataAt(placingEntityName, target2D.x, target2D.y, target2D.z );
       placeEntity(entity);
       return;
     }
@@ -3112,10 +3182,13 @@ export default function TerrainEditor() {
     }
   }
 
+  // for 2D
   function handleMouseMove(event:React.MouseEvent<HTMLCanvasElement>) {
     const pos = cellFromEvent(event);
     const inside = pos.x >= 0 && pos.x < width && pos.z >= 0 && pos.z < depth;
     setHoverCell(inside ? pos : null);
+    lastCell2dRef.current = inside ? { x: pos.x, z: pos.z } : null;
+    refreshEntityShadow2d();
     if (tool === "road" && roadStartRef.current) {
       roadHoverRef.current = { x: clamp(pos.x, 0, width - 1), z: clamp(pos.z, 0, depth - 1) };
       draw(); // road preview
@@ -3185,6 +3258,8 @@ export default function TerrainEditor() {
 
   function handleMouseLeave() {
     setHoverCell(null);
+    lastCell2dRef.current = null;
+    refreshEntityShadow2d();
     roadHoverRef.current = null;
     draw();
   }
