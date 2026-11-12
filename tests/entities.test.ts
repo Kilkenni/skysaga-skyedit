@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import {
+  orientationXZ,
   getEntityYaw,
   parseEntities,
   exportEntity,
@@ -52,6 +53,16 @@ describe("getEntityYaw", () => {
   it("passes other values through untouched (no normalisation yet)", () => {
     expect(getEntityYaw({ ...full, yaw: 270 })).toBe(270);
   });
+});
+
+// ---------- orientationXZ ----------
+describe("getEntityYaw", () => {
+  it.each([[0, 0, 1], [90, 1, 0], [180, 0, -1], [270, -1, 0], [-90, -1, 0], [360, 0, 1]])(
+    "yaw %s faces (%s, %s)", (yaw, x, z) => {
+      const f = orientationXZ(yaw);
+      expect(f.x).toBeCloseTo(x);
+      expect(f.z).toBeCloseTo(z);
+    });
 });
 
 // ---------- exportEntity ----------

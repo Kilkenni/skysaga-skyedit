@@ -15,6 +15,16 @@ interface EntityDataId extends EntityData {
   id: number,
 }
 
+/**
+ * Utility function for 2D
+ * @param yaw - yaw 0 -> +Z, yaw 90 -> +X
+ * @returns Unit vector the entity faces in the XZ plane
+ */
+function orientationXZ(yaw: number): { x: number; z: number } {
+  const rad = (yaw * Math.PI) / 180;
+  return { x: Math.sin(rad), z: Math.cos(rad) };
+}
+
 function getEntityYaw(entity: EntityData):number {
   if(isNum(entity.yaw))
     return entity.yaw!;
@@ -92,6 +102,7 @@ function findAirshipSpot(dims: MapDimensions, surfaceAt:(x: number, z: number, f
 export {
   EntityData,
   EntityDataId,
+  orientationXZ,
   getEntityYaw,
   parseEntities,
   exportEntity,
