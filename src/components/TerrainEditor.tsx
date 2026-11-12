@@ -37,6 +37,7 @@ import { useEntityList } from "../hooks/useEntityList.ts";
 import { canPlaceEntity, Cell, EntityCatalogue, footprintCells, PlaceCheck } from "../lib/placementChecks.ts";
 import Toolbar from "./tools/Toolbar.tsx";
 import EntityInstancesList from "./EntityInstancesList.tsx";
+import { drawEntityGlyph } from "../rendering/entityGlyph.ts";
 
 export interface MapData {
   gridX: number,
@@ -2920,50 +2921,36 @@ export default function TerrainEditor() {
 
     // Drawing entities
     // footprint cells: faint squares, current layer only
-    ctx.globalAlpha = 0.3;
+    ctx.save()
+    ctx.globalAlpha = 0.3; // semi-transparent
     for (const { cells, color } of entityDrawList) {
       ctx.fillStyle = color;
       for (const [x, y, z] of cells) {
-        if (y === currentLayer) ctx.fillRect(x * cell, z * cell, cell, cell);
+        if (y === currentLayer)
+          ctx.fillRect(x * cell, z * cell, cell, cell);
       }
     }
+    ctx.restore(); // reset to full opacity, as before
 
     // origin: facing tick, then diamond on top
     for (const { entity, color } of entityDrawList) {
       if (entity.x < 0 || entity.x >= width || entity.z < 0 || entity.z >= depth)
         continue; // skip entities that are off the grid
       const onLayer = entity.y === currentLayer;
-      const cx2 = entity.x * cell + cell / 2;
-      const cz2 = entity.z * cell + cell / 2;
-      const r = cell * 0.38;
-      ctx.globalAlpha = onLayer ? 1 : 0.2;
+      drawEntityGlyph(ctx, cell, entity.x, entity.z, color, getEntityYaw(entity), onLayer ? 1 : 0.2);
 
-      const f = orientationXZ(getEntityYaw(entity));
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(cx2, cz2);
-      ctx.lineTo(cx2 + f.x * cell * 0.7, cz2 + f.z * cell * 0.7);
-      ctx.stroke();
-
-      ctx.fillStyle = color;
-      ctx.strokeStyle = "#2a0a17";
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.moveTo(cx2, cz2 - r); ctx.lineTo(cx2 + r, cz2); ctx.lineTo(cx2, cz2 + r); ctx.lineTo(cx2 - r, cz2);
-      ctx.closePath();
-      ctx.fill();
-      ctx.stroke();
-      if (onLayer && cell >= 18) {
-        ctx.fillStyle = "#fff";
-        ctx.font = `${Math.max(9, Math.floor(cell * 0.4))}px sans-serif`;
+      if (onLayer && cell >= 18) { // the letter label within the origin, only at close zoom
+        const cx2 = entity.x * cell + cell / 2;
+        const cz2 = entity.z * cell + cell / 2;
+        ctx.fillStyle = "black";
+        ctx.font = `bold ${Math.max(9, Math.floor(cell * 0.4))}px sans-serif`;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         const name = entity.name || "?";
+        console.log(ctx.globalAlpha)
         ctx.fillText(name[0]!.toUpperCase(), cx2, cz2 + 0.5);
       }
     }
-    ctx.globalAlpha = 1;
 
     // const ms = performance.now() - t0;
     // if (ms > 1) console.log(`draw ${ms.toFixed(1)} ms, voxels: ${terrain.size}`);
