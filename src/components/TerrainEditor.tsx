@@ -34,7 +34,7 @@ import { generateTerrain, regenerateDeco, regenerateOre, regenerateVeg } from ".
 import { EntityData, EntityDataId, parseEntities, exportEntity, findAirshipSpot, getEntityYaw, orientationXZ } from "../lib/entities.ts";
 import { EntityStore, EntityStoreEvent } from "../lib/EntityStore.ts";
 import { useEntityList } from "../hooks/useEntityList.ts";
-import { canPlaceEntity, EntityCatalogue, footprintCells, PlaceCheck } from "../lib/placementChecks.ts";
+import { canPlaceEntity, Cell, EntityCatalogue, footprintCells, PlaceCheck } from "../lib/placementChecks.ts";
 import Toolbar from "./tools/Toolbar.tsx";
 import EntityInstancesList from "./EntityInstancesList.tsx";
 
@@ -1926,16 +1926,8 @@ export default function TerrainEditor() {
         setCurrentLayer(cy);
         return;
       }
-      const ent: EntityData = {
-        name: placingEntityRef.current,
-        x: cx,
-        y: cy,
-        z: cz
-      }
-      const yaw = placingRotationRef.current * 90;
-      if(yaw !== 0)
-        ent.yaw = yaw;
-      placeEntity(ent);
+      const entity: EntityData = createEntityDataAt(placingEntityRef.current, cx, cy, cz);
+      placeEntity(entity);
       setCurrentLayer(cy);
       return;
     }
@@ -1975,6 +1967,38 @@ export default function TerrainEditor() {
     originMaterial: THREE.MeshBasicMaterial;
     arrow: THREE.ArrowHelper;
   };
+
+  type ShadowPlan = {
+    candidate: EntityData;
+    footprintCells: Cell[];             // world (absolute) cells of the footprint (Cell is the tuple type from placementChecks)
+    collisionCellKeys: Set<string>;     // cells that collide with existing footprints
+    refusedAll: boolean;                // refused for a reason with no single cell to blame (other than 'overlap')
+    colorHex: number;
+  };
+
+  function createEntityDataAt(name: string, x: number, y: number, z: number): EntityData {
+    const entity: EntityData = { name, x, y, z };
+    const yaw = placingRotationRef.current * 90;
+    if (yaw !== 0)
+      entity.yaw = yaw; // the same rule as always - only store defined yaw if not 0
+    return entity;
+  }
+
+  function planShadow(candidate: EntityData): ShadowPlan {
+    const check = canPlaceEntity(candidate, entities.list(), dimsRef.current, ENTITY_CATALOGUE);
+    const collisionCellKeys = new Set<string>();
+    if (check.ok === false && check.reason === "overlap") {
+      for (const [x, y, z] of check.overlaps)
+        collisionCellKeys.add(keyOf(x, y, z));
+    }
+    return {
+      candidate,
+      footprintCells: footprintCells(candidate, ENTITY_CATALOGUE),
+      collisionCellKeys,
+      refusedAll: check.ok === false && check.reason !== "overlap",
+      colorHex: entityCategoryColor(ENTITY_CATEGORY.get(candidate.name) ?? "service"),
+    };
+  }
 
   const shadowEntityRef = useRef<ShadowEntity | null>(null);
 
@@ -2044,28 +2068,14 @@ export default function TerrainEditor() {
 
     if (key === shadowKeyRef.current)
       return;   // nothing relevant changed: do no work
-    // console.log("shadow:", key === "" ? "(none)" : key);
     if (key === "") { 
       hideShadow();
       shadowKeyRef.current = key;
       return; 
     }
     // key !== "" means name and cell are valid - entity placement mode is active, and we have a raycast hit with a voxel
-    const projection: EntityData = { name: name!, x: cell!.x, y: cell!.y, z: cell!.z };
-    if (yaw !== 0) 
-      projection.yaw = yaw; // same rule as placeEntity - if rotation is not 0, write to our new entity as yaw
-
-    const check = canPlaceEntity(projection, entities.list(), dimsRef.current, ENTITY_CATALOGUE);
-    const cells = footprintCells(projection, ENTITY_CATALOGUE);
-
-    // We want the overlapped cells marked in red. Which ones?
-    const badCells = new Set<string>();
-    const wholeRefused = (check.ok === false) && (check.reason !== "overlap"); // if the refusal reason is not overlap, then there's no point to search
-    if (check.ok === false && check.reason === "overlap") {
-      for (const [x, y, z] of check.overlaps) {
-        badCells.add(keyOf(x, y, z));
-      }
-    }
+    const projection: EntityData = createEntityDataAt(name!, cell!.x, cell!.y, cell!.z );
+    const plan = planShadow(projection);
 
     const shadow = ensureEntityShadow();
     if (!shadow)
@@ -2074,13 +2084,13 @@ export default function TerrainEditor() {
     const base = new THREE.Color(colorHex);
     const red = new THREE.Color(0xff2020);
     const shadowDummy = new THREE.Object3D(); // temp object to calculate transformation matrix
-    cells.forEach(([x, y, z], i) => {
+    plan.footprintCells.forEach(([x, y, z], i) => {
       shadowDummy.position.set(x + 0.5, y + 0.5, z + 0.5);
       shadowDummy.updateMatrix();
       shadow.footprintCells.setMatrixAt(i, shadowDummy.matrix);
-      shadow.footprintCells.setColorAt(i, wholeRefused || badCells.has(keyOf(x, y, z)) ? red : base);
+      shadow.footprintCells.setColorAt(i, plan.refusedAll || plan.collisionCellKeys.has(keyOf(x, y, z)) ? red : base);
     });
-    shadow.footprintCells.count = cells.length;
+    shadow.footprintCells.count = plan.footprintCells.length;
 
     shadow.footprintCells.instanceMatrix.needsUpdate = true;
     if (shadow.footprintCells.instanceColor)
@@ -2131,6 +2141,7 @@ export default function TerrainEditor() {
     setCurrentLayer(cy);
   }
 
+  // for 'fly' mode
   function performPlace():void {
     const hit = raycastFromCamera();
     if (hit === null)
@@ -2141,16 +2152,8 @@ export default function TerrainEditor() {
     const {x: cx, y: cy, z: cz} = cell;
 
     if (placingEntityRef.current) {
-      const ent: EntityData = {
-        name: placingEntityRef.current,
-        x: cx,
-        y: cy,
-        z: cz
-      }
-      const yaw = placingRotationRef.current * 90;
-      if(yaw !== 0)
-        ent.yaw = yaw;
-      placeEntity(ent);
+      const entity = createEntityDataAt(placingEntityRef.current, cx, cy, cz);
+      placeEntity(entity);
       setCurrentLayer(cy);
       return;
     }
@@ -3071,16 +3074,8 @@ export default function TerrainEditor() {
     if (placingEntityName) {
       const surfaceY = terrain.surfaceY(x, z, height - 1);
       const y = surfaceY >= 0 ? surfaceY + 1 : currentLayer;
-      const ent: EntityData = {
-        name: placingEntityName,
-        x,
-        y,
-        z
-      }
-      const yaw = placingRotationRef.current * 90;
-      if(yaw !== 0)
-        ent.yaw = yaw;
-      placeEntity(ent);
+      const entity = createEntityDataAt(placingEntityName, x, y, z);
+      placeEntity(entity);
       return;
     }
     if (placingStructureId) {
