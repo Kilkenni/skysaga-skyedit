@@ -3962,21 +3962,15 @@ export default function TerrainEditor() {
           </div>
         </div>
 
-        <TabGroup as="aside" className={"flex flex-col overflow-hidden max-h-full w-80 pb-2.5"} style={{
-          display: "flex",
-          flexDirection: "column",
-          overflow: "hidden",
-          maxHeight: "100%",
-          width: "320px",
-          paddingBottom: 10,
-        }}>
-          <TabList>
-            <Tab>Palette</Tab>
-            <Tab>EntitiesPanel</Tab>
-            <Tab>Entity Instances</Tab>
+        <TabGroup as="aside" className={"flex flex-col overflow-hidden max-h-full w-96 pb-2.5 bg-gray-950"}>
+          <TabList className={" px-2 pt-2"}>
+            <Tab disabled={viewMode !== "2d"} className={"bg-gray-800 border-gray-600 border-2 rounded-t-md p-2 disabled:opacity-25 data-selected:pb-4 align-bottom"}>Layer</Tab>
+            <Tab className={"bg-gray-800 border-gray-600 border-2 rounded-t-md p-2 disabled:opacity-25 data-selected:pb-4 align-bottom"}>Palette</Tab>
+            <Tab className={"bg-gray-800 border-gray-600 border-2 rounded-t-md p-2 disabled:opacity-25 data-selected:pb-4 align-bottom"}>Entities</Tab>
+            <Tab className={"bg-gray-800 border-gray-600 border-2 rounded-t-md p-2 disabled:opacity-25 data-selected:pb-4 align-bottom"}>Instances</Tab>
           </TabList>
           <TabPanels className={"h-full min-h-0"}>
-            <TabPanel className={"flex flex-col h-full"}>
+            <TabPanel>
               {viewMode === "2d" && (
                 <LayerNav
                   chunkY={chunkY}
@@ -3987,6 +3981,8 @@ export default function TerrainEditor() {
                   totalHeight={height}
                 />
               )}
+            </TabPanel>
+            <TabPanel className={"flex flex-col h-full"}>
               <PaletteSidebar
                 paletteObj={paletteObj}
                 clearTexture={clearTexture}
