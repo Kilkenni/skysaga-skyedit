@@ -33,6 +33,7 @@ const catalogue: EntityCatalogue = {
     ],
     Mixed: [[0, 2, 0], [1, 0, 0], [0, 1, 0]], // heights are not in ascending order
   },
+  categories: new Map(),
   singleton: new Set<string>(),
   service: new Set<string>(),
 };

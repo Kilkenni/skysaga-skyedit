@@ -404,7 +404,7 @@ export default function TerrainEditor() {
   const roadHoverRef = useRef<{ x: number; z: number } | null>(null); // for preview on Road tool
   // const strokeChangesRef = useRef<any[]>([]);
   // const touchedInStrokeRef = useRef(new Map());
-  const saveTimerRef = useRef<number>(null);
+  const saveTimerRef = useRef<NodeJS.Timeout>(null);
   const canvas3dRef = useRef<HTMLCanvasElement>(null);
   const toolRef = useRef(tool);
   

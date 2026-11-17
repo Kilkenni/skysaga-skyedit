@@ -1,5 +1,9 @@
-import { blocks, entities, serviceEntities, deviceCells, mapSizes } from "./data";
-import { EntityCatalogue } from "./lib/placementChecks";
+import blocks from "./data/blocks.json" with {type: "json"};
+import entities from "./data/entities.json" with {type: "json"};
+import serviceEntities from "./data/serviceEntities.json" with {type: "json"};
+import deviceCells from "./data/deviceCells.json" with {type: "json"};
+import mapSizes from "./data/mapSizes.json" with {type: "json"};
+
 
 export const CHUNK = 32;
 export const CELL_BASE = 14;
@@ -19,11 +23,19 @@ export function mapSizeKey(x: number, y: number, z: number) {
 
 export type EntityCategory = "creature" | "npc" | "device" | "object" | "service";
 
+export interface EntityCatalogue {
+  footprints: Readonly<Record<string, readonly (readonly [number, number, number])[]>>;
+  categories: ReadonlyMap<string, string>;
+  singleton: ReadonlySet<string>;
+  service: ReadonlySet<string>;
+}
+
 export const ENTITIES = entities as {name: string, category: EntityCategory}[];
 export const ENTITY_CATEGORY = new Map(ENTITIES.map((e) => [e.name, e.category]));
 
 export const ENTITY_CATALOGUE: EntityCatalogue = {
   footprints: deviceCells as unknown as EntityCatalogue["footprints"], // trusted because we have deviceCells.test.ts for that - run it when data changes!
+  categories: new Map(ENTITIES.map((e) => [e.name, e.category])),
   singleton: new Set(["Airship"]),
   service: new Set(serviceEntities),
 }

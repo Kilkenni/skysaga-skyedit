@@ -1,3 +1,4 @@
+import { EntityCatalogue } from "../constants";
 import { EntityData, getEntityYaw } from "./entities";
 import { keyOf } from "./keys";
 
@@ -6,12 +7,6 @@ type PlaceCheck =
   | { ok: false; reason: "out-of-bounds" | "singleton" | "service" }
   | { ok: false; reason: "overlap"; overlaps: Cell[] };
 type Cell = [number, number, number];
-
-interface EntityCatalogue {
-  footprints: Readonly<Record<string, readonly (readonly [number, number, number])[]>>;
-  singleton: ReadonlySet<string>;
-  service: ReadonlySet<string>;
-}
 
 const YAW_TOLERANCE = 0.1;
 
