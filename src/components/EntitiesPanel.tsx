@@ -39,16 +39,10 @@ export default function EntitiesPanel({
   }
 
   return (
-    <div
+    <div className="flex flex-col gap-2 px-2.5 py-3 h-full overflow-y-auto"
       style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: 8,
-        padding: "10px 12px",
         borderBottom: "1px solid #1e222b",
         background: "#1c1219",
-        height: "100%",
-        overflowY: "auto",
       }}
     >
       <div style={{ fontSize: 11, color: "#e0a3c0" }}>{t.entitiesHint}</div>
