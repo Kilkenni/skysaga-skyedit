@@ -1,0 +1,2759 @@
+[
+  {
+    "name": "Arctic_Bear_ArmouredIce_0",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Bear_ArmouredIce_1",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Bear_ArmouredIce_2",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Bear_ArmouredIce_3",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Bear_ArmouredIce_4",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Bear_ArmouredIce_BOSS_2",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Bear_ArmouredIce_BOSS_3",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Bear_ArmouredIce_BOSS_4",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Bear_Fighter_0",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Bear_Fighter_1",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Bear_Fighter_2",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Bear_Fighter_3",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Bear_Fighter_4",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Bear_Fighter_BOSS_1",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Bear_Whelp_0",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Bear_Whelp_1",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Bear_Whelp_2",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Bear_Whelp_3",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Bear_Whelp_4",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_BigCat_Fighter_0",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_BigCat_Fighter_1",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_BigCat_Fighter_2",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_BigCat_Fighter_3",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_BigCat_Fighter_4",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_BigCat_Sabretooth_0",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_BigCat_Sabretooth_1",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_BigCat_Sabretooth_2",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_BigCat_Sabretooth_3",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_BigCat_Sabretooth_4",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_BigCat_Sabretooth_BOSS_1",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_BigCat_Whelp_0",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_BigCat_Whelp_1",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_BigCat_Whelp_2",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_BigCat_Whelp_3",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_BigCat_Whelp_4",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_FennecFox",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Goat",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_AirshipCaptain_BOSS_3",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_Archer_0",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_Archer_1",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_Archer_2",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_Archer_3",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_Archer_4",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_Beast_0",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_Beast_1",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_Beast_2",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_Beast_3",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_Beast_4",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_Beastmaster_0",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_Beastmaster_1",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_Beastmaster_2",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_Beastmaster_3",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_Beastmaster_4",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_Beastmaster_BOSS_2",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_Beastmaster_BOSS_3",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_Beastmaster_BOSS_4",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_BloodhornCaptain_BOSS_3",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_Bombardier_0",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_Bombardier_1",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_Bombardier_2",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_Bombardier_3",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_Bombardier_4",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_Champion_0",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_Champion_1",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_Champion_2",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_Champion_3",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_Champion_4",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_Champion_BOSS_1",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_Fighter_0",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_Fighter_1",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_Fighter_2",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_Fighter_3",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_Fighter_4",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_Guardian_0",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_Guardian_1",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_Guardian_2",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_Guardian_3",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_Guardian_4",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_Guardian_BOSS_2",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_Guardian_BOSS_3",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_Guardian_BOSS_4",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_JagoTheBlack_BOSS_1",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_JarlBloodhorn_BOSS_4",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_Rogue_0",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_Rogue_1",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_Rogue_2",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_Rogue_3",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_Rogue_4",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_WarBeast_0",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_WarBeast_1",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_WarBeast_2",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_WarBeast_3",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_WarBeast_4",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Human_WarBeast_BOSS_2",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_HumanA_Blademaster_0",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_HumanA_Blademaster_1",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_HumanA_Blademaster_2",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_HumanA_Blademaster_3",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_HumanA_Blademaster_4",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_HumanA_Blademaster_BOSS_2",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_HumanA_Blademaster_BOSS_3",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_HumanA_Blademaster_BOSS_4",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_HumanA_Brute_0",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_HumanA_Brute_1",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_HumanA_Brute_2",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_HumanA_Brute_3",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_HumanA_Brute_4",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_HumanA_Brute_BOSS_2",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_HumanA_Brute_BOSS_3",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_HumanA_Brute_BOSS_4",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_HumanA_Defender_0",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_HumanA_Defender_1",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_HumanA_Defender_2",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_HumanA_Defender_3",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_HumanA_Defender_4",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_HumanA_Defender_BOSS_1",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_HumanA_Fighter_0",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_HumanA_Fighter_1",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_HumanA_Fighter_2",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_HumanA_Fighter_3",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_HumanA_Fighter_4",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_HumanA_Pikeman_0",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_HumanA_Pikeman_1",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_HumanA_Pikeman_2",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_HumanA_Pikeman_3",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_HumanA_Pikeman_4",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_HumanA_Rogue_0",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_HumanA_Rogue_1",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_HumanA_Rogue_2",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_HumanA_Rogue_3",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_HumanA_Rogue_4",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_HumanA_UnderlordRasmos_BOSS_2",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_MineCritter",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Penguin",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Rabbit",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_TreasureGoblin",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Wolf_Fighter_0",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Wolf_Fighter_1",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Wolf_Fighter_2",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Wolf_Fighter_3",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Wolf_Fighter_4",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Wolf_IceFang_0",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Wolf_IceFang_1",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Wolf_IceFang_2",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Wolf_IceFang_3",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Wolf_IceFang_4",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Wolf_IceFang_BOSS_1",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Wolf_Leader_0",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Wolf_Leader_1",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Wolf_Leader_2",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Wolf_Leader_3",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Wolf_Leader_4",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Wolf_Leader_BOSS_2",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Wolf_Leader_BOSS_3",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Wolf_Leader_BOSS_4",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Wolf_Whelp_0",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Wolf_Whelp_1",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Wolf_Whelp_2",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Wolf_Whelp_3",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Wolf_Whelp_4",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Yeti_Brute_0",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Yeti_Brute_1",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Yeti_Brute_2",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Yeti_Brute_3",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Yeti_Brute_4",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Yeti_Brute_BOSS_2",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Yeti_Brute_BOSS_3",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Yeti_Brute_BOSS_4",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Yeti_Fighter_0",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Yeti_Fighter_1",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Yeti_Fighter_2",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Yeti_Fighter_3",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Yeti_Fighter_4",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Yeti_Fighter_BOSS_1",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Yeti_Runt_0",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Yeti_Runt_1",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Yeti_Runt_2",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Yeti_Runt_3",
+    "category": "creature"
+  },
+  {
+    "name": "Arctic_Yeti_Runt_4",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_BigCat_Fighter_0",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_BigCat_Fighter_1",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_BigCat_Fighter_2",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_BigCat_Fighter_3",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_BigCat_Fighter_4",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_BigCat_Leader_0",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_BigCat_Leader_1",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_BigCat_Leader_2",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_BigCat_Leader_3",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_BigCat_Leader_4",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_BigCat_Leader_BOSS_2",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_BigCat_Leader_BOSS_3",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_BigCat_Leader_BOSS_4",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_BigCat_Veteran_0",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_BigCat_Veteran_1",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_BigCat_Veteran_2",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_BigCat_Veteran_3",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_BigCat_Veteran_4",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_BigCat_Veteran_BOSS_1",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_BigCat_Whelp_0",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_BigCat_Whelp_1",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_BigCat_Whelp_2",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_BigCat_Whelp_3",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_BigCat_Whelp_4",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Boar",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Archer_0",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Archer_1",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Archer_2",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Archer_3",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Archer_4",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Beast_0",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Beast_1",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Beast_2",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Beast_3",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Beast_4",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Beastmaster_0",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Beastmaster_1",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Beastmaster_2",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Beastmaster_3",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Beastmaster_4",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Beastmaster_BOSS_2",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Beastmaster_BOSS_3",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Beastmaster_BOSS_4",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Blademaster_0",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Blademaster_1",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Blademaster_2",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Blademaster_3",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Blademaster_4",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Blademaster_BOSS_2",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Blademaster_BOSS_3",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Blademaster_BOSS_4",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Bombardier_0",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Bombardier_1",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Bombardier_2",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Bombardier_3",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Bombardier_4",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Brute_0",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Brute_1",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Brute_2",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Brute_3",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Brute_4",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Brute_BOSS_2",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Brute_BOSS_3",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Brute_BOSS_4",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Defender_0",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Defender_1",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Defender_2",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Defender_3",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Defender_4",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Defender_BOSS_1",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Fighter_0",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Fighter_1",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Fighter_2",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Fighter_3",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Fighter_4",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Hunter_0",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Hunter_1",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Hunter_2",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Hunter_3",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Hunter_4",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Hunter_BOSS_1",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Pikeman_0",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Pikeman_1",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Pikeman_2",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Pikeman_3",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Pikeman_4",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Rogue_0",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Rogue_1",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Rogue_2",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Rogue_3",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Cat_Rogue_4",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Chicken",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_FennecFox",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_FiringCactus",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_MineCritter",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Rabbit",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Scarab_Fighter_0",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Scarab_Fighter_1",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Scarab_Fighter_2",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Scarab_Fighter_3",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Scarab_Fighter_4",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Scarab_Flyer_0",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Scarab_Flyer_1",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Scarab_Flyer_2",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Scarab_Flyer_3",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Scarab_Flyer_4",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Scarab_Queen_BOSS_2",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Scarab_Queen_BOSS_3",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Scarab_Queen_BOSS_4",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Scarab_Rhino_0",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Scarab_Rhino_1",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Scarab_Rhino_2",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Scarab_Rhino_3",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Scarab_Rhino_4",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Scarab_Rhino_BOSS_1",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Scarab_Rhino_BOSS_2",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Scarab_Soldier_0",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Scarab_Soldier_1",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Scarab_Soldier_2",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Scarab_Soldier_3",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Scarab_Soldier_4",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Scarab_Soldier_BOSS_1",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Scarab_Spitter_0",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Scarab_Spitter_1",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Scarab_Spitter_2",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Scarab_Spitter_3",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_Scarab_Spitter_4",
+    "category": "creature"
+  },
+  {
+    "name": "Desert_TreasureGoblin",
+    "category": "creature"
+  },
+  {
+    "name": "Firey_Chicken",
+    "category": "creature",
+    "icon": "t_devi_Logicnetwork_mob_spawner_firey_chicken_icon.png"
+  },
+  {
+    "name": "Forest_Bear_Fighter_0",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Bear_Fighter_1",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Bear_Fighter_2",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Bear_Fighter_3",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Bear_Fighter_4",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Bear_Fighter_BOSS_1",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Bear_Leader_0",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Bear_Leader_1",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Bear_Leader_2",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Bear_Leader_3",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Bear_Leader_4",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Bear_Leader_BOSS_2",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Bear_Leader_BOSS_3",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Bear_Leader_BOSS_4",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Bear_Whelp_0",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Bear_Whelp_1",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Bear_Whelp_2",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Bear_Whelp_3",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Bear_Whelp_4",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Boar",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Chicken",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Human_Archer_0",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Human_Archer_1",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Human_Archer_2",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Human_Archer_3",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Human_Archer_4",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Human_Brute_0",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Human_Brute_1",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Human_Brute_2",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Human_Brute_3",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Human_Brute_4",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Human_Brute_BOSS_2",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Human_Brute_BOSS_3",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Human_Brute_BOSS_4",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Human_Champion_0",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Human_Champion_1",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Human_Champion_2",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Human_Champion_3",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Human_Champion_4",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Human_Champion_BOSS_1",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Human_Defender_0",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Human_Defender_1",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Human_Defender_2",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Human_Defender_3",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Human_Defender_4",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Human_Defender_BOSS_1",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Human_Fighter_0",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Human_Fighter_1",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Human_Fighter_2",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Human_Fighter_3",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Human_Fighter_4",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Human_Guardian_0",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Human_Guardian_1",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Human_Guardian_2",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Human_Guardian_3",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Human_Guardian_4",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Human_Guardian_BOSS_2",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Human_Guardian_BOSS_3",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Human_Guardian_BOSS_4",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Human_Pikeman_0",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Human_Pikeman_1",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Human_Pikeman_2",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Human_Pikeman_3",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Human_Pikeman_4",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_HumanA_Archer_0",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_HumanA_Archer_1",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_HumanA_Archer_2",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_HumanA_Archer_3",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_HumanA_Archer_4",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_HumanA_Beast_0",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_HumanA_Beast_1",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_HumanA_Beast_2",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_HumanA_Beast_3",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_HumanA_Beast_4",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_HumanA_Beastmaster_0",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_HumanA_Beastmaster_1",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_HumanA_Beastmaster_2",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_HumanA_Beastmaster_3",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_HumanA_Beastmaster_4",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_HumanA_Beastmaster_BOSS_2",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_HumanA_Beastmaster_BOSS_3",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_HumanA_Beastmaster_BOSS_4",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_HumanA_Blademaster_0",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_HumanA_Blademaster_1",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_HumanA_Blademaster_2",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_HumanA_Blademaster_3",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_HumanA_Blademaster_4",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_HumanA_Blademaster_BOSS_2",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_HumanA_Blademaster_BOSS_3",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_HumanA_Blademaster_BOSS_4",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_HumanA_Bombardier_0",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_HumanA_Bombardier_1",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_HumanA_Bombardier_2",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_HumanA_Bombardier_3",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_HumanA_Bombardier_4",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_HumanA_Fighter_0",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_HumanA_Fighter_1",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_HumanA_Fighter_2",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_HumanA_Fighter_3",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_HumanA_Fighter_4",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_HumanA_Hunter_0",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_HumanA_Hunter_1",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_HumanA_Hunter_2",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_HumanA_Hunter_3",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_HumanA_Hunter_4",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_HumanA_Hunter_BOSS_1",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_HumanA_Rogue_0",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_HumanA_Rogue_1",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_HumanA_Rogue_2",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_HumanA_Rogue_3",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_HumanA_Rogue_4",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_MineCritter",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Pig",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Rabbit",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Rawbone_AgnesBlack",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Rawbone_Kras_Ascended",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Rawbone_Kras_Original",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Rawbone_MasteryBoss_A",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Rawbone_MasteryBoss_B",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Sheep",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Skitterling_Bomber_0",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Skitterling_Bomber_1",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Skitterling_Bomber_2",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Skitterling_Bomber_3",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Skitterling_Bomber_4",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Skitterling_Fighter_0",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Skitterling_Fighter_1",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Skitterling_Fighter_2",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Skitterling_Fighter_3",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Skitterling_Fighter_4",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Skitterling_Leader_0",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Skitterling_Leader_1",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Skitterling_Leader_2",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Skitterling_Leader_3",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Skitterling_Leader_4",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Skitterling_Leader_BOSS_1",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Skitterling_Spitter_0",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Skitterling_Spitter_1",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Skitterling_Spitter_2",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Skitterling_Spitter_3",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Skitterling_Spitter_4",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_TreasureGoblin",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Wolf_Fighter_0",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Wolf_Fighter_1",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Wolf_Fighter_2",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Wolf_Fighter_3",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Wolf_Fighter_4",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Wolf_Leader_0",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Wolf_Leader_1",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Wolf_Leader_2",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Wolf_Leader_3",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Wolf_Leader_4",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Wolf_Leader_BOSS_2",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Wolf_Leader_BOSS_3",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Wolf_Leader_BOSS_4",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Wolf_ShadowFang_0",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Wolf_ShadowFang_1",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Wolf_ShadowFang_2",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Wolf_ShadowFang_3",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Wolf_ShadowFang_4",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Wolf_ShadowFang_BOSS_1",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Wolf_Whelp_0",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Wolf_Whelp_1",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Wolf_Whelp_2",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Wolf_Whelp_3",
+    "category": "creature"
+  },
+  {
+    "name": "Forest_Wolf_Whelp_4",
+    "category": "creature"
+  },
+  {
+    "name": "FTUE_CityGuard_Archer",
+    "category": "creature"
+  },
+  {
+    "name": "FTUE_CityGuard_Defender",
+    "category": "creature"
+  },
+  {
+    "name": "FTUE_CityGuard_Fighter",
+    "category": "creature"
+  },
+  {
+    "name": "FTUE_CityGuard_Pikeman",
+    "category": "creature"
+  },
+  {
+    "name": "FTUE_Rawbone_Archer",
+    "category": "creature"
+  },
+  {
+    "name": "FTUE_Rawbone_Blademaster",
+    "category": "creature"
+  },
+  {
+    "name": "FTUE_Rawbone_Champion",
+    "category": "creature"
+  },
+  {
+    "name": "FTUE_Rawbone_Defender",
+    "category": "creature"
+  },
+  {
+    "name": "FTUE_Rawbone_Fighter",
+    "category": "creature"
+  },
+  {
+    "name": "FTUE_Rawbone_Pikeman",
+    "category": "creature"
+  },
+  {
+    "name": "FTUE_Rawbone_Rogue",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Bear_Poison_0",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Bear_Poison_1",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Bear_Poison_2",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Bear_Poison_3",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Bear_Poison_4",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Bear_Poison_BOSS_1",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_BigCat_Fighter_0",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_BigCat_Fighter_1",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_BigCat_Fighter_2",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_BigCat_Fighter_3",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_BigCat_Fighter_4",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_BigCat_Leader_0",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_BigCat_Leader_1",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_BigCat_Leader_2",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_BigCat_Leader_3",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_BigCat_Leader_4",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_BigCat_Leader_BOSS_2",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_BigCat_Leader_BOSS_3",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_BigCat_Leader_BOSS_4",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Boar",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Chicken",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Colossaur_Brute_0",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Colossaur_Brute_1",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Colossaur_Brute_2",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Colossaur_Brute_3",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Colossaur_Brute_4",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Colossaur_Brute_BOSS_2",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Colossaur_Brute_BOSS_3",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Colossaur_Brute_BOSS_4",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Colossaur_Fighter_0",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Colossaur_Fighter_1",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Colossaur_Fighter_2",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Colossaur_Fighter_3",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Colossaur_Fighter_4",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Colossaur_Fighter_BOSS_1",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Colossaur_Whelp_0",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Colossaur_Whelp_1",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Colossaur_Whelp_2",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Colossaur_Whelp_3",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Colossaur_Whelp_4",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_ExplodingFrog_0",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_ExplodingFrog_1",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_ExplodingFrog_2",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_ExplodingFrog_3",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_ExplodingFrog_4",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Frog",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Archer_0",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Archer_1",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Archer_2",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Archer_3",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Archer_4",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Blademaster_0",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Blademaster_1",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Blademaster_2",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Blademaster_3",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Blademaster_4",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Blademaster_BOSS_2",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Blademaster_BOSS_3",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Blademaster_BOSS_4",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Bombardier_0",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Bombardier_1",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Bombardier_2",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Bombardier_3",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Bombardier_4",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Brute_0",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Brute_1",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Brute_2",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Brute_3",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Brute_4",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Brute_BOSS_2",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Brute_BOSS_3",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Brute_BOSS_4",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Champion_0",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Champion_1",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Champion_2",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Champion_3",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Champion_4",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Champion_BOSS_1",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Defender_0",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Defender_1",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Defender_2",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Defender_3",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Defender_4",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Defender_BOSS_1",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Fighter_0",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Fighter_1",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Fighter_2",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Fighter_3",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Fighter_4",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Hunter_0",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Hunter_1",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Hunter_2",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Hunter_3",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Hunter_4",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Hunter_BOSS_1",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Mastery_8_BOSS_3",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Rogue_0",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Rogue_1",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Rogue_2",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Rogue_3",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_Rogue_4",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_WardrakeHokkush_BOSS_3",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Lizard_WardrakeTakara_BOSS_3",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_MineCritter",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Monkey_Mastery_7_BOSS_3",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Pig",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Raptor_Fighter_0",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Raptor_Fighter_1",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Raptor_Fighter_2",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Raptor_Fighter_3",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Raptor_Fighter_4",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Raptor_Hunter_0",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Raptor_Hunter_1",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Raptor_Hunter_2",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Raptor_Hunter_3",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Raptor_Hunter_4",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Raptor_Hunter_BOSS_1",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Raptor_Leader_0",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Raptor_Leader_1",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Raptor_Leader_2",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Raptor_Leader_3",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Raptor_Leader_4",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Raptor_Leader_BOSS_2",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Raptor_Leader_BOSS_3",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Raptor_Leader_BOSS_4",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Raptor_Spitter_0",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Raptor_Spitter_1",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Raptor_Spitter_2",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Raptor_Spitter_3",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_Raptor_Spitter_4",
+    "category": "creature"
+  },
+  {
+    "name": "Jungle_TreasureGoblin",
+    "category": "creature"
+  },
+  {
+    "name": "Midwinter_Chicken",
+    "category": "creature"
+  },
+  {
+    "name": "Midwinter_FennecFox",
+    "category": "creature"
+  },
+  {
+    "name": "Midwinter_Pig",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Archer_0",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Archer_1",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Archer_2",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Archer_3",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Archer_4",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Blademaster_0",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Blademaster_1",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Blademaster_2",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Blademaster_3",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Blademaster_4",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Blademaster_BOSS_2",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Blademaster_BOSS_3",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Blademaster_BOSS_4",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Bombardier_0",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Bombardier_1",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Bombardier_2",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Bombardier_3",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Bombardier_4",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Brute_0",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Brute_1",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Brute_2",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Brute_3",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Brute_4",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Brute_BOSS_2",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Brute_BOSS_3",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Brute_BOSS_4",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Champion_0",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Champion_1",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Champion_2",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Champion_3",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Champion_4",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Champion_BOSS_1",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Defender_0",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Defender_1",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Defender_2",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Defender_3",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Defender_4",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Defender_BOSS_1",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Fighter_0",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Fighter_1",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Fighter_2",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Fighter_3",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Fighter_4",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Pikeman_0",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Pikeman_1",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Pikeman_2",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Pikeman_3",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Pikeman_4",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Rogue_0",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Rogue_1",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Rogue_2",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Rogue_3",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Rogue_4",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Summoner_0",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Summoner_1",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Summoner_2",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Summoner_3",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Summoner_4",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Summoner_BOSS_2",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Summoner_BOSS_3",
+    "category": "creature"
+  },
+  {
+    "name": "Rawbone_Summoner_BOSS_4",
+    "category": "creature"
+  },
+  {
+    "name": "SpittingPlant_0",
+    "category": "creature"
+  },
+  {
+    "name": "SpittingPlant_1",
+    "category": "creature"
+  },
+  {
+    "name": "SpittingPlant_2",
+    "category": "creature"
+  },
+  {
+    "name": "SpittingPlant_3",
+    "category": "creature"
+  },
+  {
+    "name": "SpittingPlant_4",
+    "category": "creature"
+  },
+  {
+    "name": "Test_Biped_CombatStyles_1",
+    "category": "creature"
+  },
+  {
+    "name": "Test_Biped_CombatStyles_2",
+    "category": "creature"
+  },
+  {
+    "name": "Test_Biped_Dummy",
+    "category": "creature"
+  },
+  {
+    "name": "TEST_Population_Chicken",
+    "category": "creature"
+  }
+]

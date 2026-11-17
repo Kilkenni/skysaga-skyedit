@@ -34,7 +34,7 @@ import { generateTerrain, regenerateDeco, regenerateOre, regenerateVeg } from ".
 import { EntityData, EntityDataId, parseEntities, exportEntity, findAirshipSpot, getEntityYaw, orientationXZ } from "../lib/entities.ts";
 import { EntityStore, EntityStoreEvent } from "../lib/EntityStore.ts";
 import { useEntityList } from "../hooks/useEntityList.ts";
-import { canPlaceEntity, Cell, EntityCatalogue, footprintCells, PlaceCheck } from "../lib/placementChecks.ts";
+import { canPlaceEntity, Cell, footprintCells, PlaceCheck } from "../lib/placementChecks.ts";
 import Toolbar from "./tools/Toolbar.tsx";
 import EntityInstancesList from "./EntityInstancesList.tsx";
 import { drawEntityGlyph } from "../rendering/entityGlyph.ts";

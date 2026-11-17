@@ -14,8 +14,9 @@
 // Tests marked DECISION / UNVERIFIED pin a guess that needs a check on the real client.
 
 import { describe, it, expect } from "vitest";
-import { canPlaceEntity, footprintCells, EntityCatalogue } from "../src/lib/placementChecks";
+import { canPlaceEntity, footprintCells } from "../src/lib/placementChecks";
 import { EntityData } from "../src/lib/entities";
+import { EntityCatalogue } from "../src/constants";
 
 // ---------- fixtures ----------
 

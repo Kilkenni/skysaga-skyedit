@@ -1,0 +1,829 @@
+[
+  {
+    "name": "Airship_Damaged",
+    "category": "object",
+    "icon": "t_devi_Airship_Damaged_icon.png"
+  },
+  {
+    "name": "Airship_FTUE",
+    "category": "object"
+  },
+  {
+    "name": "ArtTestPlayer",
+    "category": "object"
+  },
+  {
+    "name": "Audio_MainFeatureEnd",
+    "category": "object"
+  },
+  {
+    "name": "Audio_MainFeatureStart",
+    "category": "object"
+  },
+  {
+    "name": "Audio_Social_Explorer",
+    "category": "object"
+  },
+  {
+    "name": "Audio_Social_Fighter",
+    "category": "object"
+  },
+  {
+    "name": "Audio_Social_Settler",
+    "category": "object"
+  },
+  {
+    "name": "Audio_Social_Trader",
+    "category": "object"
+  },
+  {
+    "name": "Audio_Start",
+    "category": "object"
+  },
+  {
+    "name": "Audio_SubFeature",
+    "category": "object"
+  },
+  {
+    "name": "Billboard_3x2x1",
+    "category": "object",
+    "icon": "t_scga_Billboard_3x2x1_icon.png"
+  },
+  {
+    "name": "Billboard_6x4x1",
+    "category": "object",
+    "icon": "t_scga_Billboard_6x4x1_icon.png"
+  },
+  {
+    "name": "BlueprintConstructor_dummy",
+    "category": "object"
+  },
+  {
+    "name": "BlueprintConstructorArea",
+    "category": "object"
+  },
+  {
+    "name": "BlueprintPropStore",
+    "category": "object"
+  },
+  {
+    "name": "BookShelf_A",
+    "category": "object",
+    "icon": "t_scen_bookShelf_A_icon.png"
+  },
+  {
+    "name": "BuildOffGate_Open",
+    "category": "object",
+    "icon": "t_scst_BuildOffGate_Open_icon.png"
+  },
+  {
+    "name": "Bush_Desert_B",
+    "category": "object"
+  },
+  {
+    "name": "CheckpointTriggerArea",
+    "category": "object"
+  },
+  {
+    "name": "ConstructionCrate",
+    "category": "object"
+  },
+  {
+    "name": "ConstructionCrate_1x1x1",
+    "category": "object"
+  },
+  {
+    "name": "ConstructionCrate_1x2x1",
+    "category": "object"
+  },
+  {
+    "name": "ConstructionCrate_1x3x1",
+    "category": "object"
+  },
+  {
+    "name": "ConstructionCrate_2x1x1",
+    "category": "object"
+  },
+  {
+    "name": "ConstructionCrate_2x1x2",
+    "category": "object"
+  },
+  {
+    "name": "ConstructionCrate_2x2x1",
+    "category": "object"
+  },
+  {
+    "name": "ConstructionCrate_2x2x2",
+    "category": "object"
+  },
+  {
+    "name": "ConstructionCrate_2x3x2",
+    "category": "object"
+  },
+  {
+    "name": "ConstructionCrate_3x1x1",
+    "category": "object"
+  },
+  {
+    "name": "ConstructionCrate_3x4x1",
+    "category": "object"
+  },
+  {
+    "name": "ConstructionCrate_3x5x3",
+    "category": "object"
+  },
+  {
+    "name": "ConstructionCrate_5x3x4",
+    "category": "object"
+  },
+  {
+    "name": "ConstructionCrate_5x4x4",
+    "category": "object"
+  },
+  {
+    "name": "ConstructionCrate_9x9x2",
+    "category": "object"
+  },
+  {
+    "name": "Crate_A_On_Fire",
+    "category": "object"
+  },
+  {
+    "name": "Crop_Cactus_A",
+    "category": "object",
+    "icon": "t_scen_Crop_Cactus_A_icon.png"
+  },
+  {
+    "name": "Crop_Dates_A",
+    "category": "object",
+    "icon": "t_scen_Crop_Dates_A_icon.png"
+  },
+  {
+    "name": "Crop_Fruit_Apple_A",
+    "category": "object",
+    "icon": "t_scen_Crop_Fruit_Apple_A_icon.png"
+  },
+  {
+    "name": "Crop_Fruit_Jungle_A",
+    "category": "object",
+    "icon": "t_scen_Crop_Fruit_Jungle_A_icon.png"
+  },
+  {
+    "name": "Crop_Pumpkin_A",
+    "category": "object",
+    "icon": "t_scen_Crop_Pumpkin_A_icon.png"
+  },
+  {
+    "name": "Crop_Wheat_A",
+    "category": "object",
+    "icon": "t_scen_Crop_Wheat_A_icon.png"
+  },
+  {
+    "name": "CrumbleVoxel",
+    "category": "object",
+    "icon": "t_scen_CrumbleVoxel_icon.png"
+  },
+  {
+    "name": "Cutscene_Pick",
+    "category": "object"
+  },
+  {
+    "name": "Cutscene_Sword",
+    "category": "object"
+  },
+  {
+    "name": "Damaged_Stone_Voxel",
+    "category": "object",
+    "icon": "t_scen_Damaged_Stone_Voxel_icon.png"
+  },
+  {
+    "name": "DartTrap_dummy",
+    "category": "object"
+  },
+  {
+    "name": "Door_Double_A",
+    "category": "object",
+    "icon": "t_devi_Door_Double_A_icon.png"
+  },
+  {
+    "name": "Door_Jail_Double_A",
+    "category": "object",
+    "icon": "t_devi_Door_Jail_Double_A_icon.png"
+  },
+  {
+    "name": "Door_Jail_Single_A",
+    "category": "object",
+    "icon": "t_devi_Door_Jail_Single_A_icon.png"
+  },
+  {
+    "name": "Door_Jungle_Double_A",
+    "category": "object",
+    "icon": "t_devi_Door_Jungle_Double_A_icon.png"
+  },
+  {
+    "name": "Door_Jungle_Single_A",
+    "category": "object",
+    "icon": "t_devi_Door_Jungle_Single_A_icon.png"
+  },
+  {
+    "name": "Door_Metal_Gate_Double",
+    "category": "object",
+    "icon": "t_devi_Door_Metal_Gate_Double_icon.png"
+  },
+  {
+    "name": "Door_Metal_Gate_Single",
+    "category": "object",
+    "icon": "Door_Metal_Gate_Single_icon.png"
+  },
+  {
+    "name": "Door_Single_A",
+    "category": "object",
+    "icon": "t_devi_Door_Single_A_icon.png"
+  },
+  {
+    "name": "Door_Stone_Double_5x8",
+    "category": "object",
+    "icon": "t_devi_Door_Stone_Double_5x8_icon.png"
+  },
+  {
+    "name": "Door_Stone_Double_5x8_Checkpoint",
+    "category": "object"
+  },
+  {
+    "name": "Door_Stone_Double_A",
+    "category": "object",
+    "icon": "t_devi_Door_Stone_Double_A_icon.png"
+  },
+  {
+    "name": "Door_Stone_Single_A",
+    "category": "object",
+    "icon": "t_devi_Door_Stone_Single_A_icon.png"
+  },
+  {
+    "name": "Door_Tudor_Double",
+    "category": "object",
+    "icon": "t_devi_Door_Tudor_Double_icon.png"
+  },
+  {
+    "name": "Door_Tudor_Single",
+    "category": "object",
+    "icon": "t_devi_Door_Tudor_Single_icon.png"
+  },
+  {
+    "name": "Effect_Campfire_Smoke",
+    "category": "object"
+  },
+  {
+    "name": "Effect_Fireflies",
+    "category": "object"
+  },
+  {
+    "name": "Effect_FTUE_Cinders",
+    "category": "object"
+  },
+  {
+    "name": "Effect_FTUE_Cinders_Up",
+    "category": "object"
+  },
+  {
+    "name": "Effect_FTUE_Fire",
+    "category": "object"
+  },
+  {
+    "name": "Effect_FTUE_Fire_Large",
+    "category": "object"
+  },
+  {
+    "name": "Effect_FTUE_Fireball",
+    "category": "object"
+  },
+  {
+    "name": "Effect_FTUE_Flash",
+    "category": "object"
+  },
+  {
+    "name": "Effect_FTUE_Lightning",
+    "category": "object"
+  },
+  {
+    "name": "Effect_FTUE_Uplit_Smoke",
+    "category": "object"
+  },
+  {
+    "name": "Effect_FTUE_Uplit_Smoke_Short",
+    "category": "object"
+  },
+  {
+    "name": "Effect_Smoke",
+    "category": "object"
+  },
+  {
+    "name": "EntitySpawner",
+    "category": "object"
+  },
+  {
+    "name": "EntitySpawnerQuest",
+    "category": "object"
+  },
+  {
+    "name": "Fire_Pit_B",
+    "category": "object"
+  },
+  {
+    "name": "Grass_Clump_Dead_A",
+    "category": "object",
+    "icon": "t_scen_Grass_Clump_Dead_A_icon.png"
+  },
+  {
+    "name": "Grass_Clump_Dead_B",
+    "category": "object",
+    "icon": "t_scen_Grass_Clump_Dead_B_icon.png"
+  },
+  {
+    "name": "Grass_Clump_Green_A",
+    "category": "object",
+    "icon": "t_scen_Grass_Clump_Green_A_icon.png"
+  },
+  {
+    "name": "Grass_Clump_Wild_A",
+    "category": "object",
+    "icon": "t_scen_Grass_Clump_Wild_A_icon.png"
+  },
+  {
+    "name": "Grass_Clump_Wild_B",
+    "category": "object",
+    "icon": "t_scen_Grass_Clump_Wild_B_icon.png"
+  },
+  {
+    "name": "Hanging_Banner_Blue",
+    "category": "object"
+  },
+  {
+    "name": "Hanging_Banner_Red",
+    "category": "object"
+  },
+  {
+    "name": "Hanging_Painting_A",
+    "category": "object",
+    "icon": "t_scen_hanging_painting_A_icon.png"
+  },
+  {
+    "name": "Hanging_Painting_B",
+    "category": "object",
+    "icon": "t_scen_hanging_painting_B_icon.png"
+  },
+  {
+    "name": "Hanging_Painting_C",
+    "category": "object",
+    "icon": "t_scen_hanging_painting_C_icon.png"
+  },
+  {
+    "name": "Hub_Beam",
+    "category": "object"
+  },
+  {
+    "name": "Hub_Beam_OldCity",
+    "category": "object"
+  },
+  {
+    "name": "Keystone_Oven_Damaged",
+    "category": "object",
+    "icon": "t_devi_Keystone_Oven_Damaged_icon.png"
+  },
+  {
+    "name": "LandingPad",
+    "category": "object"
+  },
+  {
+    "name": "Landmark_FeatureGroup",
+    "category": "object"
+  },
+  {
+    "name": "Light_Lantern_B",
+    "category": "object"
+  },
+  {
+    "name": "LogicNetwork_Creature_Spawn_Crate_A",
+    "category": "object",
+    "icon": "t_devi_Logicnetwork_Creature_Spawn_Crate_A_icon.png"
+  },
+  {
+    "name": "LogicNetwork_Creature_Spawn_Crate_B",
+    "category": "object",
+    "icon": "t_devi_Logicnetwork_Creature_Spawn_Crate_B_icon.png"
+  },
+  {
+    "name": "LogicNetwork_Output_Platform_Tudor",
+    "category": "object",
+    "icon": "t_devi_Logicnetwork_Output_Platform_Tudor_icon.png"
+  },
+  {
+    "name": "MeandrosNode",
+    "category": "object"
+  },
+  {
+    "name": "MountainPass_CastleBoss",
+    "category": "object"
+  },
+  {
+    "name": "MountainPass_CastleEntrance",
+    "category": "object"
+  },
+  {
+    "name": "MountainPass_MineStart",
+    "category": "object"
+  },
+  {
+    "name": "MountainPass_Start",
+    "category": "object"
+  },
+  {
+    "name": "MountainPass_YetiCaveBoss",
+    "category": "object"
+  },
+  {
+    "name": "MountainPass_YetiCaveStart",
+    "category": "object"
+  },
+  {
+    "name": "Mushroom_Cave_A",
+    "category": "object",
+    "icon": "t_scen_Mushroom_Cave_A_icon.png"
+  },
+  {
+    "name": "Mushroom_Cave_B",
+    "category": "object",
+    "icon": "t_scen_Mushroom_Cave_B_icon.png"
+  },
+  {
+    "name": "Mushroom_Field_A",
+    "category": "object",
+    "icon": "t_scen_Mushroom_Field_A_icon.png"
+  },
+  {
+    "name": "Mushroom_Field_B",
+    "category": "object",
+    "icon": "t_scen_Mushroom_Field_B_icon.png"
+  },
+  {
+    "name": "Npc_Scene_Scout_Log",
+    "category": "object",
+    "icon": "t_scst_Npc_Scene_Scout_Log_icon.png"
+  },
+  {
+    "name": "OldCity_Explosion_EnterLeftWing_Drop_TallBuilding",
+    "category": "object"
+  },
+  {
+    "name": "OldCity_Explosion_Floor_01",
+    "category": "object"
+  },
+  {
+    "name": "OldCity_Explosion_FountainArea_Dock",
+    "category": "object"
+  },
+  {
+    "name": "OldCity_Explosion_LeftWingDock_Airship_01",
+    "category": "object"
+  },
+  {
+    "name": "OldCity_Explosion_MooredShip",
+    "category": "object"
+  },
+  {
+    "name": "OldCity_Explosion_MooredShip_02",
+    "category": "object"
+  },
+  {
+    "name": "OldCity_Explosion_Right_Floor",
+    "category": "object"
+  },
+  {
+    "name": "OldCity_Explosion_Small_FountainArea_Dock",
+    "category": "object"
+  },
+  {
+    "name": "OldCity_Explosion_Small_Right_Floor",
+    "category": "object"
+  },
+  {
+    "name": "OldCity_Explosion_SmallFire_MooredShip",
+    "category": "object"
+  },
+  {
+    "name": "OldCity_Explosion_Smoke_FountainArea_ArchWay",
+    "category": "object"
+  },
+  {
+    "name": "OldCity_ExplosionEnterRoom",
+    "category": "object"
+  },
+  {
+    "name": "OldCity_ExplosionMediumRight",
+    "category": "object"
+  },
+  {
+    "name": "OldCity_Fountain_Checkpoint",
+    "category": "object"
+  },
+  {
+    "name": "OldCity_GladiatorSpawner_1",
+    "category": "object"
+  },
+  {
+    "name": "OldCity_GladiatorSpawner_2",
+    "category": "object"
+  },
+  {
+    "name": "OldCity_LeftWing_Checkpoint",
+    "category": "object"
+  },
+  {
+    "name": "OldCity_PuzzleBridge",
+    "category": "object"
+  },
+  {
+    "name": "OldCity_PuzzleStonePile",
+    "category": "object"
+  },
+  {
+    "name": "OldCity_RightWing_Checkpoint",
+    "category": "object"
+  },
+  {
+    "name": "OldCity_Trigger_CourtYard",
+    "category": "object"
+  },
+  {
+    "name": "OldCity_Trigger_CrossBridge",
+    "category": "object"
+  },
+  {
+    "name": "OldCity_Trigger_EnterStorageRoom",
+    "category": "object"
+  },
+  {
+    "name": "OldCity_Trigger_InFrontOfBeam",
+    "category": "object"
+  },
+  {
+    "name": "OldCity_Trigger_Jump",
+    "category": "object"
+  },
+  {
+    "name": "OldCity_Trigger_ShieldBeam_Fall",
+    "category": "object"
+  },
+  {
+    "name": "PaperMap_CC",
+    "category": "object"
+  },
+  {
+    "name": "PickupEntitySpawner",
+    "category": "object"
+  },
+  {
+    "name": "Pile_Of_Chests",
+    "category": "object",
+    "icon": "t_scen_Pile_Of_Chests_icon.png"
+  },
+  {
+    "name": "PilotHelmet_CC",
+    "category": "object"
+  },
+  {
+    "name": "ProximityAction",
+    "category": "object"
+  },
+  {
+    "name": "PVPBase",
+    "category": "object"
+  },
+  {
+    "name": "PVPFlag",
+    "category": "object"
+  },
+  {
+    "name": "Rack_Tool_A",
+    "category": "object"
+  },
+  {
+    "name": "Rack_Weapon_A",
+    "category": "object"
+  },
+  {
+    "name": "Reward_Banner_A",
+    "category": "object",
+    "icon": "t_scen_Reward_Banner_A_icon.png"
+  },
+  {
+    "name": "Reward_Banner_B",
+    "category": "object",
+    "icon": "t_scen_Reward_Banner_B_icon.png"
+  },
+  {
+    "name": "Shrub_A",
+    "category": "object",
+    "icon": "t_scen_Shrub_A_icon.png"
+  },
+  {
+    "name": "Shrub_B",
+    "category": "object",
+    "icon": "t_scen_Shrub_B_icon.png"
+  },
+  {
+    "name": "Shrub_Broadleaf_Plant_A",
+    "category": "object",
+    "icon": "t_scen_Shrub_Broadleaf_Plant_A_icon.png"
+  },
+  {
+    "name": "Shrub_Bulbous_Flower_A",
+    "category": "object",
+    "icon": "t_scen_Shrub_Bulbous_Flower_A_icon.png"
+  },
+  {
+    "name": "Shrub_CottonPlant_A",
+    "category": "object",
+    "icon": "t_scen_Shrub_CottonPlant_A_icon.png"
+  },
+  {
+    "name": "Shrub_Fern_A",
+    "category": "object",
+    "icon": "t_scen_Shrub_Fern_A_icon.png"
+  },
+  {
+    "name": "Shrub_Fern_Large_A",
+    "category": "object",
+    "icon": "t_scen_Shrub_Fern_Large_A_icon.png"
+  },
+  {
+    "name": "Shrub_Large_Flower_A",
+    "category": "object",
+    "icon": "t_scen_Shrub_Large_Flower_A_icon.png"
+  },
+  {
+    "name": "Shrub_Large_Flower_B",
+    "category": "object",
+    "icon": "t_scen_Shrub_Large_Flower_B_icon.png"
+  },
+  {
+    "name": "Shrub_Small_Tree_A",
+    "category": "object",
+    "icon": "t_scen_Shrub_Small_Tree_A_icon.png"
+  },
+  {
+    "name": "SkeletonSpawner",
+    "category": "object"
+  },
+  {
+    "name": "Social_ExplorerShip_Propeller",
+    "category": "object",
+    "icon": "t_scst_social_explorership_propeller_icon.png"
+  },
+  {
+    "name": "Social_Kite_A",
+    "category": "object"
+  },
+  {
+    "name": "Social_Kite_B",
+    "category": "object"
+  },
+  {
+    "name": "Social_Kite_C",
+    "category": "object"
+  },
+  {
+    "name": "Social_Kite_D",
+    "category": "object"
+  },
+  {
+    "name": "Social_PvP_Ship_Propeller",
+    "category": "object",
+    "icon": "t_scst_social_pvp_ship_propeller_icon.png"
+  },
+  {
+    "name": "Social_SettlerShip_Propeller_A",
+    "category": "object",
+    "icon": "t_scst_social_settlership_propeller_a_icon.png"
+  },
+  {
+    "name": "Social_SettlerShip_Propeller_B",
+    "category": "object",
+    "icon": "t_scst_social_settlership_propeller_b_icon.png"
+  },
+  {
+    "name": "Social_Ship_Cannon",
+    "category": "object",
+    "icon": "t_scst_social_ship_cannon_icon.png"
+  },
+  {
+    "name": "Social_Sign_Large",
+    "category": "object"
+  },
+  {
+    "name": "Social_Water_Wheel",
+    "category": "object",
+    "icon": "t_scst_social_water_wheel_icon.png"
+  },
+  {
+    "name": "Spawner_PortalRift",
+    "category": "object"
+  },
+  {
+    "name": "Spawner_PortalRift_Bipeds",
+    "category": "object"
+  },
+  {
+    "name": "Spawner_PortalRift_Rawbones",
+    "category": "object"
+  },
+  {
+    "name": "Spawner_PortalRift_Skitterlings",
+    "category": "object"
+  },
+  {
+    "name": "TestPlayer",
+    "category": "object"
+  },
+  {
+    "name": "Tiles_surround_A",
+    "category": "object",
+    "icon": "t_scst_tiles_surround_a_icon.png"
+  },
+  {
+    "name": "Tiles_surround_B",
+    "category": "object",
+    "icon": "t_scst_tiles_surround_b_icon.png"
+  },
+  {
+    "name": "Tiles_surround_C",
+    "category": "object",
+    "icon": "t_scst_tiles_surround_c_icon.png"
+  },
+  {
+    "name": "Tiles_surround_D",
+    "category": "object",
+    "icon": "t_scst_tiles_surround_d_icon.png"
+  },
+  {
+    "name": "Tool_Explorer_Generic_Torch",
+    "category": "object"
+  },
+  {
+    "name": "Tree",
+    "category": "object",
+    "icon": "t_scen_Christmas_Tree_icon.png"
+  },
+  {
+    "name": "TreeIvy",
+    "category": "object"
+  },
+  {
+    "name": "TreeKeystoneOre",
+    "category": "object"
+  },
+  {
+    "name": "TreeMetalOre",
+    "category": "object"
+  },
+  {
+    "name": "TreeVine",
+    "category": "object"
+  },
+  {
+    "name": "Trigger_Generic",
+    "category": "object"
+  },
+  {
+    "name": "Vines",
+    "category": "object"
+  },
+  {
+    "name": "WA_BossRoom",
+    "category": "object"
+  },
+  {
+    "name": "WA_CaveMouth",
+    "category": "object"
+  },
+  {
+    "name": "WA_MountainTop",
+    "category": "object"
+  },
+  {
+    "name": "WA_Start",
+    "category": "object"
+  },
+  {
+    "name": "WA_Village",
+    "category": "object"
+  },
+  {
+    "name": "Window_Shutter_A_Lit",
+    "category": "object"
+  },
+  {
+    "name": "Window_Shutter_B_Lit",
+    "category": "object"
+  }
+]

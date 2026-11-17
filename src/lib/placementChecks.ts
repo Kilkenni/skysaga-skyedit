@@ -1,5 +1,5 @@
-import { EntityCatalogue } from "../constants";
-import { EntityData, getEntityYaw } from "./entities";
+import { EntityCatalogue } from "../constants.ts";
+import { EntityData, getEntityYaw } from "./entities.ts";
 import { keyOf } from "./keys";
 
 type PlaceCheck =
@@ -103,7 +103,6 @@ function canPlaceEntity(
 export {
   Cell,
   PlaceCheck,
-  EntityCatalogue,
   footprintCells,
   canPlaceEntity,
 }

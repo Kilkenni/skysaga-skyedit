@@ -1,0 +1,214 @@
+[
+  {
+    "name": "FTUE_Archer",
+    "category": "npc"
+  },
+  {
+    "name": "HUB_NPC_Beastmaster",
+    "category": "npc"
+  },
+  {
+    "name": "HUB_NPC_BlueprintShop",
+    "category": "npc"
+  },
+  {
+    "name": "HUB_NPC_CommunityQuests",
+    "category": "npc"
+  },
+  {
+    "name": "HUB_NPC_Crafter",
+    "category": "npc"
+  },
+  {
+    "name": "HUB_NPC_Crafter_OldCity",
+    "category": "npc"
+  },
+  {
+    "name": "HUB_NPC_CrafterShop",
+    "category": "npc"
+  },
+  {
+    "name": "HUB_NPC_ExpertQuests",
+    "category": "npc"
+  },
+  {
+    "name": "HUB_NPC_Explorer",
+    "category": "npc"
+  },
+  {
+    "name": "HUB_NPC_Explorer_OldCity",
+    "category": "npc"
+  },
+  {
+    "name": "HUB_NPC_ExplorerShop",
+    "category": "npc"
+  },
+  {
+    "name": "HUB_NPC_FabricShop",
+    "category": "npc"
+  },
+  {
+    "name": "HUB_NPC_FoodShop",
+    "category": "npc"
+  },
+  {
+    "name": "HUB_NPC_FurnitureRecipeShop",
+    "category": "npc"
+  },
+  {
+    "name": "HUB_NPC_Gladiator",
+    "category": "npc"
+  },
+  {
+    "name": "HUB_NPC_Gladiator_OldCity",
+    "category": "npc"
+  },
+  {
+    "name": "HUB_NPC_GladiatorShop",
+    "category": "npc"
+  },
+  {
+    "name": "HUB_NPC_GuildManager",
+    "category": "npc"
+  },
+  {
+    "name": "HUB_NPC_GuildShop",
+    "category": "npc"
+  },
+  {
+    "name": "HUB_NPC_InteractivePropSeller",
+    "category": "npc"
+  },
+  {
+    "name": "HUB_NPC_IslandDeedShop",
+    "category": "npc"
+  },
+  {
+    "name": "HUB_NPC_JungleMasteryQuest",
+    "category": "npc"
+  },
+  {
+    "name": "HUB_NPC_KeystoneShop",
+    "category": "npc"
+  },
+  {
+    "name": "HUB_NPC_LoreInfo",
+    "category": "npc"
+  },
+  {
+    "name": "HUB_NPC_MysteryBoxShop",
+    "category": "npc"
+  },
+  {
+    "name": "HUB_NPC_PlayerTitleShop",
+    "category": "npc"
+  },
+  {
+    "name": "HUB_NPC_PropSeller",
+    "category": "npc"
+  },
+  {
+    "name": "HUB_NPC_RareItemShop",
+    "category": "npc"
+  },
+  {
+    "name": "HUB_NPC_RecipeBuyerShop",
+    "category": "npc"
+  },
+  {
+    "name": "HUB_NPC_RepairShop",
+    "category": "npc"
+  },
+  {
+    "name": "HUB_NPC_Trader",
+    "category": "npc"
+  },
+  {
+    "name": "NPC_Blacksmith",
+    "category": "npc"
+  },
+  {
+    "name": "NPC_Builder",
+    "category": "npc"
+  },
+  {
+    "name": "NPC_Cartographer",
+    "category": "npc"
+  },
+  {
+    "name": "NPC_Fox",
+    "category": "npc"
+  },
+  {
+    "name": "NPC_Gatherer",
+    "category": "npc"
+  },
+  {
+    "name": "NPC_Hunter",
+    "category": "npc"
+  },
+  {
+    "name": "NPC_Miner",
+    "category": "npc"
+  },
+  {
+    "name": "NPC_Scout",
+    "category": "npc"
+  },
+  {
+    "name": "NPC_Travelling_Vendor",
+    "category": "npc"
+  },
+  {
+    "name": "QUEST_NPC_Arctic_Mastery_04_Portal",
+    "category": "npc"
+  },
+  {
+    "name": "QUEST_NPC_Arctic_Mastery_07",
+    "category": "npc"
+  },
+  {
+    "name": "QUEST_NPC_Arctic_Mastery_10",
+    "category": "npc"
+  },
+  {
+    "name": "QUEST_NPC_Desert_Mastery_05_Captain",
+    "category": "npc"
+  },
+  {
+    "name": "QUEST_NPC_Desert_Mastery_07_QuestGiver",
+    "category": "npc"
+  },
+  {
+    "name": "QUEST_NPC_Desert_Mastery_10_QuestGiver",
+    "category": "npc"
+  },
+  {
+    "name": "QUEST_NPC_Forest_Mastery_Agnes_Black",
+    "category": "npc"
+  },
+  {
+    "name": "QUEST_NPC_Forest_Mastery_Barnaby_Wyatt",
+    "category": "npc"
+  },
+  {
+    "name": "QUEST_NPC_Forest_Mastery_Step_01",
+    "category": "npc"
+  },
+  {
+    "name": "QUEST_NPC_Jungle_Mastery_02_Monkey_B",
+    "category": "npc"
+  },
+  {
+    "name": "QUEST_NPC_Jungle_Mastery_07_Monkey_C",
+    "category": "npc"
+  },
+  {
+    "name": "QUEST_NPC_Jungle_Mastery_07_Monkey_D",
+    "category": "npc"
+  },
+  {
+    "name": "QUEST_NPC_Jungle_Mastery_07_Monkey_E",
+    "category": "npc"
+  }
+]
