@@ -1230,7 +1230,7 @@
   {
     "name": "Firey_Chicken",
     "category": "creature",
-    "icon": "t_devi_Logicnetwork_mob_spawner_firey_chicken_icon.png"
+    "icon": "t_devi_Logicnetwork_mob_spawner_firey_chicken_icon"
   },
   {
     "name": "Forest_Bear_Fighter_0",

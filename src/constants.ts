@@ -4,6 +4,11 @@ import serviceEntities from "./data/serviceEntities.json" with {type: "json"};
 import deviceCells from "./data/deviceCells.json" with {type: "json"};
 import mapSizes from "./data/mapSizes.json" with {type: "json"};
 
+import entDevices from "./data/entity-device.json" with {type: "json"};
+import entNpcs from "./data/entity-npc.json" with {type: "json"};
+import entObjects from "./data/entity-object.json" with {type: "json"};
+import entCreatures from "./data/entity-creature.json" with {type: "json"};
+
 
 export const CHUNK = 32;
 export const CELL_BASE = 14;
@@ -23,6 +28,19 @@ export function mapSizeKey(x: number, y: number, z: number) {
 
 export type EntityCategory = "creature" | "npc" | "device" | "object" | "service";
 
+export interface EntityRegEntry {
+  name: string,
+  category: EntityCategory,
+  icon: string,
+}
+
+export const ENTITY_REGISTRY = {
+  DEVICE: entDevices as EntityRegEntry[],
+  NPC: entNpcs as EntityRegEntry[],
+  OBJECT: entObjects as EntityRegEntry[],
+  CREATURE: entCreatures as EntityRegEntry[],
+}
+
 export interface EntityCatalogue {
   footprints: Readonly<Record<string, readonly (readonly [number, number, number])[]>>;
   categories: ReadonlyMap<string, string>;
@@ -39,7 +57,7 @@ export const ENTITY_CATALOGUE: EntityCatalogue = {
   singleton: new Set(["Airship"]),
   service: new Set(serviceEntities),
 }
-export const ENTITY_CATEGORIES = ["creature", "npc", "device", "object"] as const;
+export const ENTITY_CATEGORIES = [ "device", "object", "creature", "npc"] as const;
 export const ENTITY_COLORS:Record<EntityCategory, number> = { creature: 0xff5f5f, npc: 0xffd166, device: 0x5fa8ff, object: 0xb0b6c3 , service: 0xff9ff9};
 
 export const BLOCK_NAMES = blocks;

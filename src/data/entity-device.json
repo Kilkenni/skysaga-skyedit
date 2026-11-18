@@ -2,7 +2,7 @@
   {
     "name": "Airship",
     "category": "device",
-    "icon": "t_devi_Airship_icon.png"
+    "icon": "t_devi_Airship_icon"
   },
   {
     "name": "Airship_Dock",
@@ -11,22 +11,22 @@
   {
     "name": "Airship_Wreckage_A",
     "category": "device",
-    "icon": "t_scen_Airship_Wreckage_A_icon.png"
+    "icon": "t_scen_Airship_Wreckage_A_icon"
   },
   {
     "name": "Airship_Wreckage_B",
     "category": "device",
-    "icon": "t_scen_Airship_Wreckage_B_icon.png"
+    "icon": "t_scen_Airship_Wreckage_B_icon"
   },
   {
     "name": "Airship_Wreckage_C",
     "category": "device",
-    "icon": "t_scen_Airship_Wreckage_C_icon.png"
+    "icon": "t_scen_Airship_Wreckage_C_icon"
   },
   {
     "name": "Altar_A",
     "category": "device",
-    "icon": "t_scen_Altar_A_icon.png"
+    "icon": "t_scen_Altar_A_icon"
   },
   {
     "name": "Anvil",
@@ -35,12 +35,12 @@
   {
     "name": "Anvil_2x1x1",
     "category": "device",
-    "icon": "t_scen_Anvil_2X1X1_icon.png"
+    "icon": "t_scen_Anvil_2X1X1_icon"
   },
   {
     "name": "Armour_Secondary",
     "category": "device",
-    "icon": "t_devi_Armour_Secondary_icon.png"
+    "icon": "t_devi_Armour_Secondary_icon"
   },
   {
     "name": "Armoury",
@@ -53,77 +53,77 @@
   {
     "name": "Barrel_A",
     "category": "device",
-    "icon": "t_scen_barrel_A_icon.png"
+    "icon": "t_scen_barrel_A_icon"
   },
   {
     "name": "Barrel_B",
     "category": "device",
-    "icon": "t_scen_Barrel_B_icon.png"
+    "icon": "t_scen_Barrel_B_icon"
   },
   {
     "name": "Barrel_Large_A",
     "category": "device",
-    "icon": "t_scen_Barrel_Large_A_icon.png"
+    "icon": "t_scen_Barrel_Large_A_icon"
   },
   {
     "name": "Barrel_With_Tap",
     "category": "device",
-    "icon": "t_scen_Barrel_With_Tap_icon.png"
+    "icon": "t_scen_Barrel_With_Tap_icon"
   },
   {
     "name": "Basket_A",
     "category": "device",
-    "icon": "t_scen_Basket_A_icon.png"
+    "icon": "t_scen_Basket_A_icon"
   },
   {
     "name": "Basket_Big_A",
     "category": "device",
-    "icon": "t_scen_Basket_Big_A_icon.png"
+    "icon": "t_scen_Basket_Big_A_icon"
   },
   {
     "name": "Bear_Skin_Rug_A",
     "category": "device",
-    "icon": "t_scen_Bear_Skin_Rug_A_icon.png"
+    "icon": "t_scen_Bear_Skin_Rug_A_icon"
   },
   {
     "name": "Bed_Fancy_A",
     "category": "device",
-    "icon": "t_scen_Bed_Fancy_A_icon.png"
+    "icon": "t_scen_Bed_Fancy_A_icon"
   },
   {
     "name": "Bed_Hammock_A",
     "category": "device",
-    "icon": "t_scen_Bed_Hammock_A_icon.png"
+    "icon": "t_scen_Bed_Hammock_A_icon"
   },
   {
     "name": "Bed_Iron_A",
     "category": "device",
-    "icon": "t_scen_Bed_Iron_A_icon.png"
+    "icon": "t_scen_Bed_Iron_A_icon"
   },
   {
     "name": "Bed_Jungle_Lizard_3x1x3",
     "category": "device",
-    "icon": "t_scen_Bed_Jungle_Lizard_3X1X3_icon.png"
+    "icon": "t_scen_Bed_Jungle_Lizard_3X1X3_icon"
   },
   {
     "name": "Bed_Rustic_A",
     "category": "device",
-    "icon": "t_scen_Bed_Rustic_A_icon.png"
+    "icon": "t_scen_Bed_Rustic_A_icon"
   },
   {
     "name": "Bed_Tudor",
     "category": "device",
-    "icon": "t_scen_Bed_Tudor_icon.png"
+    "icon": "t_scen_Bed_Tudor_icon"
   },
   {
     "name": "Bedroll_3x1x1",
     "category": "device",
-    "icon": "t_scen_Bedroll_3X1X1_icon.png"
+    "icon": "t_scen_Bedroll_3X1X1_icon"
   },
   {
     "name": "Beehive_A",
     "category": "device",
-    "icon": "t_scst_beehive_a_icon.png"
+    "icon": "t_scst_beehive_a_icon"
   },
   {
     "name": "Bellows",
@@ -132,27 +132,27 @@
   {
     "name": "Bench_A",
     "category": "device",
-    "icon": "t_scen_bench_A_icon.png"
+    "icon": "t_scen_bench_A_icon"
   },
   {
     "name": "Bench_B",
     "category": "device",
-    "icon": "t_scen_bench_B_icon.png"
+    "icon": "t_scen_bench_B_icon"
   },
   {
     "name": "Bench_Bamboo_A",
     "category": "device",
-    "icon": "t_scen_Bench_Bamboo_A_icon.png"
+    "icon": "t_scen_Bench_Bamboo_A_icon"
   },
   {
     "name": "Bench_Stone_A",
     "category": "device",
-    "icon": "t_scen_Bench_Stone_A_icon.png"
+    "icon": "t_scen_Bench_Stone_A_icon"
   },
   {
     "name": "Bench_Tudor",
     "category": "device",
-    "icon": "t_scen_Bench_Tudor_icon.png"
+    "icon": "t_scen_Bench_Tudor_icon"
   },
   {
     "name": "BlueprintConstructor",
@@ -165,142 +165,142 @@
   {
     "name": "BlueprintCreator",
     "category": "device",
-    "icon": "t_devi_BlueprintCreator_icon.png"
+    "icon": "t_devi_BlueprintCreator_icon"
   },
   {
     "name": "Boat_Upsidedown",
     "category": "device",
-    "icon": "t_scen_Boat_Upsidedown_icon.png"
+    "icon": "t_scen_Boat_Upsidedown_icon"
   },
   {
     "name": "Boat_Vertical",
     "category": "device",
-    "icon": "t_scen_Boat_Vertical_icon.png"
+    "icon": "t_scen_Boat_Vertical_icon"
   },
   {
     "name": "Bone_GiantRib_A",
     "category": "device",
-    "icon": "t_scen_Bone_GiantRib_A_icon.png"
+    "icon": "t_scen_Bone_GiantRib_A_icon"
   },
   {
     "name": "Bone_GiantRib_B",
     "category": "device",
-    "icon": "t_scen_Bone_GiantRib_B_icon.png"
+    "icon": "t_scen_Bone_GiantRib_B_icon"
   },
   {
     "name": "Bone_GiantRib_C",
     "category": "device",
-    "icon": "t_scen_Bone_GiantRib_C_icon.png"
+    "icon": "t_scen_Bone_GiantRib_C_icon"
   },
   {
     "name": "Bone_GiantSkull_A",
     "category": "device",
-    "icon": "t_scen_Bone_GiantSkull_A_icon.png"
+    "icon": "t_scen_Bone_GiantSkull_A_icon"
   },
   {
     "name": "Bone_GiantSkull_B",
     "category": "device",
-    "icon": "t_scen_Bone_GiantSkull_B_icon.png"
+    "icon": "t_scen_Bone_GiantSkull_B_icon"
   },
   {
     "name": "Bone_GiantSkull_C",
     "category": "device",
-    "icon": "t_scen_Bone_GiantSkull_C_icon.png"
+    "icon": "t_scen_Bone_GiantSkull_C_icon"
   },
   {
     "name": "Bone_Pile_A",
     "category": "device",
-    "icon": "t_scen_Bone_Pile_A_icon.png"
+    "icon": "t_scen_Bone_Pile_A_icon"
   },
   {
     "name": "Bone_Pile_B",
     "category": "device",
-    "icon": "t_scen_Bone_Pile_B_icon.png"
+    "icon": "t_scen_Bone_Pile_B_icon"
   },
   {
     "name": "Bone_Ribs_A",
     "category": "device",
-    "icon": "t_scen_Bone_Ribs_A_icon.png"
+    "icon": "t_scen_Bone_Ribs_A_icon"
   },
   {
     "name": "Bone_Skull_A",
     "category": "device",
-    "icon": "t_scen_Bone_Skull_A_icon.png"
+    "icon": "t_scen_Bone_Skull_A_icon"
   },
   {
     "name": "Books_Shelf_A",
     "category": "device",
-    "icon": "t_scen_Books_Shelf_A_icon.png"
+    "icon": "t_scen_Books_Shelf_A_icon"
   },
   {
     "name": "Books_Stack_A",
     "category": "device",
-    "icon": "t_scen_Books_Stack_A_icon.png"
+    "icon": "t_scen_Books_Stack_A_icon"
   },
   {
     "name": "Bookshelf_Desert",
     "category": "device",
-    "icon": "t_scen_Bookshelf_Desert_icon.png"
+    "icon": "t_scen_Bookshelf_Desert_icon"
   },
   {
     "name": "BookShelf_Tudor",
     "category": "device",
-    "icon": "t_scen_BookShelf_Tudor_icon.png"
+    "icon": "t_scen_BookShelf_Tudor_icon"
   },
   {
     "name": "Bridge_Slats_A",
     "category": "device",
-    "icon": "t_scst_bridge_slats_a_icon.png"
+    "icon": "t_scst_bridge_slats_a_icon"
   },
   {
     "name": "Bucket_A",
     "category": "device",
-    "icon": "t_scen_bucket_A_icon.png"
+    "icon": "t_scen_bucket_A_icon"
   },
   {
     "name": "Bucket_Metal",
     "category": "device",
-    "icon": "t_scen_Bucket_Metal_icon.png"
+    "icon": "t_scen_Bucket_Metal_icon"
   },
   {
     "name": "Bucket_Of_Ore",
     "category": "device",
-    "icon": "t_scen_Bucket_Of_Ore_icon.png"
+    "icon": "t_scen_Bucket_Of_Ore_icon"
   },
   {
     "name": "Bug_Egg_A",
     "category": "device",
-    "icon": "t_scen_Bug_Egg_A_icon.png"
+    "icon": "t_scen_Bug_Egg_A_icon"
   },
   {
     "name": "Bug_Egg_Large_A",
     "category": "device",
-    "icon": "t_scen_Bug_Egg_Large_A_icon.png"
+    "icon": "t_scen_Bug_Egg_Large_A_icon"
   },
   {
     "name": "Bug_Plant_A",
     "category": "device",
-    "icon": "t_scen_Bug_Plant_A_icon.png"
+    "icon": "t_scen_Bug_Plant_A_icon"
   },
   {
     "name": "Bug_Vent_A",
     "category": "device",
-    "icon": "t_scen_Bug_Vent_A_icon.png"
+    "icon": "t_scen_Bug_Vent_A_icon"
   },
   {
     "name": "Bureau_Jungle_Lizard_2x2x1",
     "category": "device",
-    "icon": "t_scen_Bureau_Jungle_Lizard_2X2X1_icon.png"
+    "icon": "t_scen_Bureau_Jungle_Lizard_2X2X1_icon"
   },
   {
     "name": "Bush",
     "category": "device",
-    "icon": "t_scen_Bush_icon.png"
+    "icon": "t_scen_Bush_icon"
   },
   {
     "name": "Camp_Fire",
     "category": "device",
-    "icon": "t_devi_Camp_Fire_icon.png"
+    "icon": "t_devi_Camp_Fire_icon"
   },
   {
     "name": "Camp_Fire_With_Smoke",
@@ -309,22 +309,22 @@
   {
     "name": "Cart_A",
     "category": "device",
-    "icon": "t_scen_cart_A_icon.png"
+    "icon": "t_scen_cart_A_icon"
   },
   {
     "name": "Cart_B",
     "category": "device",
-    "icon": "t_scen_Cart_B_icon.png"
+    "icon": "t_scen_Cart_B_icon"
   },
   {
     "name": "Cart_Wood",
     "category": "device",
-    "icon": "t_scen_Cart_Wood_icon.png"
+    "icon": "t_scen_Cart_Wood_icon"
   },
   {
     "name": "Cart_Wood_With_Sacks_3x2x2",
     "category": "device",
-    "icon": "t_scen_Cart_Wood_With_Sacks_3x2x2_icon.png"
+    "icon": "t_scen_Cart_Wood_With_Sacks_3x2x2_icon"
   },
   {
     "name": "Cauldron",
@@ -333,7 +333,7 @@
   {
     "name": "Cave_Crystal_Clump_A",
     "category": "device",
-    "icon": "t_scen_Cave_Crystal_Clump_A_icon.png"
+    "icon": "t_scen_Cave_Crystal_Clump_A_icon"
   },
   {
     "name": "Cave_Crystal_Clump_A_Lit",
@@ -342,52 +342,52 @@
   {
     "name": "Cave_Crystal_Clump_Large",
     "category": "device",
-    "icon": "t_scen_Cave_Crystal_Clump_Large_icon.png"
+    "icon": "t_scen_Cave_Crystal_Clump_Large_icon"
   },
   {
     "name": "Cave_Crystal_Hanging_A",
     "category": "device",
-    "icon": "t_scen_Cave_Crystal_Hanging_A_icon.png"
+    "icon": "t_scen_Cave_Crystal_Hanging_A_icon"
   },
   {
     "name": "Cellar_Grate_A",
     "category": "device",
-    "icon": "t_scen_Cellar_Grate_A_icon.png"
+    "icon": "t_scen_Cellar_Grate_A_icon"
   },
   {
     "name": "Chair_A",
     "category": "device",
-    "icon": "t_scen_chair_A_icon.png"
+    "icon": "t_scen_chair_A_icon"
   },
   {
     "name": "Chair_B",
     "category": "device",
-    "icon": "t_scen_Chair_B_icon.png"
+    "icon": "t_scen_Chair_B_icon"
   },
   {
     "name": "Chair_Bamboo_A",
     "category": "device",
-    "icon": "t_scen_Chair_Bamboo_A_icon.png"
+    "icon": "t_scen_Chair_Bamboo_A_icon"
   },
   {
     "name": "Chair_Fancy_A",
     "category": "device",
-    "icon": "t_scen_Chair_Fancy_A_icon.png"
+    "icon": "t_scen_Chair_Fancy_A_icon"
   },
   {
     "name": "Chair_Jungle_Lizard_1x1x1",
     "category": "device",
-    "icon": "t_scen_Chair_Jungle_Lizard_1X1X1_icon.png"
+    "icon": "t_scen_Chair_Jungle_Lizard_1X1X1_icon"
   },
   {
     "name": "Chair_Tudor",
     "category": "device",
-    "icon": "t_scen_Chair_Tudor_icon.png"
+    "icon": "t_scen_Chair_Tudor_icon"
   },
   {
     "name": "Chair_Tudor_Tall",
     "category": "device",
-    "icon": "t_scen_Chair_Tudor_Tall_icon.png"
+    "icon": "t_scen_Chair_Tudor_Tall_icon"
   },
   {
     "name": "Chest",
@@ -396,12 +396,12 @@
   {
     "name": "Chest_Adventure_End",
     "category": "device",
-    "icon": "t_devi_Chest_Adventure_End_icon.png"
+    "icon": "t_devi_Chest_Adventure_End_icon"
   },
   {
     "name": "Chest_Big",
     "category": "device",
-    "icon": "t_devi_Chest_Big_icon.png"
+    "icon": "t_devi_Chest_Big_icon"
   },
   {
     "name": "Chest_Big_Titan",
@@ -410,17 +410,17 @@
   {
     "name": "Chest_Blacksmith_Major",
     "category": "device",
-    "icon": "t_devi_chest_blacksmith_major_icon.png"
+    "icon": "t_devi_chest_blacksmith_major_icon"
   },
   {
     "name": "Chest_Blacksmith_Minor",
     "category": "device",
-    "icon": "t_devi_chest_blacksmith_minor_icon.png"
+    "icon": "t_devi_chest_blacksmith_minor_icon"
   },
   {
     "name": "Chest_Christmas_Minor",
     "category": "device",
-    "icon": "t_devi_Chest_Christmas_Minor_icon.png"
+    "icon": "t_devi_Chest_Christmas_Minor_icon"
   },
   {
     "name": "Chest_EndGame",
@@ -429,12 +429,12 @@
   {
     "name": "Chest_Generic_Major",
     "category": "device",
-    "icon": "t_devi_Chest_Generic_Major_icon.png"
+    "icon": "t_devi_Chest_Generic_Major_icon"
   },
   {
     "name": "Chest_Generic_Minor",
     "category": "device",
-    "icon": "t_devi_Chest_Generic_Minor_icon.png"
+    "icon": "t_devi_Chest_Generic_Minor_icon"
   },
   {
     "name": "Chest_Golden",
@@ -443,12 +443,12 @@
   {
     "name": "Chest_Lizardmen_Major",
     "category": "device",
-    "icon": "t_devi_Chest_Lizardmen_Major_icon.png"
+    "icon": "t_devi_Chest_Lizardmen_Major_icon"
   },
   {
     "name": "Chest_Lizardmen_Minor",
     "category": "device",
-    "icon": "t_devi_Chest_Lizardmen_Minor_icon.png"
+    "icon": "t_devi_Chest_Lizardmen_Minor_icon"
   },
   {
     "name": "Chest_Major_Arrow_Titan",
@@ -573,42 +573,42 @@
   {
     "name": "Chest_Monkey_Major",
     "category": "device",
-    "icon": "t_devi_chest_monkey_major_icon.png"
+    "icon": "t_devi_chest_monkey_major_icon"
   },
   {
     "name": "Chest_Monkey_Minor",
     "category": "device",
-    "icon": "t_devi_chest_monkey_minor_icon.png"
+    "icon": "t_devi_chest_monkey_minor_icon"
   },
   {
     "name": "Chest_Survivalist_Major",
     "category": "device",
-    "icon": "t_devi_Chest_Survivalist_Major_icon.png"
+    "icon": "t_devi_Chest_Survivalist_Major_icon"
   },
   {
     "name": "Chest_Survivalist_Minor",
     "category": "device",
-    "icon": "t_devi_Chest_Survivalist_Minor_icon.png"
+    "icon": "t_devi_Chest_Survivalist_Minor_icon"
   },
   {
     "name": "Chest_Trader_Major",
     "category": "device",
-    "icon": "t_devi_Chest_Trader_Major_icon.png"
+    "icon": "t_devi_Chest_Trader_Major_icon"
   },
   {
     "name": "Chest_Trader_Minor",
     "category": "device",
-    "icon": "t_devi_Chest_Trader_Minor_icon.png"
+    "icon": "t_devi_Chest_Trader_Minor_icon"
   },
   {
     "name": "Chest_Yeti_Major",
     "category": "device",
-    "icon": "t_devi_Chest_Yeti_Major_icon.png"
+    "icon": "t_devi_Chest_Yeti_Major_icon"
   },
   {
     "name": "Chest_Yeti_Minor",
     "category": "device",
-    "icon": "t_devi_Chest_Yeti_Minor_icon.png"
+    "icon": "t_devi_Chest_Yeti_Minor_icon"
   },
   {
     "name": "ChestMinorLootPvP",
@@ -617,47 +617,47 @@
   {
     "name": "Chimney_Tudor_A",
     "category": "device",
-    "icon": "t_scen_Chimney_Tudor_A_icon.png"
+    "icon": "t_scen_Chimney_Tudor_A_icon"
   },
   {
     "name": "Chimney_Tudor_B",
     "category": "device",
-    "icon": "t_scen_Chimney_Tudor_B_icon.png"
+    "icon": "t_scen_Chimney_Tudor_B_icon"
   },
   {
     "name": "Chimney_Tudor_C",
     "category": "device",
-    "icon": "t_scen_Chimney_Tudor_C_icon.png"
+    "icon": "t_scen_Chimney_Tudor_C_icon"
   },
   {
     "name": "Christmas_Snowman",
     "category": "device",
-    "icon": "t_scen_Christmas_Snowman_icon.png"
+    "icon": "t_scen_Christmas_Snowman_icon"
   },
   {
     "name": "Christmas_Tree",
     "category": "device",
-    "icon": "t_scen_Christmas_Tree_icon.png"
+    "icon": "t_scen_Christmas_Tree_icon"
   },
   {
     "name": "Clock_Longcase",
     "category": "device",
-    "icon": "t_scen_Clock_Longcase_icon.png"
+    "icon": "t_scen_Clock_Longcase_icon"
   },
   {
     "name": "Coffer_A",
     "category": "device",
-    "icon": "t_scen_Coffer_A_icon.png"
+    "icon": "t_scen_Coffer_A_icon"
   },
   {
     "name": "Coffer_Desert_2x1",
     "category": "device",
-    "icon": "t_scen_Coffer_Desert_2X1_icon.png"
+    "icon": "t_scen_Coffer_Desert_2X1_icon"
   },
   {
     "name": "Coffer_Tudor",
     "category": "device",
-    "icon": "t_scen_Coffer_Tudor_icon.png"
+    "icon": "t_scen_Coffer_Tudor_icon"
   },
   {
     "name": "Cold_Weather_Survival_Kit",
@@ -666,7 +666,7 @@
   {
     "name": "Collapsed_Doorway",
     "category": "device",
-    "icon": "t_scen_Collapsed_Doorway_icon.png"
+    "icon": "t_scen_Collapsed_Doorway_icon"
   },
   {
     "name": "Compressor",
@@ -675,62 +675,62 @@
   {
     "name": "Cornice_Metal_A",
     "category": "device",
-    "icon": "t_scen_Cornice_Metal_A_icon.png"
+    "icon": "t_scen_Cornice_Metal_A_icon"
   },
   {
     "name": "Cornice_Metal_B",
     "category": "device",
-    "icon": "t_scen_Cornice_Metal_B_icon.png"
+    "icon": "t_scen_Cornice_Metal_B_icon"
   },
   {
     "name": "Cornice_Metal_C",
     "category": "device",
-    "icon": "t_scen_Cornice_Metal_C_icon.png"
+    "icon": "t_scen_Cornice_Metal_C_icon"
   },
   {
     "name": "Cornice_Stone_A",
     "category": "device",
-    "icon": "t_scen_Cornice_Stone_A_icon.png"
+    "icon": "t_scen_Cornice_Stone_A_icon"
   },
   {
     "name": "Cornice_Stone_B",
     "category": "device",
-    "icon": "t_scen_Cornice_Stone_B_icon.png"
+    "icon": "t_scen_Cornice_Stone_B_icon"
   },
   {
     "name": "Cornice_Stone_C",
     "category": "device",
-    "icon": "t_scen_Cornice_Stone_C_icon.png"
+    "icon": "t_scen_Cornice_Stone_C_icon"
   },
   {
     "name": "Cornice_Wood_A",
     "category": "device",
-    "icon": "t_scen_Cornice_Wood_A_icon.png"
+    "icon": "t_scen_Cornice_Wood_A_icon"
   },
   {
     "name": "Cornice_Wood_B",
     "category": "device",
-    "icon": "t_scen_Cornice_Wood_B_icon.png"
+    "icon": "t_scen_Cornice_Wood_B_icon"
   },
   {
     "name": "Cornice_Wood_C",
     "category": "device",
-    "icon": "t_scen_Cornice_Wood_C_icon.png"
+    "icon": "t_scen_Cornice_Wood_C_icon"
   },
   {
     "name": "Counter_Tudor_5x1x1",
     "category": "device",
-    "icon": "t_scen_Counter_Tudor_5X1X1_icon.png"
+    "icon": "t_scen_Counter_Tudor_5X1X1_icon"
   },
   {
     "name": "Cracked_Cover_Stone_3x1x3",
     "category": "device",
-    "icon": "t_scen_Cracked_Cover_Stone_3x1x3_icon.png"
+    "icon": "t_scen_Cracked_Cover_Stone_3x1x3_icon"
   },
   {
     "name": "Cracked_Cover_Stone_3x3x1",
     "category": "device",
-    "icon": "t_scen_Cracked_Cover_Stone_3x3x1_icon.png"
+    "icon": "t_scen_Cracked_Cover_Stone_3x3x1_icon"
   },
   {
     "name": "Crafting_Device",
@@ -739,22 +739,22 @@
   {
     "name": "Crate_A",
     "category": "device",
-    "icon": "t_scen_crate_A_icon.png"
+    "icon": "t_scen_crate_A_icon"
   },
   {
     "name": "Crate_B",
     "category": "device",
-    "icon": "t_scen_Crate_B_icon.png"
+    "icon": "t_scen_Crate_B_icon"
   },
   {
     "name": "Crate_Keystone",
     "category": "device",
-    "icon": "t_scst_crate_keystone_icon.png"
+    "icon": "t_scst_crate_keystone_icon"
   },
   {
     "name": "Crate_Keystone_Open",
     "category": "device",
-    "icon": "t_scst_crate_keystone_open_icon.png"
+    "icon": "t_scst_crate_keystone_open_icon"
   },
   {
     "name": "CustomSpawner_Cage_Wolf",
@@ -775,7 +775,7 @@
   {
     "name": "Drying_Rack_A",
     "category": "device",
-    "icon": "t_scen_Drying_Rack_A_icon.png"
+    "icon": "t_scen_Drying_Rack_A_icon"
   },
   {
     "name": "ExitTeleporter",
@@ -788,57 +788,57 @@
   {
     "name": "Fence_Jungle_Lizard_Stone",
     "category": "device",
-    "icon": "t_scst_Fence_Jungle_Lizard_Stone_icon.png"
+    "icon": "t_scst_Fence_Jungle_Lizard_Stone_icon"
   },
   {
     "name": "Fence_Metal_A",
     "category": "device",
-    "icon": "t_scst_fence_metal_a_icon.png"
+    "icon": "t_scst_fence_metal_a_icon"
   },
   {
     "name": "Fence_Panel_A",
     "category": "device",
-    "icon": "t_scst_fence_panel_a_icon.png"
+    "icon": "t_scst_fence_panel_a_icon"
   },
   {
     "name": "Fence_Rope_A",
     "category": "device",
-    "icon": "t_scst_fence_rope_a_icon.png"
+    "icon": "t_scst_fence_rope_a_icon"
   },
   {
     "name": "Fence_Stone_A",
     "category": "device",
-    "icon": "t_scst_fence_stone_a_icon.png"
+    "icon": "t_scst_fence_stone_a_icon"
   },
   {
     "name": "Fence_Wood_A",
     "category": "device",
-    "icon": "t_scst_Fence_Wood_A_icon.png"
+    "icon": "t_scst_Fence_Wood_A_icon"
   },
   {
     "name": "Fire_Pit_A",
     "category": "device",
-    "icon": "t_scen_Fire_Pit_A_icon.png"
+    "icon": "t_scen_Fire_Pit_A_icon"
   },
   {
     "name": "Fireworks_Device",
     "category": "device",
-    "icon": "t_devi_Fireworks_Device_icon.png"
+    "icon": "t_devi_Fireworks_Device_icon"
   },
   {
     "name": "Fishing_Net_A",
     "category": "device",
-    "icon": "t_scen_Fishing_Net_A_icon.png"
+    "icon": "t_scen_Fishing_Net_A_icon"
   },
   {
     "name": "Flag_A",
     "category": "device",
-    "icon": "t_scst_flag_a_icon.png"
+    "icon": "t_scst_flag_a_icon"
   },
   {
     "name": "Food_Primary",
     "category": "device",
-    "icon": "t_devi_Food_Primary_icon.png"
+    "icon": "t_devi_Food_Primary_icon"
   },
   {
     "name": "Forge",
@@ -847,17 +847,17 @@
   {
     "name": "Fountain_Tudor_5x5x5",
     "category": "device",
-    "icon": "t_scen_Fountain_Tudor_5X5X5_icon.png"
+    "icon": "t_scen_Fountain_Tudor_5X5X5_icon"
   },
   {
     "name": "Freestanding_Banner_Explorer_1x3x1",
     "category": "device",
-    "icon": "t_scen_Freestanding_Banner_Explorer_1x3x1_icon.png"
+    "icon": "t_scen_Freestanding_Banner_Explorer_1x3x1_icon"
   },
   {
     "name": "Freestanding_Banner_Settler_1x3x1",
     "category": "device",
-    "icon": "t_scen_Freestanding_Banner_Settler_1x3x1_icon.png"
+    "icon": "t_scen_Freestanding_Banner_Settler_1x3x1_icon"
   },
   {
     "name": "Furniture_Device",
@@ -874,237 +874,237 @@
   {
     "name": "Glowing_WallDec_Stone_Large_A",
     "category": "device",
-    "icon": "t_scen_Glowing_WallDec_Stone_Large_A_icon.png"
+    "icon": "t_scen_Glowing_WallDec_Stone_Large_A_icon"
   },
   {
     "name": "Glowing_WallDec_Stone_Small_A",
     "category": "device",
-    "icon": "t_scen_Glowing_WallDec_Stone_Small_A_icon.png"
+    "icon": "t_scen_Glowing_WallDec_Stone_Small_A_icon"
   },
   {
     "name": "Gramophone_1x2x1",
     "category": "device",
-    "icon": "t_scen_Gramophone_1X2X1_icon.png"
+    "icon": "t_scen_Gramophone_1X2X1_icon"
   },
   {
     "name": "Grate",
     "category": "device",
-    "icon": "t_scen_Grate_icon.png"
+    "icon": "t_scen_Grate_icon"
   },
   {
     "name": "Grindstone_A",
     "category": "device",
-    "icon": "t_scen_grindStone_A_icon.png"
+    "icon": "t_scen_grindStone_A_icon"
   },
   {
     "name": "Halloween_Skull_1x1x1",
     "category": "device",
-    "icon": "t_scen_Halloween_Skull_1X1X1_icon.png"
+    "icon": "t_scen_Halloween_Skull_1X1X1_icon"
   },
   {
     "name": "Hanging_Awning_Tudor_1x1x1",
     "category": "device",
-    "icon": "t_scen_Hanging_Awning_Tudor_1X1X1_icon.png"
+    "icon": "t_scen_Hanging_Awning_Tudor_1X1X1_icon"
   },
   {
     "name": "Hanging_Awning_Tudor_1x2x2",
     "category": "device",
-    "icon": "t_scen_Hanging_Awning_Tudor_1X2X2_icon.png"
+    "icon": "t_scen_Hanging_Awning_Tudor_1X2X2_icon"
   },
   {
     "name": "Hanging_Banner_A",
     "category": "device",
-    "icon": "t_scen_Hanging_Banner_A_icon.png"
+    "icon": "t_scen_Hanging_Banner_A_icon"
   },
   {
     "name": "Hanging_Banner_Desert_1x3x1",
     "category": "device",
-    "icon": "t_scen_Hanging_Banner_Desert_1X3X1_icon.png"
+    "icon": "t_scen_Hanging_Banner_Desert_1X3X1_icon"
   },
   {
     "name": "Hanging_Banner_Desert_3x3x1",
     "category": "device",
-    "icon": "t_scen_Hanging_Banner_Desert_3X3X1_icon.png"
+    "icon": "t_scen_Hanging_Banner_Desert_3X3X1_icon"
   },
   {
     "name": "Hanging_Banner_Jungle_Lizard_1x3x1",
     "category": "device",
-    "icon": "t_scen_Hanging_Banner_Jungle_Lizard_1X3X1_icon.png"
+    "icon": "t_scen_Hanging_Banner_Jungle_Lizard_1X3X1_icon"
   },
   {
     "name": "Hanging_Banner_Jungle_Lizard_3x3x1",
     "category": "device",
-    "icon": "t_scen_Hanging_Banner_Jungle_Lizard_3X3X1_icon.png"
+    "icon": "t_scen_Hanging_Banner_Jungle_Lizard_3X3X1_icon"
   },
   {
     "name": "Hanging_Banner_Jungle_Lizard_B_3x3x1",
     "category": "device",
-    "icon": "t_scen_Hanging_Banner_Jungle_Lizard_B_3X3X1_icon.png"
+    "icon": "t_scen_Hanging_Banner_Jungle_Lizard_B_3X3X1_icon"
   },
   {
     "name": "Hanging_Banner_Monkey_Large",
     "category": "device",
-    "icon": "t_scen_Hanging_Banner_Monkey_Large_icon.png"
+    "icon": "t_scen_Hanging_Banner_Monkey_Large_icon"
   },
   {
     "name": "Hanging_Banner_Monkey_Small",
     "category": "device",
-    "icon": "t_scen_Hanging_Banner_Monkey_Small_icon.png"
+    "icon": "t_scen_Hanging_Banner_Monkey_Small_icon"
   },
   {
     "name": "Hanging_Banner_Mountain_1x3x1",
     "category": "device",
-    "icon": "t_scen_Hanging_Banner_Mountain_1x3x1_icon.png"
+    "icon": "t_scen_Hanging_Banner_Mountain_1x3x1_icon"
   },
   {
     "name": "Hanging_Banner_Mountain_3x3x1",
     "category": "device",
-    "icon": "t_scen_Hanging_Banner_Mountain_3x3x1_icon.png"
+    "icon": "t_scen_Hanging_Banner_Mountain_3x3x1_icon"
   },
   {
     "name": "Hanging_Bunting_Tudor",
     "category": "device",
-    "icon": "t_scen_Hanging_Bunting_Tudor_icon.png"
+    "icon": "t_scen_Hanging_Bunting_Tudor_icon"
   },
   {
     "name": "Hanging_Bunting_Tudor_Flag",
     "category": "device",
-    "icon": "t_scen_Hanging_Bunting_Tudor_Flag_icon.png"
+    "icon": "t_scen_Hanging_Bunting_Tudor_Flag_icon"
   },
   {
     "name": "Hanging_Canopy_A",
     "category": "device",
-    "icon": "t_scst_hanging_canopy_a_icon.png"
+    "icon": "t_scst_hanging_canopy_a_icon"
   },
   {
     "name": "Hanging_Canopy_B",
     "category": "device",
-    "icon": "t_scst_hanging_canopy_b_icon.png"
+    "icon": "t_scst_hanging_canopy_b_icon"
   },
   {
     "name": "Hanging_Canopy_C",
     "category": "device",
-    "icon": "t_scst_hanging_canopy_c_icon.png"
+    "icon": "t_scst_hanging_canopy_c_icon"
   },
   {
     "name": "Hanging_Christmas_Lights",
     "category": "device",
-    "icon": "t_scen_Hanging_Christmas_Lights_icon.png"
+    "icon": "t_scen_Hanging_Christmas_Lights_icon"
   },
   {
     "name": "Hanging_Christmas_Stocking",
     "category": "device",
-    "icon": "t_scen_Hanging_Christmas_Stocking_icon.png"
+    "icon": "t_scen_Hanging_Christmas_Stocking_icon"
   },
   {
     "name": "Hanging_Christmas_Wreath",
     "category": "device",
-    "icon": "t_scen_Hanging_Christmas_Wreath_icon.png"
+    "icon": "t_scen_Hanging_Christmas_Wreath_icon"
   },
   {
     "name": "Hanging_Herbs_A",
     "category": "device",
-    "icon": "t_scen_hanging_herbs_A_icon.png"
+    "icon": "t_scen_hanging_herbs_A_icon"
   },
   {
     "name": "Hanging_Jewel_Lamp_A",
     "category": "device",
-    "icon": "t_scen_Hanging_Jewel_Lamp_A_icon.png"
+    "icon": "t_scen_Hanging_Jewel_Lamp_A_icon"
   },
   {
     "name": "Hanging_Jewel_Lamp_Large_A",
     "category": "device",
-    "icon": "t_scen_Hanging_Jewel_Lamp_Large_A_icon.png"
+    "icon": "t_scen_Hanging_Jewel_Lamp_Large_A_icon"
   },
   {
     "name": "Hanging_Light_Buoy_Ball",
     "category": "device",
-    "icon": "t_scen_Hanging_Light_Buoy_Ball_icon.png"
+    "icon": "t_scen_Hanging_Light_Buoy_Ball_icon"
   },
   {
     "name": "Hanging_Meat_A",
     "category": "device",
-    "icon": "t_scen_hanging_meat_A_icon.png"
+    "icon": "t_scen_hanging_meat_A_icon"
   },
   {
     "name": "Hanging_Mounted_Head_1x1x1",
     "category": "device",
-    "icon": "t_scen_Hanging_Mounted_Head_1X1X1_icon.png"
+    "icon": "t_scen_Hanging_Mounted_Head_1X1X1_icon"
   },
   {
     "name": "Hanging_Rough_Banner_A",
     "category": "device",
-    "icon": "t_scen_Hanging_Rough_Banner_A_icon.png"
+    "icon": "t_scen_Hanging_Rough_Banner_A_icon"
   },
   {
     "name": "Hanging_Tapestry_A",
     "category": "device",
-    "icon": "t_scen_Hanging_Tapestry_A_icon.png"
+    "icon": "t_scen_Hanging_Tapestry_A_icon"
   },
   {
     "name": "Hanging_Tapestry_B",
     "category": "device",
-    "icon": "t_scen_Hanging_Tapestry_B_icon.png"
+    "icon": "t_scen_Hanging_Tapestry_B_icon"
   },
   {
     "name": "Hanging_Tapestry_C",
     "category": "device",
-    "icon": "t_scen_Hanging_Tapestry_C_icon.png"
+    "icon": "t_scen_Hanging_Tapestry_C_icon"
   },
   {
     "name": "Hanging_Wall_Pot",
     "category": "device",
-    "icon": "t_scen_Hanging_Wall_Pot_icon.png"
+    "icon": "t_scen_Hanging_Wall_Pot_icon"
   },
   {
     "name": "Hanging_WallDec_Bamboo_Large_A",
     "category": "device",
-    "icon": "t_scen_Hanging_WallDec_Bamboo_Large_A_icon.png"
+    "icon": "t_scen_Hanging_WallDec_Bamboo_Large_A_icon"
   },
   {
     "name": "Hanging_WallDec_Bamboo_Small_A",
     "category": "device",
-    "icon": "t_scen_Hanging_WallDec_Bamboo_Small_A_icon.png"
+    "icon": "t_scen_Hanging_WallDec_Bamboo_Small_A_icon"
   },
   {
     "name": "Hanging_WallDec_Stone_C",
     "category": "device",
-    "icon": "t_scen_Hanging_WallDec_Stone_C_icon.png"
+    "icon": "t_scen_Hanging_WallDec_Stone_C_icon"
   },
   {
     "name": "Hanging_WallDecoration_Stone_A",
     "category": "device",
-    "icon": "t_scen_Hanging_WallDecoration_Stone_A_icon.png"
+    "icon": "t_scen_Hanging_WallDecoration_Stone_A_icon"
   },
   {
     "name": "Hanging_WallDecoration_Stone_B",
     "category": "device",
-    "icon": "t_scen_Hanging_WallDecoration_Stone_B_icon.png"
+    "icon": "t_scen_Hanging_WallDecoration_Stone_B_icon"
   },
   {
     "name": "Hanging_WallShield_A",
     "category": "device",
-    "icon": "t_scen_Hanging_WallShield_A_icon.png"
+    "icon": "t_scen_Hanging_WallShield_A_icon"
   },
   {
     "name": "Hanging_Yeti_Bunting_A",
     "category": "device",
-    "icon": "t_scen_Hanging_Yeti_Bunting_A_icon.png"
+    "icon": "t_scen_Hanging_Yeti_Bunting_A_icon"
   },
   {
     "name": "Hanging_Yeti_Bunting_B",
     "category": "device",
-    "icon": "t_scen_Hanging_Yeti_Bunting_B_icon.png"
+    "icon": "t_scen_Hanging_Yeti_Bunting_B_icon"
   },
   {
     "name": "Hay_Bale_A",
     "category": "device",
-    "icon": "t_scen_Hay_Bale_A_icon.png"
+    "icon": "t_scen_Hay_Bale_A_icon"
   },
   {
     "name": "Hay_Bale_B",
     "category": "device",
-    "icon": "t_scen_Hay_Bale_B_icon.png"
+    "icon": "t_scen_Hay_Bale_B_icon"
   },
   {
     "name": "HomeTeleporter",
@@ -1125,27 +1125,27 @@
   {
     "name": "Instrument_Drum_A",
     "category": "device",
-    "icon": "t_scen_Instrument_Drum_A_icon.png"
+    "icon": "t_scen_Instrument_Drum_A_icon"
   },
   {
     "name": "Instrument_Gong_A",
     "category": "device",
-    "icon": "t_scen_Instrument_Gong_A_icon.png"
+    "icon": "t_scen_Instrument_Gong_A_icon"
   },
   {
     "name": "Jail_Bench_A",
     "category": "device",
-    "icon": "t_scen_Jail_Bench_A_icon.png"
+    "icon": "t_scen_Jail_Bench_A_icon"
   },
   {
     "name": "Jail_Bench_B",
     "category": "device",
-    "icon": "t_scen_Jail_Bench_B_icon.png"
+    "icon": "t_scen_Jail_Bench_B_icon"
   },
   {
     "name": "Keystone_Oven",
     "category": "device",
-    "icon": "t_devi_Keystone_Oven_icon.png"
+    "icon": "t_devi_Keystone_Oven_icon"
   },
   {
     "name": "Kiln",
@@ -1154,22 +1154,22 @@
   {
     "name": "Ladder_Metal",
     "category": "device",
-    "icon": "t_scst_ladder_metal_icon.png"
+    "icon": "t_scst_ladder_metal_icon"
   },
   {
     "name": "Ladder_Wood",
     "category": "device",
-    "icon": "t_scen_Ladder_Wood_icon.png"
+    "icon": "t_scen_Ladder_Wood_icon"
   },
   {
     "name": "Ladder_Wood_Jungle",
     "category": "device",
-    "icon": "t_scen_Ladder_Wood_Jungle_icon.png"
+    "icon": "t_scen_Ladder_Wood_Jungle_icon"
   },
   {
     "name": "Leaderboard",
     "category": "device",
-    "icon": "t_devi_Leaderboard_icon.png"
+    "icon": "t_devi_Leaderboard_icon"
   },
   {
     "name": "Leaderboard_CQ",
@@ -1186,7 +1186,7 @@
   {
     "name": "Leaderboard_PVP",
     "category": "device",
-    "icon": "t_devi_Leaderboard_PVP_icon.png"
+    "icon": "t_devi_Leaderboard_PVP_icon"
   },
   {
     "name": "Leaderboard_Survival",
@@ -1199,302 +1199,302 @@
   {
     "name": "Light_BoneLamp_A",
     "category": "device",
-    "icon": "t_scen_Light_BoneLamp_A_icon.png"
+    "icon": "t_scen_Light_BoneLamp_A_icon"
   },
   {
     "name": "Light_Brazier_A",
     "category": "device",
-    "icon": "t_scen_Light_Brazier_A_icon.png"
+    "icon": "t_scen_Light_Brazier_A_icon"
   },
   {
     "name": "Light_Brazier_Wall_A",
     "category": "device",
-    "icon": "t_scen_Light_Brazier_Wall_A_icon.png"
+    "icon": "t_scen_Light_Brazier_Wall_A_icon"
   },
   {
     "name": "Light_Brazier_WallPost_A",
     "category": "device",
-    "icon": "t_scen_Light_Brazier_WallPost_A_icon.png"
+    "icon": "t_scen_Light_Brazier_WallPost_A_icon"
   },
   {
     "name": "Light_BrazierPost_A",
     "category": "device",
-    "icon": "t_scen_Light_BrazierPost_A_icon.png"
+    "icon": "t_scen_Light_BrazierPost_A_icon"
   },
   {
     "name": "Light_BrazierPost_B",
     "category": "device",
-    "icon": "t_scen_Light_BrazierPost_B_icon.png"
+    "icon": "t_scen_Light_BrazierPost_B_icon"
   },
   {
     "name": "Light_Candle_Cluster_A",
     "category": "device",
-    "icon": "t_scen_Light_Candle_Cluster_A_icon.png"
+    "icon": "t_scen_Light_Candle_Cluster_A_icon"
   },
   {
     "name": "Light_CandleStick_Small",
     "category": "device",
-    "icon": "t_scen_Light_CandleStick_Small_icon.png"
+    "icon": "t_scen_Light_CandleStick_Small_icon"
   },
   {
     "name": "Light_CandleStick_Tall",
     "category": "device",
-    "icon": "t_scen_Light_CandleStick_Tall_icon.png"
+    "icon": "t_scen_Light_CandleStick_Tall_icon"
   },
   {
     "name": "Light_Floor_Jungle_Lizard",
     "category": "device",
-    "icon": "t_scen_Light_Floor_Jungle_Lizard_icon.png"
+    "icon": "t_scen_Light_Floor_Jungle_Lizard_icon"
   },
   {
     "name": "Light_GasLamp_A",
     "category": "device",
-    "icon": "t_scen_Light_GasLamp_A_icon.png"
+    "icon": "t_scen_Light_GasLamp_A_icon"
   },
   {
     "name": "Light_GasLamp_B",
     "category": "device",
-    "icon": "t_scen_Light_GasLamp_B_icon.png"
+    "icon": "t_scen_Light_GasLamp_B_icon"
   },
   {
     "name": "Light_Hanging_Bone_Lamp",
     "category": "device",
-    "icon": "t_scen_Light_Hanging_Bone_Lamp_icon.png"
+    "icon": "t_scen_Light_Hanging_Bone_Lamp_icon"
   },
   {
     "name": "Light_Hanging_Bone_Lamp_3X3X3",
     "category": "device",
-    "icon": "t_scen_Light_Hanging_Bone_Lamp_3X3X3_icon.png"
+    "icon": "t_scen_Light_Hanging_Bone_Lamp_3X3X3_icon"
   },
   {
     "name": "Light_Hanging_Chandelier_3x3x3",
     "category": "device",
-    "icon": "t_scen_Light_Hanging_Chandelier_3x3x3_icon.png"
+    "icon": "t_scen_Light_Hanging_Chandelier_3x3x3_icon"
   },
   {
     "name": "Light_Hanging_Chandelier_A",
     "category": "device",
-    "icon": "t_scen_Light_Hanging_Chandelier_A_icon.png"
+    "icon": "t_scen_Light_Hanging_Chandelier_A_icon"
   },
   {
     "name": "Light_Hanging_Jungle_Lizard_1x2x1",
     "category": "device",
-    "icon": "t_scen_Light_Hanging_Jungle_Lizard_1X2X1_icon.png"
+    "icon": "t_scen_Light_Hanging_Jungle_Lizard_1X2X1_icon"
   },
   {
     "name": "Light_Hanging_Jungle_Lizard_3x3x3",
     "category": "device",
-    "icon": "t_scen_Light_Hanging_Jungle_Lizard_3X3X3_icon.png"
+    "icon": "t_scen_Light_Hanging_Jungle_Lizard_3X3X3_icon"
   },
   {
     "name": "Light_Hanging_Lantern",
     "category": "device",
-    "icon": "t_scen_Light_Hanging_Lantern_icon.png"
+    "icon": "t_scen_Light_Hanging_Lantern_icon"
   },
   {
     "name": "Light_LampPost_A",
     "category": "device",
-    "icon": "t_scen_Light_LampPost_A_icon.png"
+    "icon": "t_scen_Light_LampPost_A_icon"
   },
   {
     "name": "Light_Lantern_A",
     "category": "device",
-    "icon": "t_scen_Light_Lantern_A_icon.png"
+    "icon": "t_scen_Light_Lantern_A_icon"
   },
   {
     "name": "Light_Lantern_Jungle_Lizard_A",
     "category": "device",
-    "icon": "t_scen_Light_Lantern_Jungle_Lizard_A_icon.png"
+    "icon": "t_scen_Light_Lantern_Jungle_Lizard_A_icon"
   },
   {
     "name": "Light_Lantern_Jungle_Lizard_B",
     "category": "device",
-    "icon": "t_scen_Light_Lantern_Jungle_Lizard_B_icon.png"
+    "icon": "t_scen_Light_Lantern_Jungle_Lizard_B_icon"
   },
   {
     "name": "Light_Lantern_Stone_A",
     "category": "device",
-    "icon": "t_scen_Light_Lantern_Stone_A_icon.png"
+    "icon": "t_scen_Light_Lantern_Stone_A_icon"
   },
   {
     "name": "Light_Lantern_Wall",
     "category": "device",
-    "icon": "t_scen_Light_Lantern_Wall_icon.png"
+    "icon": "t_scen_Light_Lantern_Wall_icon"
   },
   {
     "name": "Light_Oil_Lamp_A",
     "category": "device",
-    "icon": "t_scen_Light_Oil_Lamp_A_icon.png"
+    "icon": "t_scen_Light_Oil_Lamp_A_icon"
   },
   {
     "name": "Light_Oil_Lamp_Tall_A",
     "category": "device",
-    "icon": "t_scen_Light_Oil_Lamp_Tall_A_icon.png"
+    "icon": "t_scen_Light_Oil_Lamp_Tall_A_icon"
   },
   {
     "name": "Light_Stone_3x3x3",
     "category": "device",
-    "icon": "t_scen_Light_Stone_3x3x3_icon.png"
+    "icon": "t_scen_Light_Stone_3x3x3_icon"
   },
   {
     "name": "Light_Stone_Ceiling_3x1x3",
     "category": "device",
-    "icon": "t_scen_Light_Stone_Ceiling_3x1x3_icon.png"
+    "icon": "t_scen_Light_Stone_Ceiling_3x1x3_icon"
   },
   {
     "name": "Light_Stone_Floor_1x1x1",
     "category": "device",
-    "icon": "t_scen_Light_Stone_Floor_1x1x1_icon.png"
+    "icon": "t_scen_Light_Stone_Floor_1x1x1_icon"
   },
   {
     "name": "Light_Stone_Floor_3x1x3",
     "category": "device",
-    "icon": "t_scen_Light_Stone_Floor_3x1x3_icon.png"
+    "icon": "t_scen_Light_Stone_Floor_3x1x3_icon"
   },
   {
     "name": "Light_Stone_Wall_3x3x1",
     "category": "device",
-    "icon": "t_scen_Light_Stone_Wall_3x3x1_icon.png"
+    "icon": "t_scen_Light_Stone_Wall_3x3x1_icon"
   },
   {
     "name": "Light_Table_Jungle_Lizard",
     "category": "device",
-    "icon": "t_scen_Light_Table_Jungle_Lizard_icon.png"
+    "icon": "t_scen_Light_Table_Jungle_Lizard_icon"
   },
   {
     "name": "Light_Wall_BoneLamp",
     "category": "device",
-    "icon": "t_scen_Light_Wall_BoneLamp_icon.png"
+    "icon": "t_scen_Light_Wall_BoneLamp_icon"
   },
   {
     "name": "Light_Wall_Candle",
     "category": "device",
-    "icon": "t_scen_Light_Wall_Candle_icon.png"
+    "icon": "t_scen_Light_Wall_Candle_icon"
   },
   {
     "name": "Light_Wall_Jewel",
     "category": "device",
-    "icon": "t_scen_Light_Wall_Jewel_icon.png"
+    "icon": "t_scen_Light_Wall_Jewel_icon"
   },
   {
     "name": "Light_Wall_Oil_Lamp",
     "category": "device",
-    "icon": "t_scen_Light_Wall_Oil_Lamp_icon.png"
+    "icon": "t_scen_Light_Wall_Oil_Lamp_icon"
   },
   {
     "name": "Link_Chain",
     "category": "device",
-    "icon": "t_scst_Link_Chain_icon.png"
+    "icon": "t_scst_Link_Chain_icon"
   },
   {
     "name": "Link_Chain_Diagonal",
     "category": "device",
-    "icon": "t_scst_Link_Chain_Diagonal_icon.png"
+    "icon": "t_scst_Link_Chain_Diagonal_icon"
   },
   {
     "name": "Link_Rope",
     "category": "device",
-    "icon": "t_scst_Link_Rope_icon.png"
+    "icon": "t_scst_Link_Rope_icon"
   },
   {
     "name": "Link_Rope_Diagonal",
     "category": "device",
-    "icon": "t_scst_Link_Rope_Diagonal_icon.png"
+    "icon": "t_scst_Link_Rope_Diagonal_icon"
   },
   {
     "name": "Lobster_Pot_Large_A",
     "category": "device",
-    "icon": "t_scen_Lobster_Pot_Large_A_icon.png"
+    "icon": "t_scen_Lobster_Pot_Large_A_icon"
   },
   {
     "name": "Lobster_Pot_Small_A",
     "category": "device",
-    "icon": "t_scen_Lobster_Pot_Small_A_icon.png"
+    "icon": "t_scen_Lobster_Pot_Small_A_icon"
   },
   {
     "name": "Log_Pile_A",
     "category": "device",
-    "icon": "t_scen_Log_Pile_A_icon.png"
+    "icon": "t_scen_Log_Pile_A_icon"
   },
   {
     "name": "LogicNetwork_CraftingDevice",
     "category": "device",
-    "icon": "t_devi_LogicNetwork_CraftingDevice_icon.png"
+    "icon": "t_devi_LogicNetwork_CraftingDevice_icon"
   },
   {
     "name": "LogicNetwork_Exploding_Barrel",
     "category": "device",
-    "icon": "t_devi_Logicnetwork_Exploding_Barrel_icon.png"
+    "icon": "t_devi_Logicnetwork_Exploding_Barrel_icon"
   },
   {
     "name": "LogicNetwork_Exploding_Barrel_Titan",
     "category": "device",
-    "icon": "t_devi_Logicnetwork_Exploding_Barrel_Titan_icon.png"
+    "icon": "t_devi_Logicnetwork_Exploding_Barrel_Titan_icon"
   },
   {
     "name": "LogicNetwork_Input_Manual_Switch",
     "category": "device",
-    "icon": "t_devi_Logicnetwork_Input_Manual_Switch_icon.png"
+    "icon": "t_devi_Logicnetwork_Input_Manual_Switch_icon"
   },
   {
     "name": "LogicNetwork_Input_PressurePad",
     "category": "device",
-    "icon": "t_devi_LogicNetwork_Input_PressurePad_icon.png"
+    "icon": "t_devi_LogicNetwork_Input_PressurePad_icon"
   },
   {
     "name": "LogicNetwork_Input_PressurePad_A",
     "category": "device",
-    "icon": "t_devi_Logicnetwork_Input_Pressurepad_A_icon.png"
+    "icon": "t_devi_Logicnetwork_Input_Pressurepad_A_icon"
   },
   {
     "name": "LogicNetwork_Input_PressurePad_Large",
     "category": "device",
-    "icon": "t_devi_Logicnetwork_Input_Pressurepad_Large_icon.png"
+    "icon": "t_devi_Logicnetwork_Input_Pressurepad_Large_icon"
   },
   {
     "name": "LogicNetwork_Input_PressurePad_Large_A",
     "category": "device",
-    "icon": "t_devi_Logicnetwork_Input_Pressurepad_Large_A_icon.png"
+    "icon": "t_devi_Logicnetwork_Input_Pressurepad_Large_A_icon"
   },
   {
     "name": "LogicNetwork_Input_Target_Des",
     "category": "device",
-    "icon": "t_devi_Logicnetwork_Input_Target_Des_icon.png"
+    "icon": "t_devi_Logicnetwork_Input_Target_Des_icon"
   },
   {
     "name": "LogicNetwork_Input_Target_Des_Tudor",
     "category": "device",
-    "icon": "t_devi_Logicnetwork_Input_Target_Des_Tudor_icon.png"
+    "icon": "t_devi_Logicnetwork_Input_Target_Des_Tudor_icon"
   },
   {
     "name": "LogicNetwork_Input_Target_Indes_Tudor",
     "category": "device",
-    "icon": "t_devi_Logicnetwork_Input_Target_Indes_Tudor_icon.png"
+    "icon": "t_devi_Logicnetwork_Input_Target_Indes_Tudor_icon"
   },
   {
     "name": "LogicNetwork_Input_Target_Indestructible",
     "category": "device",
-    "icon": "t_devi_Logicnetwork_Input_Target_Indestructible_icon.png"
+    "icon": "t_devi_Logicnetwork_Input_Target_Indestructible_icon"
   },
   {
     "name": "LogicNetwork_Input_WallSwitch_Tudor",
     "category": "device",
-    "icon": "t_devi_Logicnetwork_Input_Wallswitch_Tudor_icon.png"
+    "icon": "t_devi_Logicnetwork_Input_Wallswitch_Tudor_icon"
   },
   {
     "name": "LogicNetwork_Logic_And",
     "category": "device",
-    "icon": "t_devi_LogicNetwork_Logic_AND_icon.png"
+    "icon": "t_devi_LogicNetwork_Logic_AND_icon"
   },
   {
     "name": "LogicNetwork_Logic_Latch",
     "category": "device",
-    "icon": "t_devi_LogicNetwork_Logic_Latch_icon.png"
+    "icon": "t_devi_LogicNetwork_Logic_Latch_icon"
   },
   {
     "name": "LogicNetwork_Logic_Not",
     "category": "device",
-    "icon": "t_devi_LogicNetwork_Logic_NOT_icon.png"
+    "icon": "t_devi_LogicNetwork_Logic_NOT_icon"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Arctic_Bear_ArmouredIce",
@@ -1631,7 +1631,7 @@
   {
     "name": "LogicNetwork_Mob_Spawner_Firey_Chicken",
     "category": "device",
-    "icon": "t_devi_Logicnetwork_mob_spawner_firey_chicken_icon.png"
+    "icon": "t_devi_Logicnetwork_mob_spawner_firey_chicken_icon"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Forest_Bear_Fighter",
@@ -1784,7 +1784,7 @@
   {
     "name": "LogicNetwork_Network_Delay",
     "category": "device",
-    "icon": "devi_LogicNetwork_Network_Delay_icon.png"
+    "icon": "devi_LogicNetwork_Network_Delay_icon"
   },
   {
     "name": "LogicNetwork_Network_Delay_1sec",
@@ -1801,52 +1801,52 @@
   {
     "name": "LogicNetwork_Network_Relay",
     "category": "device",
-    "icon": "t_devi_Logicnetwork_Network_Relay_icon.png"
+    "icon": "t_devi_Logicnetwork_Network_Relay_icon"
   },
   {
     "name": "LogicNetwork_Output_3DLetters_A",
     "category": "device",
-    "icon": "t_devi_Logicnetwork_Output_3DLetters_A_icon.png"
+    "icon": "t_devi_Logicnetwork_Output_3DLetters_A_icon"
   },
   {
     "name": "LogicNetwork_Output_3DLetters_N",
     "category": "device",
-    "icon": "t_devi_LogicNetwork_Output_3DLetters_N_icon.png"
+    "icon": "t_devi_LogicNetwork_Output_3DLetters_N_icon"
   },
   {
     "name": "LogicNetwork_Output_DartTrap",
     "category": "device",
-    "icon": "t_devi_LogicNetwork_Output_DartTrap_icon.png"
+    "icon": "t_devi_LogicNetwork_Output_DartTrap_icon"
   },
   {
     "name": "LogicNetwork_Output_DartTrap_02",
     "category": "device",
-    "icon": "t_devi_Logicnetwork_Output_Darttrap_02_icon.png"
+    "icon": "t_devi_Logicnetwork_Output_Darttrap_02_icon"
   },
   {
     "name": "LogicNetwork_Output_Door",
     "category": "device",
-    "icon": "t_devi_LogicNetwork_Output_Door_icon.png"
+    "icon": "t_devi_LogicNetwork_Output_Door_icon"
   },
   {
     "name": "LogicNetwork_Output_Lamp",
     "category": "device",
-    "icon": "t_devi_LogicNetwork_Output_Lamp_icon.png"
+    "icon": "t_devi_LogicNetwork_Output_Lamp_icon"
   },
   {
     "name": "LogicNetwork_Output_Lamp_Tudor",
     "category": "device",
-    "icon": "t_devi_Logicnetwork_Output_Lamp_Tudor_icon.png"
+    "icon": "t_devi_Logicnetwork_Output_Lamp_Tudor_icon"
   },
   {
     "name": "LogicNetwork_Output_Platform_A",
     "category": "device",
-    "icon": "t_devi_Logicnetwork_Output_Platform_A_icon.png"
+    "icon": "t_devi_Logicnetwork_Output_Platform_A_icon"
   },
   {
     "name": "LogicNetwork_Output_Platform_B",
     "category": "device",
-    "icon": "t_devi_Logicnetwork_Output_Platform_B_icon.png"
+    "icon": "t_devi_Logicnetwork_Output_Platform_B_icon"
   },
   {
     "name": "LogicNetwork_Output_SoundEmitter_Alarm",
@@ -1879,22 +1879,22 @@
   {
     "name": "Lumo_Out_Door_Forest",
     "category": "device",
-    "icon": "t_devi_Lumo_Out_Door_Forest_icon.png"
+    "icon": "t_devi_Lumo_Out_Door_Forest_icon"
   },
   {
     "name": "Lumo_Out_FireworkLauncher_Xu",
     "category": "device",
-    "icon": "t_devi_Lumo_Out_Fireworklauncher_Xu_icon.png"
+    "icon": "t_devi_Lumo_Out_Fireworklauncher_Xu_icon"
   },
   {
     "name": "Lumo_Toggle_Titan",
     "category": "device",
-    "icon": "t_devi_Lumo_Toggle_Titan_icon.png"
+    "icon": "t_devi_Lumo_Toggle_Titan_icon"
   },
   {
     "name": "Lumo_Viewpoint_Titan",
     "category": "device",
-    "icon": "t_devi_Lumo_Viewpoint_Titan_icon.png"
+    "icon": "t_devi_Lumo_Viewpoint_Titan_icon"
   },
   {
     "name": "Magical_Symbol",
@@ -1903,32 +1903,32 @@
   {
     "name": "Mailbox",
     "category": "device",
-    "icon": "t_devi_Mailbox_icon.png"
+    "icon": "t_devi_Mailbox_icon"
   },
   {
     "name": "Manhole_Cover_A",
     "category": "device",
-    "icon": "t_scen_Manhole_Cover_A_icon.png"
+    "icon": "t_scen_Manhole_Cover_A_icon"
   },
   {
     "name": "Metal_Primary",
     "category": "device",
-    "icon": "t_devi_Metal_Primary_icon.png"
+    "icon": "t_devi_Metal_Primary_icon"
   },
   {
     "name": "Mine_Cart_A",
     "category": "device",
-    "icon": "t_scen_Mine_Cart_A_icon.png"
+    "icon": "t_scen_Mine_Cart_A_icon"
   },
   {
     "name": "Miscellaneous_Primary",
     "category": "device",
-    "icon": "t_devi_Miscellaneous_Primary_icon.png"
+    "icon": "t_devi_Miscellaneous_Primary_icon"
   },
   {
     "name": "Miscellaneous_Secondary",
     "category": "device",
-    "icon": "t_devi_Miscellaneous_Secondary_icon.png"
+    "icon": "t_devi_Miscellaneous_Secondary_icon"
   },
   {
     "name": "NotSavable_Chest_Generic_Major",
@@ -1937,222 +1937,222 @@
   {
     "name": "Oven",
     "category": "device",
-    "icon": "t_devi_Keystone_Oven_icon.png"
+    "icon": "t_devi_Keystone_Oven_icon"
   },
   {
     "name": "Pack_Starter_Shield_Bronze",
     "category": "device",
-    "icon": "t_scen_Pack_Starter_Shield_Bronze_icon.png"
+    "icon": "t_scen_Pack_Starter_Shield_Bronze_icon"
   },
   {
     "name": "Pack_Starter_Statue_Gold",
     "category": "device",
-    "icon": "t_scen_Pack_Starter_Statue_Gold_icon.png"
+    "icon": "t_scen_Pack_Starter_Statue_Gold_icon"
   },
   {
     "name": "Pack_Starter_Statue_Silver",
     "category": "device",
-    "icon": "t_scen_Pack_Starter_Statue_Silver_icon.png"
+    "icon": "t_scen_Pack_Starter_Statue_Silver_icon"
   },
   {
     "name": "Paperscreen_1x1x1",
     "category": "device",
-    "icon": "t_scst_Paperscreen_1x1x1_icon.png"
+    "icon": "t_scst_Paperscreen_1x1x1_icon"
   },
   {
     "name": "Paperscreen_1x2x1",
     "category": "device",
-    "icon": "t_scst_Paperscreen_1x2x1_icon.png"
+    "icon": "t_scst_Paperscreen_1x2x1_icon"
   },
   {
     "name": "Paperscreen_2x3x1",
     "category": "device",
-    "icon": "t_scst_Paperscreen_2x3x1_icon.png"
+    "icon": "t_scst_Paperscreen_2x3x1_icon"
   },
   {
     "name": "Parcel_A",
     "category": "device",
-    "icon": "t_scen_Parcel_A_icon.png"
+    "icon": "t_scen_Parcel_A_icon"
   },
   {
     "name": "Pillar_Jungle_Lizard_Wood",
     "category": "device",
-    "icon": "t_scst_Pillar_Jungle_Lizard_Wood_icon.png"
+    "icon": "t_scst_Pillar_Jungle_Lizard_Wood_icon"
   },
   {
     "name": "Pillar_Stone_Basic",
     "category": "device",
-    "icon": "t_scst_Pillar_Stone_Basic_icon.png"
+    "icon": "t_scst_Pillar_Stone_Basic_icon"
   },
   {
     "name": "Pillar_Stone_Desert",
     "category": "device",
-    "icon": "t_scst_Pillar_Stone_Desert_icon.png"
+    "icon": "t_scst_Pillar_Stone_Desert_icon"
   },
   {
     "name": "Pillar_Stone_Titan",
     "category": "device",
-    "icon": "t_scst_Pillar_Stone_Titan_icon.png"
+    "icon": "t_scst_Pillar_Stone_Titan_icon"
   },
   {
     "name": "Plate_Gold_Pan_A",
     "category": "device",
-    "icon": "t_scen_Plate_Gold_Pan_A_icon.png"
+    "icon": "t_scen_Plate_Gold_Pan_A_icon"
   },
   {
     "name": "Plate_Offering_A",
     "category": "device",
-    "icon": "t_scen_Plate_Offering_A_icon.png"
+    "icon": "t_scen_Plate_Offering_A_icon"
   },
   {
     "name": "Plate_Offering_B",
     "category": "device",
-    "icon": "t_scst_plate_offering_b_icon.png"
+    "icon": "t_scst_plate_offering_b_icon"
   },
   {
     "name": "Plate_PestleAndMortar_A",
     "category": "device",
-    "icon": "t_scst_plate_pestleandmortar_a_icon.png"
+    "icon": "t_scst_plate_pestleandmortar_a_icon"
   },
   {
     "name": "Plate_WoodenBowl_A",
     "category": "device",
-    "icon": "t_scen_Plate_WoodenBowl_A_icon.png"
+    "icon": "t_scen_Plate_WoodenBowl_A_icon"
   },
   {
     "name": "Plinth_Stone_Basic_Down",
     "category": "device",
-    "icon": "t_scst_Plinth_Stone_Basic_Down_icon.png"
+    "icon": "t_scst_Plinth_Stone_Basic_Down_icon"
   },
   {
     "name": "Plinth_Stone_Basic_Up",
     "category": "device",
-    "icon": "t_scst_Plinth_Stone_Basic_Up_icon.png"
+    "icon": "t_scst_Plinth_Stone_Basic_Up_icon"
   },
   {
     "name": "Plinth_Stone_Desert_Down",
     "category": "device",
-    "icon": "t_scst_Plinth_Stone_Desert_Down_icon.png"
+    "icon": "t_scst_Plinth_Stone_Desert_Down_icon"
   },
   {
     "name": "Plinth_Stone_Desert_Up",
     "category": "device",
-    "icon": "t_scst_Plinth_Stone_Desert_Up_icon.png"
+    "icon": "t_scst_Plinth_Stone_Desert_Up_icon"
   },
   {
     "name": "Post_Bamboo_A",
     "category": "device",
-    "icon": "t_scst_Post_Bamboo_A_icon.png"
+    "icon": "t_scst_Post_Bamboo_A_icon"
   },
   {
     "name": "Post_Metal_A",
     "category": "device",
-    "icon": "t_scst_post_metal_a_icon.png"
+    "icon": "t_scst_post_metal_a_icon"
   },
   {
     "name": "Post_Rough_Banner_A",
     "category": "device",
-    "icon": "t_scst_post_rough_banner_a_icon.png"
+    "icon": "t_scst_post_rough_banner_a_icon"
   },
   {
     "name": "Post_SignPost_A",
     "category": "device",
-    "icon": "t_scst_post_signpost_a_icon.png"
+    "icon": "t_scst_post_signpost_a_icon"
   },
   {
     "name": "Post_Skull_A",
     "category": "device",
-    "icon": "t_scst_post_skull_a_icon.png"
+    "icon": "t_scst_post_skull_a_icon"
   },
   {
     "name": "Post_SpikePost_A",
     "category": "device",
-    "icon": "t_scst_post_spikepost_a_icon.png"
+    "icon": "t_scst_post_spikepost_a_icon"
   },
   {
     "name": "Pot_Cauldron_A",
     "category": "device",
-    "icon": "t_scen_Pot_Cauldron_A_icon.png"
+    "icon": "t_scen_Pot_Cauldron_A_icon"
   },
   {
     "name": "Pot_Cauldron_B",
     "category": "device",
-    "icon": "t_scen_Pot_Cauldron_B_icon.png"
+    "icon": "t_scen_Pot_Cauldron_B_icon"
   },
   {
     "name": "Pot_Cauldron_C",
     "category": "device",
-    "icon": "t_scen_pot_cauldron_C_icon.png"
+    "icon": "t_scen_pot_cauldron_C_icon"
   },
   {
     "name": "Pot_Cauldron_D",
     "category": "device",
-    "icon": "t_scen_Pot_Cauldron_D_icon.png"
+    "icon": "t_scen_Pot_Cauldron_D_icon"
   },
   {
     "name": "Pot_Desert_A",
     "category": "device",
-    "icon": "t_scen_Pot_Desert_A_icon.png"
+    "icon": "t_scen_Pot_Desert_A_icon"
   },
   {
     "name": "Pot_Desert_B",
     "category": "device",
-    "icon": "t_scen_Pot_Desert_B_icon.png"
+    "icon": "t_scen_Pot_Desert_B_icon"
   },
   {
     "name": "Pot_Desert_C",
     "category": "device",
-    "icon": "t_scen_Pot_Desert_C_icon.png"
+    "icon": "t_scen_Pot_Desert_C_icon"
   },
   {
     "name": "Pot_Desert_D",
     "category": "device",
-    "icon": "t_scen_pot_desert_D_icon.png"
+    "icon": "t_scen_pot_desert_D_icon"
   },
   {
     "name": "Pot_Ornate_A",
     "category": "device",
-    "icon": "t_scen_Pot_Ornate_A_icon.png"
+    "icon": "t_scen_Pot_Ornate_A_icon"
   },
   {
     "name": "Pot_Ornate_B",
     "category": "device",
-    "icon": "t_scen_Pot_Ornate_B_icon.png"
+    "icon": "t_scen_Pot_Ornate_B_icon"
   },
   {
     "name": "Pot_Ornate_C",
     "category": "device",
-    "icon": "t_scen_Pot_Ornate_C_icon.png"
+    "icon": "t_scen_Pot_Ornate_C_icon"
   },
   {
     "name": "Pot_Ornate_Tall_A",
     "category": "device",
-    "icon": "t_scen_Pot_Ornate_Tall_A_icon.png"
+    "icon": "t_scen_Pot_Ornate_Tall_A_icon"
   },
   {
     "name": "Pot_Ornate_Tall_B",
     "category": "device",
-    "icon": "t_scen_Pot_Ornate_Tall_B_icon.png"
+    "icon": "t_scen_Pot_Ornate_Tall_B_icon"
   },
   {
     "name": "Pot_Ornate_Tall_C",
     "category": "device",
-    "icon": "t_scen_Pot_Ornate_Tall_C_icon.png"
+    "icon": "t_scen_Pot_Ornate_Tall_C_icon"
   },
   {
     "name": "Pot_Yeti_A",
     "category": "device",
-    "icon": "t_scen_Pot_Yeti_A_icon.png"
+    "icon": "t_scen_Pot_Yeti_A_icon"
   },
   {
     "name": "Pot_Yeti_B",
     "category": "device",
-    "icon": "t_scen_Pot_Yeti_B_icon.png"
+    "icon": "t_scen_Pot_Yeti_B_icon"
   },
   {
     "name": "Pot_Yeti_C",
     "category": "device",
-    "icon": "t_scen_Pot_Yeti_C_icon.png"
+    "icon": "t_scen_Pot_Yeti_C_icon"
   },
   {
     "name": "Potting_Table",
@@ -2161,72 +2161,72 @@
   {
     "name": "Pumpkin_Lantern_A",
     "category": "device",
-    "icon": "t_scen_Pumpkin_Lantern_A_icon.png"
+    "icon": "t_scen_Pumpkin_Lantern_A_icon"
   },
   {
     "name": "PVP_Banner_Blue",
     "category": "device",
-    "icon": "t_scen_PVP_Banner_Blue_icon.png"
+    "icon": "t_scen_PVP_Banner_Blue_icon"
   },
   {
     "name": "PVP_Banner_Red",
     "category": "device",
-    "icon": "t_scen_PVP_Banner_Red_icon.png"
+    "icon": "t_scen_PVP_Banner_Red_icon"
   },
   {
     "name": "PvP_Barricade_Metal_A",
     "category": "device",
-    "icon": "t_scst_pvp_barricade_metal_a_icon.png"
+    "icon": "t_scst_pvp_barricade_metal_a_icon"
   },
   {
     "name": "PvP_Barricade_Metal_B",
     "category": "device",
-    "icon": "t_scst_pvp_barricade_metal_b_icon.png"
+    "icon": "t_scst_pvp_barricade_metal_b_icon"
   },
   {
     "name": "PvP_Barricade_Metal_C",
     "category": "device",
-    "icon": "t_scst_pvp_barricade_metal_c_icon.png"
+    "icon": "t_scst_pvp_barricade_metal_c_icon"
   },
   {
     "name": "PvP_Barricade_Wood_A",
     "category": "device",
-    "icon": "t_scst_pvp_barricade_wood_a_icon.png"
+    "icon": "t_scst_pvp_barricade_wood_a_icon"
   },
   {
     "name": "PvP_Barricade_Wood_B_01",
     "category": "device",
-    "icon": "t_scst_pvp_barricade_wood_b_01_icon.png"
+    "icon": "t_scst_pvp_barricade_wood_b_01_icon"
   },
   {
     "name": "PvP_Barricade_Wood_B_02",
     "category": "device",
-    "icon": "t_scst_pvp_barricade_wood_b_02_icon.png"
+    "icon": "t_scst_pvp_barricade_wood_b_02_icon"
   },
   {
     "name": "PvP_Barricade_Wood_C_01",
     "category": "device",
-    "icon": "t_scst_pvp_barricade_wood_c_01_icon.png"
+    "icon": "t_scst_pvp_barricade_wood_c_01_icon"
   },
   {
     "name": "PvP_Barricade_Wood_C_02",
     "category": "device",
-    "icon": "t_scst_pvp_barricade_wood_c_02_icon.png"
+    "icon": "t_scst_pvp_barricade_wood_c_02_icon"
   },
   {
     "name": "PvP_Barricade_Wood_C_03",
     "category": "device",
-    "icon": "t_scst_pvp_barricade_wood_c_03_icon.png"
+    "icon": "t_scst_pvp_barricade_wood_c_03_icon"
   },
   {
     "name": "PVP_Post",
     "category": "device",
-    "icon": "t_devi_PVP_Post_icon.png"
+    "icon": "t_devi_PVP_Post_icon"
   },
   {
     "name": "PVP_Post_Builder",
     "category": "device",
-    "icon": "t_devi_PVP_Post_Builder_icon.png"
+    "icon": "t_devi_PVP_Post_Builder_icon"
   },
   {
     "name": "PVP_Survival_ArenaCentre",
@@ -2243,17 +2243,17 @@
   {
     "name": "RaceTimerEnd",
     "category": "device",
-    "icon": "t_devi_RaceTimerEnd_icon.png"
+    "icon": "t_devi_RaceTimerEnd_icon"
   },
   {
     "name": "RaceTimerStart",
     "category": "device",
-    "icon": "t_devi_RaceTimerStart_icon.png"
+    "icon": "t_devi_RaceTimerStart_icon"
   },
   {
     "name": "Rail",
     "category": "device",
-    "icon": "t_scst_Rail_icon.png"
+    "icon": "t_scst_Rail_icon"
   },
   {
     "name": "ReturnTeleporter",
@@ -2262,787 +2262,787 @@
   {
     "name": "Reward_Banner_BuildCake",
     "category": "device",
-    "icon": "t_scen_Reward_Banner_BuildCake_icon.png"
+    "icon": "t_scen_Reward_Banner_BuildCake_icon"
   },
   {
     "name": "Reward_Banner_BuildComp_Runner_1",
     "category": "device",
-    "icon": "t_scen_Reward_Banner_BuildComp_Runner_1_icon.png"
+    "icon": "t_scen_Reward_Banner_BuildComp_Runner_1_icon"
   },
   {
     "name": "Reward_Banner_BuildComp_Runner_2",
     "category": "device",
-    "icon": "t_scen_Reward_Banner_BuildComp_Runner_2_icon.png"
+    "icon": "t_scen_Reward_Banner_BuildComp_Runner_2_icon"
   },
   {
     "name": "Reward_Banner_BuildComp_Winner",
     "category": "device",
-    "icon": "t_scen_Reward_Banner_BuildComp_Winner_icon.png"
+    "icon": "t_scen_Reward_Banner_BuildComp_Winner_icon"
   },
   {
     "name": "Reward_Banner_CommunityReward",
     "category": "device",
-    "icon": "t_scen_Reward_Banner_CommunityReward_icon.png"
+    "icon": "t_scen_Reward_Banner_CommunityReward_icon"
   },
   {
     "name": "Reward_Banner_KillDev_PvP",
     "category": "device",
-    "icon": "t_scen_Reward_Banner_KillDev_PvP_icon.png"
+    "icon": "t_scen_Reward_Banner_KillDev_PvP_icon"
   },
   {
     "name": "Reward_Banner_MostDeaths",
     "category": "device",
-    "icon": "t_scen_Reward_Banner_MostDeaths_icon.png"
+    "icon": "t_scen_Reward_Banner_MostDeaths_icon"
   },
   {
     "name": "River_Lily_Flower_A",
     "category": "device",
-    "icon": "t_scen_River_Lily_Flower_A_icon.png"
+    "icon": "t_scen_River_Lily_Flower_A_icon"
   },
   {
     "name": "River_Lily_Pad_A",
     "category": "device",
-    "icon": "t_scen_River_Lily_Pad_A_icon.png"
+    "icon": "t_scen_River_Lily_Pad_A_icon"
   },
   {
     "name": "River_Lily_Pad_Large_A",
     "category": "device",
-    "icon": "t_scen_River_Lily_Pad_Large_A_icon.png"
+    "icon": "t_scen_River_Lily_Pad_Large_A_icon"
   },
   {
     "name": "River_Reeds_A",
     "category": "device",
-    "icon": "t_scen_River_Reeds_A_icon.png"
+    "icon": "t_scen_River_Reeds_A_icon"
   },
   {
     "name": "Rock_A",
     "category": "device",
-    "icon": "t_scen_Rock_A_icon.png"
+    "icon": "t_scen_Rock_A_icon"
   },
   {
     "name": "Rock_B",
     "category": "device",
-    "icon": "t_scen_Rock_B_icon.png"
+    "icon": "t_scen_Rock_B_icon"
   },
   {
     "name": "Rock_Pile_A",
     "category": "device",
-    "icon": "t_scen_Rock_Pile_A_icon.png"
+    "icon": "t_scen_Rock_Pile_A_icon"
   },
   {
     "name": "Roof_Tile_Clay",
     "category": "device",
-    "icon": "t_scst_roof_tile_clay_icon.png"
+    "icon": "t_scst_roof_tile_clay_icon"
   },
   {
     "name": "Roof_Tile_Thatch",
     "category": "device",
-    "icon": "t_scst_roof_tile_thatch_icon.png"
+    "icon": "t_scst_roof_tile_thatch_icon"
   },
   {
     "name": "Roof_Tile_Wood",
     "category": "device",
-    "icon": "t_scst_roof_tile_wood_icon.png"
+    "icon": "t_scst_roof_tile_wood_icon"
   },
   {
     "name": "Rope_Bucket_A",
     "category": "device",
-    "icon": "t_scst_rope_bucket_a_icon.png"
+    "icon": "t_scst_rope_bucket_a_icon"
   },
   {
     "name": "Rope_Hook_A",
     "category": "device",
-    "icon": "t_scst_rope_hook_a_icon.png"
+    "icon": "t_scst_rope_hook_a_icon"
   },
   {
     "name": "Rope_Piece_A",
     "category": "device",
-    "icon": "t_scst_rope_piece_a_icon.png"
+    "icon": "t_scst_rope_piece_a_icon"
   },
   {
     "name": "Rope_Sandbags_A",
     "category": "device",
-    "icon": "t_scst_rope_sandbags_a_icon.png"
+    "icon": "t_scst_rope_sandbags_a_icon"
   },
   {
     "name": "Rubble_1x1x1_A",
     "category": "device",
-    "icon": "t_scen_Rubble_1X1X1_A_icon.png"
+    "icon": "t_scen_Rubble_1X1X1_A_icon"
   },
   {
     "name": "Rubble_1x1x1_B",
     "category": "device",
-    "icon": "t_scen_Rubble_1X1X1_B_icon.png"
+    "icon": "t_scen_Rubble_1X1X1_B_icon"
   },
   {
     "name": "Rubble_1x1x1_C",
     "category": "device",
-    "icon": "t_scen_Rubble_1X1X1_C_icon.png"
+    "icon": "t_scen_Rubble_1X1X1_C_icon"
   },
   {
     "name": "Rubble_1x1x1_D",
     "category": "device",
-    "icon": "t_scen_Rubble_1X1X1_D_icon.png"
+    "icon": "t_scen_Rubble_1X1X1_D_icon"
   },
   {
     "name": "Rug_3x1x3_Rough",
     "category": "device",
-    "icon": "t_scen_Rug_3X1X3_Rough_icon.png"
+    "icon": "t_scen_Rug_3X1X3_Rough_icon"
   },
   {
     "name": "Rug_A",
     "category": "device",
-    "icon": "t_scen_Rug_A_icon.png"
+    "icon": "t_scen_Rug_A_icon"
   },
   {
     "name": "Rug_Large_A",
     "category": "device",
-    "icon": "t_scen_Rug_Large_A_icon.png"
+    "icon": "t_scen_Rug_Large_A_icon"
   },
   {
     "name": "Rug_Rabbit",
     "category": "device",
-    "icon": "t_scen_Rug_Rabbit_icon.png"
+    "icon": "t_scen_Rug_Rabbit_icon"
   },
   {
     "name": "Rug_Roll_A",
     "category": "device",
-    "icon": "t_scen_Rug_Roll_A_icon.png"
+    "icon": "t_scen_Rug_Roll_A_icon"
   },
   {
     "name": "Rug_Roll_Long_A",
     "category": "device",
-    "icon": "t_scen_Rug_Roll_Long_A_icon.png"
+    "icon": "t_scen_Rug_Roll_Long_A_icon"
   },
   {
     "name": "Rug_Runner_A",
     "category": "device",
-    "icon": "t_scen_Rug_Runner_A_icon.png"
+    "icon": "t_scen_Rug_Runner_A_icon"
   },
   {
     "name": "Rug_Rustic_A",
     "category": "device",
-    "icon": "t_scen_Rug_Rustic_A_icon.png"
+    "icon": "t_scen_Rug_Rustic_A_icon"
   },
   {
     "name": "Sack_A",
     "category": "device",
-    "icon": "t_scen_sack_A_icon.png"
+    "icon": "t_scen_sack_A_icon"
   },
   {
     "name": "Sarcophagus_A",
     "category": "device",
-    "icon": "t_scen_sarcophagus_A_icon.png"
+    "icon": "t_scen_sarcophagus_A_icon"
   },
   {
     "name": "Sarcophagus_B",
     "category": "device",
-    "icon": "t_scen_sarcophagus_B_icon.png"
+    "icon": "t_scen_sarcophagus_B_icon"
   },
   {
     "name": "Sarcophagus_C",
     "category": "device",
-    "icon": "t_scen_sarcophagus_C_icon.png"
+    "icon": "t_scen_sarcophagus_C_icon"
   },
   {
     "name": "Sarcophagus_D",
     "category": "device",
-    "icon": "t_scen_Sarcophagus_D_icon.png"
+    "icon": "t_scen_Sarcophagus_D_icon"
   },
   {
     "name": "Sarcophagus_E",
     "category": "device",
-    "icon": "t_scen_Sarcophagus_E_icon.png"
+    "icon": "t_scen_Sarcophagus_E_icon"
   },
   {
     "name": "Scaffold_Bamboo",
     "category": "device",
-    "icon": "t_scst_Scaffold_Bamboo_icon.png"
+    "icon": "t_scst_Scaffold_Bamboo_icon"
   },
   {
     "name": "Scarecrow_A",
     "category": "device",
-    "icon": "t_scen_scarecrow_A_icon.png"
+    "icon": "t_scen_scarecrow_A_icon"
   },
   {
     "name": "Scroll_Holder_A",
     "category": "device",
-    "icon": "t_scen_scroll_holder_A_icon.png"
+    "icon": "t_scen_scroll_holder_A_icon"
   },
   {
     "name": "Scroll_Stand_1x2x1",
     "category": "device",
-    "icon": "t_scen_Scroll_Stand_1X2X1_icon.png"
+    "icon": "t_scen_Scroll_Stand_1X2X1_icon"
   },
   {
     "name": "Sewer_Grate_A",
     "category": "device",
-    "icon": "t_scen_Sewer_Grate_A_icon.png"
+    "icon": "t_scen_Sewer_Grate_A_icon"
   },
   {
     "name": "Shelf_A",
     "category": "device",
-    "icon": "t_scen_Shelf_A_icon.png"
+    "icon": "t_scen_Shelf_A_icon"
   },
   {
     "name": "Shelter_Small_A",
     "category": "device",
-    "icon": "t_scen_Shelter_Small_A_icon.png"
+    "icon": "t_scen_Shelter_Small_A_icon"
   },
   {
     "name": "Shrine_Rustic_A",
     "category": "device",
-    "icon": "t_scen_Shrine_Rustic_A_icon.png"
+    "icon": "t_scen_Shrine_Rustic_A_icon"
   },
   {
     "name": "Shrine_Stone_A",
     "category": "device",
-    "icon": "t_scen_Shrine_Stone_A_icon.png"
+    "icon": "t_scen_Shrine_Stone_A_icon"
   },
   {
     "name": "Sign_Arrow_Metal",
     "category": "device",
-    "icon": "t_scga_Sign_Arrow_Metal_icon.png"
+    "icon": "t_scga_Sign_Arrow_Metal_icon"
   },
   {
     "name": "Sign_Arrow_Metal_Glowing",
     "category": "device",
-    "icon": "t_scga_Sign_Arrow_Metal_Glowing_icon.png"
+    "icon": "t_scga_Sign_Arrow_Metal_Glowing_icon"
   },
   {
     "name": "Sign_Arrow_Stone",
     "category": "device",
-    "icon": "t_scga_Sign_Arrow_Stone_icon.png"
+    "icon": "t_scga_Sign_Arrow_Stone_icon"
   },
   {
     "name": "Sign_Arrow_Wood",
     "category": "device",
-    "icon": "t_scga_Sign_Arrow_Wood_icon.png"
+    "icon": "t_scga_Sign_Arrow_Wood_icon"
   },
   {
     "name": "Sloped_Stone_Dec_End",
     "category": "device",
-    "icon": "t_scst_Sloped_Stone_Dec_End_icon.png"
+    "icon": "t_scst_Sloped_Stone_Dec_End_icon"
   },
   {
     "name": "Sloped_Stone_Dec_Mid",
     "category": "device",
-    "icon": "t_scst_Sloped_Stone_Dec_Mid_icon.png"
+    "icon": "t_scst_Sloped_Stone_Dec_Mid_icon"
   },
   {
     "name": "Social_Freestanding_Banner_BuildOff_3x9x1",
     "category": "device",
-    "icon": "t_scst_Social_Freestanding_Banner_BuildOff_3x9x1_icon.png"
+    "icon": "t_scst_Social_Freestanding_Banner_BuildOff_3x9x1_icon"
   },
   {
     "name": "Social_FreeStanding_Banner_Explorer",
     "category": "device",
-    "icon": "t_scst_social_freestanding_banner_explorer_icon.png"
+    "icon": "t_scst_social_freestanding_banner_explorer_icon"
   },
   {
     "name": "Social_FreeStanding_Banner_Fighter",
     "category": "device",
-    "icon": "t_scst_social_freestanding_banner_fighter_icon.png"
+    "icon": "t_scst_social_freestanding_banner_fighter_icon"
   },
   {
     "name": "Social_FreeStanding_Banner_Settler",
     "category": "device",
-    "icon": "t_scst_social_freestanding_banner_settler_icon.png"
+    "icon": "t_scst_social_freestanding_banner_settler_icon"
   },
   {
     "name": "Social_Ship_Wheel",
     "category": "device",
-    "icon": "t_scst_social_ship_wheel_icon.png"
+    "icon": "t_scst_social_ship_wheel_icon"
   },
   {
     "name": "Social_Sign_A",
     "category": "device",
-    "icon": "t_scst_social_sign_a_icon.png"
+    "icon": "t_scst_social_sign_a_icon"
   },
   {
     "name": "Social_Sign_B",
     "category": "device",
-    "icon": "t_scst_social_sign_b_icon.png"
+    "icon": "t_scst_social_sign_b_icon"
   },
   {
     "name": "Social_Sign_C",
     "category": "device",
-    "icon": "t_scst_social_sign_c_icon.png"
+    "icon": "t_scst_social_sign_c_icon"
   },
   {
     "name": "Social_Sign_D",
     "category": "device",
-    "icon": "t_scst_social_sign_d_icon.png"
+    "icon": "t_scst_social_sign_d_icon"
   },
   {
     "name": "Social_Sign_Large_A",
     "category": "device",
-    "icon": "t_scst_social_sign_large_a_icon.png"
+    "icon": "t_scst_social_sign_large_a_icon"
   },
   {
     "name": "Social_Sign_Large_B",
     "category": "device",
-    "icon": "t_scst_social_sign_large_b_icon.png"
+    "icon": "t_scst_social_sign_large_b_icon"
   },
   {
     "name": "Social_Sign_Large_C",
     "category": "device",
-    "icon": "t_scst_social_sign_large_c_icon.png"
+    "icon": "t_scst_social_sign_large_c_icon"
   },
   {
     "name": "Social_Sign_Large_D",
     "category": "device",
-    "icon": "t_scst_social_sign_large_d_icon.png"
+    "icon": "t_scst_social_sign_large_d_icon"
   },
   {
     "name": "Social_Square_Banner_BuildOff_6x6x1",
     "category": "device",
-    "icon": "t_scst_Social_Square_Banner_BuildOff_6x6x1_icon.png"
+    "icon": "t_scst_Social_Square_Banner_BuildOff_6x6x1_icon"
   },
   {
     "name": "Social_Square_Banner_Explorer",
     "category": "device",
-    "icon": "t_scst_social_square_banner_explorer_icon.png"
+    "icon": "t_scst_social_square_banner_explorer_icon"
   },
   {
     "name": "Social_Square_Banner_Fighter",
     "category": "device",
-    "icon": "t_scst_social_square_banner_fighter_icon.png"
+    "icon": "t_scst_social_square_banner_fighter_icon"
   },
   {
     "name": "Social_Square_Banner_Settler",
     "category": "device",
-    "icon": "t_scst_social_square_banner_settler_icon.png"
+    "icon": "t_scst_social_square_banner_settler_icon"
   },
   {
     "name": "Social_Wall_Banner_BuildOff_3x6x1",
     "category": "device",
-    "icon": "t_scst_Social_Wall_Banner_BuildOff_3x6x1_icon.png"
+    "icon": "t_scst_Social_Wall_Banner_BuildOff_3x6x1_icon"
   },
   {
     "name": "Social_Wall_Banner_Explorer",
     "category": "device",
-    "icon": "t_scst_social_wall_banner_explorer_icon.png"
+    "icon": "t_scst_social_wall_banner_explorer_icon"
   },
   {
     "name": "Social_Wall_Banner_Fighter",
     "category": "device",
-    "icon": "t_scst_social_wall_banner_fighter_icon.png"
+    "icon": "t_scst_social_wall_banner_fighter_icon"
   },
   {
     "name": "Social_Wall_Banner_Settler",
     "category": "device",
-    "icon": "t_scst_social_wall_banner_settler_icon.png"
+    "icon": "t_scst_social_wall_banner_settler_icon"
   },
   {
     "name": "Social_Ware_Apples",
     "category": "device",
-    "icon": "t_scen_Social_Ware_Apples_icon.png"
+    "icon": "t_scen_Social_Ware_Apples_icon"
   },
   {
     "name": "Social_Ware_Meat",
     "category": "device",
-    "icon": "t_scen_Social_Ware_Meat_icon.png"
+    "icon": "t_scen_Social_Ware_Meat_icon"
   },
   {
     "name": "Social_Ware_Mushrooms",
     "category": "device",
-    "icon": "t_scen_Social_Ware_Mushrooms_icon.png"
+    "icon": "t_scen_Social_Ware_Mushrooms_icon"
   },
   {
     "name": "Social_Ware_Pumpkins",
     "category": "device",
-    "icon": "t_scen_Social_Ware_Pumpkins_icon.png"
+    "icon": "t_scen_Social_Ware_Pumpkins_icon"
   },
   {
     "name": "Social_Weapon_Daggers",
     "category": "device",
-    "icon": "t_scen_Social_Weapon_Daggers_icon.png"
+    "icon": "t_scen_Social_Weapon_Daggers_icon"
   },
   {
     "name": "Social_Weapon_Halberds",
     "category": "device",
-    "icon": "t_scen_Social_Weapon_Halberds_icon.png"
+    "icon": "t_scen_Social_Weapon_Halberds_icon"
   },
   {
     "name": "Social_Weapon_Sheilds",
     "category": "device",
-    "icon": "t_scen_Social_Weapon_Sheilds_icon.png"
+    "icon": "t_scen_Social_Weapon_Sheilds_icon"
   },
   {
     "name": "Social_Weapon_Swords",
     "category": "device",
-    "icon": "t_scen_Social_Weapon_Swords_icon.png"
+    "icon": "t_scen_Social_Weapon_Swords_icon"
   },
   {
     "name": "SpiderWeb_A",
     "category": "device",
-    "icon": "t_scen_spiderWeb_A_icon.png"
+    "icon": "t_scen_spiderWeb_A_icon"
   },
   {
     "name": "SpiderWeb_B",
     "category": "device",
-    "icon": "t_scen_SpiderWeb_B_icon.png"
+    "icon": "t_scen_SpiderWeb_B_icon"
   },
   {
     "name": "SpiderWeb_C",
     "category": "device",
-    "icon": "t_scen_SpiderWeb_C_icon.png"
+    "icon": "t_scen_SpiderWeb_C_icon"
   },
   {
     "name": "Spike_Trap",
     "category": "device",
-    "icon": "t_scga_Spike_Trap_icon.png"
+    "icon": "t_scga_Spike_Trap_icon"
   },
   {
     "name": "Spike_Trap_Large",
     "category": "device",
-    "icon": "t_scga_Spike_Trap_Large_icon.png"
+    "icon": "t_scga_Spike_Trap_Large_icon"
   },
   {
     "name": "Spike_Trap_Large_Titan",
     "category": "device",
-    "icon": "t_scga_Spike_Trap_Large_Titan_icon.png"
+    "icon": "t_scga_Spike_Trap_Large_Titan_icon"
   },
   {
     "name": "Spike_Trap_Titan",
     "category": "device",
-    "icon": "t_scga_Spike_Trap_Titan_icon.png"
+    "icon": "t_scga_Spike_Trap_Titan_icon"
   },
   {
     "name": "Spring_Trap",
     "category": "device",
-    "icon": "t_devi_Spring_Trap_icon.png"
+    "icon": "t_devi_Spring_Trap_icon"
   },
   {
     "name": "Spring_Trap_Large",
     "category": "device",
-    "icon": "t_devi_Spring_Trap_Large_icon.png"
+    "icon": "t_devi_Spring_Trap_Large_icon"
   },
   {
     "name": "Stalacmite_Ice_Large",
     "category": "device",
-    "icon": "t_scen_Stalacmite_Ice_Large_icon.png"
+    "icon": "t_scen_Stalacmite_Ice_Large_icon"
   },
   {
     "name": "Stalacmite_Ice_Medium",
     "category": "device",
-    "icon": "t_scen_Stalacmite_Ice_Medium_icon.png"
+    "icon": "t_scen_Stalacmite_Ice_Medium_icon"
   },
   {
     "name": "Stalacmite_Ice_Small",
     "category": "device",
-    "icon": "t_scen_Stalacmite_Ice_Small_icon.png"
+    "icon": "t_scen_Stalacmite_Ice_Small_icon"
   },
   {
     "name": "Stalacmite_Large",
     "category": "device",
-    "icon": "t_scen_Stalacmite_Large_icon.png"
+    "icon": "t_scen_Stalacmite_Large_icon"
   },
   {
     "name": "Stalacmite_Medium",
     "category": "device",
-    "icon": "t_scen_Stalacmite_Medium_icon.png"
+    "icon": "t_scen_Stalacmite_Medium_icon"
   },
   {
     "name": "Stalacmite_Small",
     "category": "device",
-    "icon": "t_scen_Stalacmite_Small_icon.png"
+    "icon": "t_scen_Stalacmite_Small_icon"
   },
   {
     "name": "Stalactite_Ice_Large",
     "category": "device",
-    "icon": "t_scen_Stalactite_Ice_Large_icon.png"
+    "icon": "t_scen_Stalactite_Ice_Large_icon"
   },
   {
     "name": "Stalactite_Ice_Medium",
     "category": "device",
-    "icon": "t_scen_Stalactite_Ice_Medium_icon.png"
+    "icon": "t_scen_Stalactite_Ice_Medium_icon"
   },
   {
     "name": "Stalactite_Ice_Small",
     "category": "device",
-    "icon": "t_scen_Stalactite_Ice_Small_icon.png"
+    "icon": "t_scen_Stalactite_Ice_Small_icon"
   },
   {
     "name": "Stalactite_Large",
     "category": "device",
-    "icon": "t_scen_Stalactite_Large_icon.png"
+    "icon": "t_scen_Stalactite_Large_icon"
   },
   {
     "name": "Stalactite_Medium",
     "category": "device",
-    "icon": "t_scen_Stalactite_Medium_icon.png"
+    "icon": "t_scen_Stalactite_Medium_icon"
   },
   {
     "name": "Stalactite_Small",
     "category": "device",
-    "icon": "t_scen_Stalactite_Small_icon.png"
+    "icon": "t_scen_Stalactite_Small_icon"
   },
   {
     "name": "Statue_Stone_A",
     "category": "device",
-    "icon": "t_scen_statue_stone_A_icon.png"
+    "icon": "t_scen_statue_stone_A_icon"
   },
   {
     "name": "Statue_Stone_B",
     "category": "device",
-    "icon": "t_scen_statue_stone_B_icon.png"
+    "icon": "t_scen_statue_stone_B_icon"
   },
   {
     "name": "Statue_Yeti_A",
     "category": "device",
-    "icon": "t_scen_Statue_Yeti_A_icon.png"
+    "icon": "t_scen_Statue_Yeti_A_icon"
   },
   {
     "name": "Statue_Yeti_B",
     "category": "device",
-    "icon": "t_scen_Statue_Yeti_B_icon.png"
+    "icon": "t_scen_Statue_Yeti_B_icon"
   },
   {
     "name": "Steps_Metal_A",
     "category": "device",
-    "icon": "t_scst_Steps_Metal_A_icon.png"
+    "icon": "t_scst_Steps_Metal_A_icon"
   },
   {
     "name": "Steps_Stone_A",
     "category": "device",
-    "icon": "t_scst_Steps_Stone_A_icon.png"
+    "icon": "t_scst_Steps_Stone_A_icon"
   },
   {
     "name": "Steps_Wood_A",
     "category": "device",
-    "icon": "t_scst_Steps_Wood_A_icon.png"
+    "icon": "t_scst_Steps_Wood_A_icon"
   },
   {
     "name": "Stone_Primary",
     "category": "device",
-    "icon": "t_devi_Stone_Primary_icon.png"
+    "icon": "t_devi_Stone_Primary_icon"
   },
   {
     "name": "Table_1x1_A",
     "category": "device",
-    "icon": "t_scen_Table_1x1_A_icon.png"
+    "icon": "t_scen_Table_1x1_A_icon"
   },
   {
     "name": "Table_1x1_Bamboo_A",
     "category": "device",
-    "icon": "t_scen_Table_1x1_Bamboo_A_icon.png"
+    "icon": "t_scen_Table_1x1_Bamboo_A_icon"
   },
   {
     "name": "Table_1x2_A",
     "category": "device",
-    "icon": "t_scen_Table_1x2_A_icon.png"
+    "icon": "t_scen_Table_1x2_A_icon"
   },
   {
     "name": "Table_1x2_Bamboo_A",
     "category": "device",
-    "icon": "t_scen_Table_1x2_Bamboo_A_icon.png"
+    "icon": "t_scen_Table_1x2_Bamboo_A_icon"
   },
   {
     "name": "Table_2x2_A",
     "category": "device",
-    "icon": "t_scen_Table_2x2_A_icon.png"
+    "icon": "t_scen_Table_2x2_A_icon"
   },
   {
     "name": "Table_Desert_1x1",
     "category": "device",
-    "icon": "t_scen_Table_Desert_1x1_icon.png"
+    "icon": "t_scen_Table_Desert_1x1_icon"
   },
   {
     "name": "Table_Desert_2x1",
     "category": "device",
-    "icon": "t_scen_Table_Desert_2x1_icon.png"
+    "icon": "t_scen_Table_Desert_2x1_icon"
   },
   {
     "name": "Table_Tudor_1x2",
     "category": "device",
-    "icon": "t_scen_Table_Tudor_1x2_icon.png"
+    "icon": "t_scen_Table_Tudor_1x2_icon"
   },
   {
     "name": "Table_Tudor_2x2",
     "category": "device",
-    "icon": "t_scen_Table_Tudor_2x2_icon.png"
+    "icon": "t_scen_Table_Tudor_2x2_icon"
   },
   {
     "name": "Tableware_Bakers_Set",
     "category": "device",
-    "icon": "t_scen_Tableware_Bakers_Set_icon.png"
+    "icon": "t_scen_Tableware_Bakers_Set_icon"
   },
   {
     "name": "Tableware_Clay",
     "category": "device",
-    "icon": "t_scen_Tableware_Clay_icon.png"
+    "icon": "t_scen_Tableware_Clay_icon"
   },
   {
     "name": "Tableware_Inkwell",
     "category": "device",
-    "icon": "t_scen_Tableware_Inkwell_icon.png"
+    "icon": "t_scen_Tableware_Inkwell_icon"
   },
   {
     "name": "Tableware_Metal",
     "category": "device",
-    "icon": "t_scen_Tableware_Metal_icon.png"
+    "icon": "t_scen_Tableware_Metal_icon"
   },
   {
     "name": "Tableware_Wood",
     "category": "device",
-    "icon": "t_scen_Tableware_Wood_icon.png"
+    "icon": "t_scen_Tableware_Wood_icon"
   },
   {
     "name": "Tent",
     "category": "device",
-    "icon": "t_scst_Tent_icon.png"
+    "icon": "t_scst_Tent_icon"
   },
   {
     "name": "Totem_Large_A",
     "category": "device",
-    "icon": "t_scen_Totem_Large_A_icon.png"
+    "icon": "t_scen_Totem_Large_A_icon"
   },
   {
     "name": "Totem_Small_A",
     "category": "device",
-    "icon": "t_scen_Totem_Small_A_icon.png"
+    "icon": "t_scen_Totem_Small_A_icon"
   },
   {
     "name": "Totem_Wood_A",
     "category": "device",
-    "icon": "t_scen_Totem_Wood_A_icon.png"
+    "icon": "t_scen_Totem_Wood_A_icon"
   },
   {
     "name": "Totem_Wood_B",
     "category": "device",
-    "icon": "t_scen_Totem_Wood_B_icon.png"
+    "icon": "t_scen_Totem_Wood_B_icon"
   },
   {
     "name": "Totem_Wood_C",
     "category": "device",
-    "icon": "t_scen_Totem_Wood_C_icon.png"
+    "icon": "t_scen_Totem_Wood_C_icon"
   },
   {
     "name": "Tree_Log_A",
     "category": "device",
-    "icon": "t_scen_Tree_Log_A_icon.png"
+    "icon": "t_scen_Tree_Log_A_icon"
   },
   {
     "name": "Tree_MossyLog_A",
     "category": "device",
-    "icon": "t_scen_Tree_MossyLog_A_icon.png"
+    "icon": "t_scen_Tree_MossyLog_A_icon"
   },
   {
     "name": "Tree_Stump_A",
     "category": "device",
-    "icon": "t_scen_Tree_Stump_A_icon.png"
+    "icon": "t_scen_Tree_Stump_A_icon"
   },
   {
     "name": "Trough_A",
     "category": "device",
-    "icon": "t_scen_trough_A_icon.png"
+    "icon": "t_scen_trough_A_icon"
   },
   {
     "name": "Vine_Jungle_A",
     "category": "device",
-    "icon": "t_scen_Vine_Jungle_A_icon.png"
+    "icon": "t_scen_Vine_Jungle_A_icon"
   },
   {
     "name": "Vine_Jungle_B",
     "category": "device",
-    "icon": "t_scen_Vine_Jungle_B_icon.png"
+    "icon": "t_scen_Vine_Jungle_B_icon"
   },
   {
     "name": "Wagon_Wheel_A",
     "category": "device",
-    "icon": "t_scen_Wagon_Wheel_A_icon.png"
+    "icon": "t_scen_Wagon_Wheel_A_icon"
   },
   {
     "name": "Wardrobe_Jungle_Lizard_2x3x1",
     "category": "device",
-    "icon": "t_scen_Wardrobe_Jungle_Lizard_2X3X1_icon.png"
+    "icon": "t_scen_Wardrobe_Jungle_Lizard_2X3X1_icon"
   },
   {
     "name": "Wardrobe_Tudor",
     "category": "device",
-    "icon": "t_scen_Wardrobe_Tudor_icon.png"
+    "icon": "t_scen_Wardrobe_Tudor_icon"
   },
   {
     "name": "Weapon_Secondary",
     "category": "device",
-    "icon": "t_devi_Weapon_Secondary_icon.png"
+    "icon": "t_devi_Weapon_Secondary_icon"
   },
   {
     "name": "Window_Boarded_1x1x1",
     "category": "device",
-    "icon": "t_scen_Window_Boarded_1x1x1_icon.png"
+    "icon": "t_scen_Window_Boarded_1x1x1_icon"
   },
   {
     "name": "Window_Boarded_Large",
     "category": "device",
-    "icon": "t_scen_Window_Boarded_Large_icon.png"
+    "icon": "t_scen_Window_Boarded_Large_icon"
   },
   {
     "name": "Window_Boarded_Small",
     "category": "device",
-    "icon": "t_scen_Window_Boarded_Small_icon.png"
+    "icon": "t_scen_Window_Boarded_Small_icon"
   },
   {
     "name": "Window_Jail_1x1x1",
     "category": "device",
-    "icon": "t_scen_Window_Jail_1x1x1_icon.png"
+    "icon": "t_scen_Window_Jail_1x1x1_icon"
   },
   {
     "name": "Window_Jail_1x2x1",
     "category": "device",
-    "icon": "t_scen_Window_Jail_1x2x1_icon.png"
+    "icon": "t_scen_Window_Jail_1x2x1_icon"
   },
   {
     "name": "Window_Jail_2x3x1",
     "category": "device",
-    "icon": "t_scen_Window_Jail_2x3x1_icon.png"
+    "icon": "t_scen_Window_Jail_2x3x1_icon"
   },
   {
     "name": "Window_Metal_2x3x1",
     "category": "device",
-    "icon": "t_scen_Window_Metal_2x3x1_icon.png"
+    "icon": "t_scen_Window_Metal_2x3x1_icon"
   },
   {
     "name": "Window_Metal_A",
     "category": "device",
-    "icon": "t_scen_Window_Metal_A_icon.png"
+    "icon": "t_scen_Window_Metal_A_icon"
   },
   {
     "name": "Window_Metal_Tall_A",
     "category": "device",
-    "icon": "t_scen_Window_Metal_Tall_A_icon.png"
+    "icon": "t_scen_Window_Metal_Tall_A_icon"
   },
   {
     "name": "Window_Shutter_1x1x1",
     "category": "device",
-    "icon": "t_scen_Window_Shutter_1x1x1_icon.png"
+    "icon": "t_scen_Window_Shutter_1x1x1_icon"
   },
   {
     "name": "Window_Shutter_A",
     "category": "device",
-    "icon": "t_scen_Window_Shutter_A_icon.png"
+    "icon": "t_scen_Window_Shutter_A_icon"
   },
   {
     "name": "Window_Shutter_B",
     "category": "device",
-    "icon": "t_scen_Window_Shutter_B_icon.png"
+    "icon": "t_scen_Window_Shutter_B_icon"
   },
   {
     "name": "Window_Stone_2x3x1",
     "category": "device",
-    "icon": "t_scen_Window_Stone_2x3x1_icon.png"
+    "icon": "t_scen_Window_Stone_2x3x1_icon"
   },
   {
     "name": "Window_Stone_A",
     "category": "device",
-    "icon": "t_scen_Window_Stone_A_icon.png"
+    "icon": "t_scen_Window_Stone_A_icon"
   },
   {
     "name": "Window_Stone_Tall_A",
     "category": "device",
-    "icon": "t_scen_Window_Stone_Tall_A_icon.png"
+    "icon": "t_scen_Window_Stone_Tall_A_icon"
   },
   {
     "name": "Window_Wood_2x3x1",
@@ -3051,27 +3051,27 @@
   {
     "name": "Window_Wood_A",
     "category": "device",
-    "icon": "t_scen_Window_Wood_A_icon.png"
+    "icon": "t_scen_Window_Wood_A_icon"
   },
   {
     "name": "Window_Wood_Tall_A",
     "category": "device",
-    "icon": "t_scen_Window_Wood_Tall_A_icon.png"
+    "icon": "t_scen_Window_Wood_Tall_A_icon"
   },
   {
     "name": "Wood_Primary",
     "category": "device",
-    "icon": "t_devi_Wood_Primary_icon.png"
+    "icon": "t_devi_Wood_Primary_icon"
   },
   {
     "name": "Wood_Stove_A",
     "category": "device",
-    "icon": "t_scen_wood_stove_A_icon.png"
+    "icon": "t_scen_wood_stove_A_icon"
   },
   {
     "name": "Wood_Stove_Small",
     "category": "device",
-    "icon": "t_scen_Wood_Stove_Small_icon.png"
+    "icon": "t_scen_Wood_Stove_Small_icon"
   },
   {
     "name": "Workbench",

@@ -11,7 +11,7 @@ import { keyOf } from "../lib/keys";
 import { clamp, clampBlockId, isNum, } from "../lib/numbers";
 import { rotateStructure90, getRotatedStructure, generateStructureThumbnail, Structure } from "../lib/structures";
 import { inputStyle, actionBtn } from "../styles/inline";
-import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react'
+import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react';
 import RandomPanel from "./RandomPanel";
 import StructuresPanel from "./StructuresPanel";
 import BulkTexturePanel from "./BulkTexturePanel";

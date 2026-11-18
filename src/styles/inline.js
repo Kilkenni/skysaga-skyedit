@@ -4,7 +4,7 @@ export const inputStyle = {
   borderRadius: 5,
   color: "#e6e8ee",
   padding: "4px 6px",
-  width: 50,
+  width: "100%",
   fontSize: 12,
 };
 
