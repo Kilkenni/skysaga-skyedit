@@ -28,10 +28,44 @@ export function mapSizeKey(x: number, y: number, z: number) {
 
 export type EntityCategory = "creature" | "npc" | "device" | "object" | "service";
 
+type FurnitureType = ""|
+                    "Bed"|
+                    "Chair"|
+                    "Decoration"|
+                    "Equipment"|
+                    "Fence"|
+                    "Instrument"|
+                    "Lighting"|
+                    "Other"|
+                    "Pot"|
+                    "Rug"|
+                    "Shrine"|
+                    "Sign"|
+                    "Statue"|
+                    "Storage"|
+                    "Structural"|
+                    "Table"|
+                    "Tableware"|
+                    "Tiles"|
+                    "Window";
+
 export interface EntityRegEntry {
   name: string,
   category: EntityCategory,
-  icon: string,
+  icon?: string,
+  index?: number,
+  objectType?: "CraftingDevice"|"Furniture"|"Generated"|"InteractableDevice"|"LogicNetworkDevice",
+  biome?: "Jungle"|"Forest"|"Desert"|"Mountain",
+  rarityLevel?: "Common"|"Uncommon"|"Rare"|"Epic"|"Legendary"|"Unknown",
+  subCategory?: "Blueprint"|"Crafting"|"CustomSpawner"|"Leaderboard"|"Logic"|"Misc"|"Multiplayer"|"Storage",
+}
+
+
+
+interface FurnitureRegEntry extends EntityRegEntry {
+  furniture: {
+    FurnitureType: FurnitureType,
+  }
 }
 
 export const ENTITY_REGISTRY = {

@@ -2,7 +2,12 @@
   {
     "name": "Airship",
     "category": "device",
-    "icon": "t_devi_Airship_icon"
+    "icon": "t_devi_Airship_icon",
+    "index": 0,
+    "objectType": "InteractableDevice",
+    "biome": "Forest",
+    "rarityLevel": "Uncommon",
+    "subCategory": "Multiplayer"
   },
   {
     "name": "Airship_Dock",
@@ -11,22 +16,50 @@
   {
     "name": "Airship_Wreckage_A",
     "category": "device",
-    "icon": "t_scen_Airship_Wreckage_A_icon"
+    "icon": "t_scen_Airship_Wreckage_A_icon",
+    "index": 4,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Common"
   },
   {
     "name": "Airship_Wreckage_B",
     "category": "device",
-    "icon": "t_scen_Airship_Wreckage_B_icon"
+    "icon": "t_scen_Airship_Wreckage_B_icon",
+    "index": 5,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Common"
   },
   {
     "name": "Airship_Wreckage_C",
     "category": "device",
-    "icon": "t_scen_Airship_Wreckage_C_icon"
+    "icon": "t_scen_Airship_Wreckage_C_icon",
+    "index": 6,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Common"
   },
   {
     "name": "Altar_A",
     "category": "device",
-    "icon": "t_scen_Altar_A_icon"
+    "icon": "t_scen_Altar_A_icon",
+    "index": 7,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Shrine"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Anvil",
@@ -36,12 +69,27 @@
   {
     "name": "Anvil_2x1x1",
     "category": "device",
-    "icon": "t_scen_Anvil_2X1X1_icon"
+    "icon": "t_scen_Anvil_2X1X1_icon",
+    "index": 11,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Armour_Secondary",
     "category": "device",
-    "icon": "t_devi_Armour_Secondary_icon"
+    "icon": "t_devi_Armour_Secondary_icon",
+    "index": 284,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Common",
+    "subCategory": "Crafting"
   },
   {
     "name": "Armoury",
@@ -49,82 +97,194 @@
   },
   {
     "name": "ArtTestPropEntity",
-    "category": "device"
+    "category": "device",
+    "index": 378,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Barrel_A",
     "category": "device",
-    "icon": "t_scen_barrel_A_icon"
+    "icon": "t_scen_barrel_A_icon",
+    "index": 380,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Storage"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Barrel_B",
     "category": "device",
-    "icon": "t_scen_Barrel_B_icon"
+    "icon": "t_scen_Barrel_B_icon",
+    "index": 381,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Storage"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Barrel_Large_A",
     "category": "device",
-    "icon": "t_scen_Barrel_Large_A_icon"
+    "icon": "t_scen_Barrel_Large_A_icon",
+    "index": 382,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Storage"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Barrel_With_Tap",
     "category": "device",
-    "icon": "t_scen_Barrel_With_Tap_icon"
+    "icon": "t_scen_Barrel_With_Tap_icon",
+    "index": 383,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Storage"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Basket_A",
     "category": "device",
-    "icon": "t_scen_Basket_A_icon"
+    "icon": "t_scen_Basket_A_icon",
+    "index": 384,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Storage"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Basket_Big_A",
     "category": "device",
-    "icon": "t_scen_Basket_Big_A_icon"
+    "icon": "t_scen_Basket_Big_A_icon",
+    "index": 385,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Storage"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Bear_Skin_Rug_A",
     "category": "device",
-    "icon": "t_scen_Bear_Skin_Rug_A_icon"
+    "icon": "t_scen_Bear_Skin_Rug_A_icon",
+    "index": 386,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Rug"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Bed_Fancy_A",
     "category": "device",
-    "icon": "t_scen_Bed_Fancy_A_icon"
+    "icon": "t_scen_Bed_Fancy_A_icon",
+    "index": 388,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Bed"
+    },
+    "rarityLevel": "Epic"
   },
   {
     "name": "Bed_Hammock_A",
     "category": "device",
-    "icon": "t_scen_Bed_Hammock_A_icon"
+    "icon": "t_scen_Bed_Hammock_A_icon",
+    "index": 389,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Bed"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Bed_Iron_A",
     "category": "device",
-    "icon": "t_scen_Bed_Iron_A_icon"
+    "icon": "t_scen_Bed_Iron_A_icon",
+    "index": 390,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Bed"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Bed_Jungle_Lizard_3x1x3",
     "category": "device",
-    "icon": "t_scen_Bed_Jungle_Lizard_3X1X3_icon"
+    "icon": "t_scen_Bed_Jungle_Lizard_3X1X3_icon",
+    "index": 391,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Bed"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Bed_Rustic_A",
     "category": "device",
-    "icon": "t_scen_Bed_Rustic_A_icon"
+    "icon": "t_scen_Bed_Rustic_A_icon",
+    "index": 392,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Bed"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Bed_Tudor",
     "category": "device",
-    "icon": "t_scen_Bed_Tudor_icon"
+    "icon": "t_scen_Bed_Tudor_icon",
+    "index": 393,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Bed"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Bedroll_3x1x1",
     "category": "device",
-    "icon": "t_scen_Bedroll_3X1X1_icon"
+    "icon": "t_scen_Bedroll_3X1X1_icon",
+    "index": 387,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Bed"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Beehive_A",
     "category": "device",
-    "icon": "t_scst_beehive_a_icon"
+    "icon": "t_scst_beehive_a_icon",
+    "index": 394,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Common"
   },
   {
     "name": "Bellows",
@@ -133,200 +293,470 @@
   {
     "name": "Bench_A",
     "category": "device",
-    "icon": "t_scen_bench_A_icon"
+    "icon": "t_scen_bench_A_icon",
+    "index": 396,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Chair"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Bench_B",
     "category": "device",
-    "icon": "t_scen_bench_B_icon"
+    "icon": "t_scen_bench_B_icon",
+    "index": 397,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Chair"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Bench_Bamboo_A",
     "category": "device",
-    "icon": "t_scen_Bench_Bamboo_A_icon"
+    "icon": "t_scen_Bench_Bamboo_A_icon",
+    "index": 398,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Chair"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Bench_Stone_A",
     "category": "device",
-    "icon": "t_scen_Bench_Stone_A_icon"
+    "icon": "t_scen_Bench_Stone_A_icon",
+    "index": 399,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Chair"
+    },
+    "rarityLevel": "Epic"
   },
   {
     "name": "Bench_Tudor",
     "category": "device",
-    "icon": "t_scen_Bench_Tudor_icon"
+    "icon": "t_scen_Bench_Tudor_icon",
+    "index": 400,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Chair"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "BlueprintConstructor",
-    "category": "device"
+    "category": "device",
+    "index": 419,
+    "objectType": "InteractableDevice",
+    "biome": "",
+    "rarityLevel": "Common",
+    "subCategory": "Blueprint"
   },
   {
     "name": "BlueprintConstructor_ftue",
-    "category": "device"
+    "category": "device",
+    "index": 421,
+    "objectType": "InteractableDevice",
+    "biome": "",
+    "rarityLevel": "Common",
+    "subCategory": "Blueprint"
   },
   {
     "name": "BlueprintCreator",
     "category": "device",
-    "icon": "t_devi_BlueprintCreator_icon"
+    "icon": "t_devi_BlueprintCreator_icon",
+    "index": 422,
+    "objectType": "InteractableDevice",
+    "biome": "",
+    "rarityLevel": "Common",
+    "subCategory": "Blueprint"
   },
   {
     "name": "Boat_Upsidedown",
     "category": "device",
-    "icon": "t_scen_Boat_Upsidedown_icon"
+    "icon": "t_scen_Boat_Upsidedown_icon",
+    "index": 424,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Boat_Vertical",
     "category": "device",
-    "icon": "t_scen_Boat_Vertical_icon"
+    "icon": "t_scen_Boat_Vertical_icon",
+    "index": 425,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Bone_GiantRib_A",
     "category": "device",
-    "icon": "t_scen_Bone_GiantRib_A_icon"
+    "icon": "t_scen_Bone_GiantRib_A_icon",
+    "index": 427,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Common"
   },
   {
     "name": "Bone_GiantRib_B",
     "category": "device",
-    "icon": "t_scen_Bone_GiantRib_B_icon"
+    "icon": "t_scen_Bone_GiantRib_B_icon",
+    "index": 428,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Common"
   },
   {
     "name": "Bone_GiantRib_C",
     "category": "device",
-    "icon": "t_scen_Bone_GiantRib_C_icon"
+    "icon": "t_scen_Bone_GiantRib_C_icon",
+    "index": 429,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Common"
   },
   {
     "name": "Bone_GiantSkull_A",
     "category": "device",
-    "icon": "t_scen_Bone_GiantSkull_A_icon"
+    "icon": "t_scen_Bone_GiantSkull_A_icon",
+    "index": 430,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Bone_GiantSkull_B",
     "category": "device",
-    "icon": "t_scen_Bone_GiantSkull_B_icon"
+    "icon": "t_scen_Bone_GiantSkull_B_icon",
+    "index": 431,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Bone_GiantSkull_C",
     "category": "device",
-    "icon": "t_scen_Bone_GiantSkull_C_icon"
+    "icon": "t_scen_Bone_GiantSkull_C_icon",
+    "index": 432,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Epic"
   },
   {
     "name": "Bone_Pile_A",
     "category": "device",
-    "icon": "t_scen_Bone_Pile_A_icon"
+    "icon": "t_scen_Bone_Pile_A_icon",
+    "index": 433,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Common"
   },
   {
     "name": "Bone_Pile_B",
     "category": "device",
-    "icon": "t_scen_Bone_Pile_B_icon"
+    "icon": "t_scen_Bone_Pile_B_icon",
+    "index": 434,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Common"
   },
   {
     "name": "Bone_Ribs_A",
     "category": "device",
-    "icon": "t_scen_Bone_Ribs_A_icon"
+    "icon": "t_scen_Bone_Ribs_A_icon",
+    "index": 435,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Common"
   },
   {
     "name": "Bone_Skull_A",
     "category": "device",
-    "icon": "t_scen_Bone_Skull_A_icon"
+    "icon": "t_scen_Bone_Skull_A_icon",
+    "index": 436,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Common"
   },
   {
     "name": "Books_Shelf_A",
     "category": "device",
-    "icon": "t_scen_Books_Shelf_A_icon"
+    "icon": "t_scen_Books_Shelf_A_icon",
+    "index": 440,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Storage"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Books_Stack_A",
     "category": "device",
-    "icon": "t_scen_Books_Stack_A_icon"
+    "icon": "t_scen_Books_Stack_A_icon",
+    "index": 441,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Storage"
+    },
+    "rarityLevel": "Epic"
   },
   {
     "name": "Bookshelf_Desert",
     "category": "device",
-    "icon": "t_scen_Bookshelf_Desert_icon"
+    "icon": "t_scen_Bookshelf_Desert_icon",
+    "index": 438,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Storage"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "BookShelf_Tudor",
     "category": "device",
-    "icon": "t_scen_BookShelf_Tudor_icon"
+    "icon": "t_scen_BookShelf_Tudor_icon",
+    "index": 439,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Storage"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Bridge_Slats_A",
     "category": "device",
-    "icon": "t_scst_bridge_slats_a_icon"
+    "icon": "t_scst_bridge_slats_a_icon",
+    "index": 443,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Structural"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Bucket_A",
     "category": "device",
-    "icon": "t_scen_bucket_A_icon"
+    "icon": "t_scen_bucket_A_icon",
+    "index": 444,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Bucket_Metal",
     "category": "device",
-    "icon": "t_scen_Bucket_Metal_icon"
+    "icon": "t_scen_Bucket_Metal_icon",
+    "index": 445,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Bucket_Of_Ore",
     "category": "device",
-    "icon": "t_scen_Bucket_Of_Ore_icon"
+    "icon": "t_scen_Bucket_Of_Ore_icon",
+    "index": 446,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Bug_Egg_A",
     "category": "device",
-    "icon": "t_scen_Bug_Egg_A_icon"
+    "icon": "t_scen_Bug_Egg_A_icon",
+    "index": 447,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Bug_Egg_Large_A",
     "category": "device",
-    "icon": "t_scen_Bug_Egg_Large_A_icon"
+    "icon": "t_scen_Bug_Egg_Large_A_icon",
+    "index": 448,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Bug_Plant_A",
     "category": "device",
-    "icon": "t_scen_Bug_Plant_A_icon"
+    "icon": "t_scen_Bug_Plant_A_icon",
+    "index": 450,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Bug_Vent_A",
     "category": "device",
-    "icon": "t_scen_Bug_Vent_A_icon"
+    "icon": "t_scen_Bug_Vent_A_icon",
+    "index": 451,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Bureau_Jungle_Lizard_2x2x1",
     "category": "device",
-    "icon": "t_scen_Bureau_Jungle_Lizard_2X2X1_icon"
+    "icon": "t_scen_Bureau_Jungle_Lizard_2X2X1_icon",
+    "index": 453,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Storage"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Bush",
     "category": "device",
-    "icon": "t_scen_Bush_icon"
+    "icon": "t_scen_Bush_icon",
+    "index": 454,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Camp_Fire",
     "category": "device",
-    "icon": "t_devi_Camp_Fire_icon"
+    "icon": "t_devi_Camp_Fire_icon",
+    "index": 457,
+    "objectType": "InteractableDevice",
+    "biome": "Forest",
+    "rarityLevel": "Uncommon",
+    "subCategory": "Misc"
   },
   {
     "name": "Camp_Fire_With_Smoke",
     "category": "device",
-    "icon": "t_devi_Camp_Fire_icon"
+    "icon": "t_devi_Camp_Fire_icon",
+    "index": 458,
+    "objectType": "InteractableDevice",
+    "biome": "Forest",
+    "rarityLevel": "Uncommon",
+    "subCategory": "Misc"
   },
   {
     "name": "Cart_A",
     "category": "device",
-    "icon": "t_scen_cart_A_icon"
+    "icon": "t_scen_cart_A_icon",
+    "index": 461,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Cart_B",
     "category": "device",
-    "icon": "t_scen_Cart_B_icon"
+    "icon": "t_scen_Cart_B_icon",
+    "index": 462,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Cart_Wood",
     "category": "device",
-    "icon": "t_scen_Cart_Wood_icon"
+    "icon": "t_scen_Cart_Wood_icon",
+    "index": 463,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Cart_Wood_With_Sacks_3x2x2",
     "category": "device",
-    "icon": "t_scen_Cart_Wood_With_Sacks_3x2x2_icon"
+    "icon": "t_scen_Cart_Wood_With_Sacks_3x2x2_icon",
+    "index": 464,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Cauldron",
@@ -335,62 +765,146 @@
   {
     "name": "Cave_Crystal_Clump_A",
     "category": "device",
-    "icon": "t_scen_Cave_Crystal_Clump_A_icon"
+    "icon": "t_scen_Cave_Crystal_Clump_A_icon",
+    "index": 466,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Common"
   },
   {
     "name": "Cave_Crystal_Clump_A_Lit",
     "category": "device",
-    "icon": "t_scen_Cave_Crystal_Clump_A_icon"
+    "icon": "t_scen_Cave_Crystal_Clump_A_icon",
+    "index": 467,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": ""
+    },
+    "rarityLevel": "Common"
   },
   {
     "name": "Cave_Crystal_Clump_Large",
     "category": "device",
-    "icon": "t_scen_Cave_Crystal_Clump_Large_icon"
+    "icon": "t_scen_Cave_Crystal_Clump_Large_icon",
+    "index": 468,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Common"
   },
   {
     "name": "Cave_Crystal_Hanging_A",
     "category": "device",
-    "icon": "t_scen_Cave_Crystal_Hanging_A_icon"
+    "icon": "t_scen_Cave_Crystal_Hanging_A_icon",
+    "index": 469,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Epic"
   },
   {
     "name": "Cellar_Grate_A",
     "category": "device",
-    "icon": "t_scen_Cellar_Grate_A_icon"
+    "icon": "t_scen_Cellar_Grate_A_icon",
+    "index": 470,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Epic"
   },
   {
     "name": "Chair_A",
     "category": "device",
-    "icon": "t_scen_chair_A_icon"
+    "icon": "t_scen_chair_A_icon",
+    "index": 471,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Chair"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Chair_B",
     "category": "device",
-    "icon": "t_scen_Chair_B_icon"
+    "icon": "t_scen_Chair_B_icon",
+    "index": 472,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Chair"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Chair_Bamboo_A",
     "category": "device",
-    "icon": "t_scen_Chair_Bamboo_A_icon"
+    "icon": "t_scen_Chair_Bamboo_A_icon",
+    "index": 473,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Chair"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Chair_Fancy_A",
     "category": "device",
-    "icon": "t_scen_Chair_Fancy_A_icon"
+    "icon": "t_scen_Chair_Fancy_A_icon",
+    "index": 474,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Chair"
+    },
+    "rarityLevel": "Epic"
   },
   {
     "name": "Chair_Jungle_Lizard_1x1x1",
     "category": "device",
-    "icon": "t_scen_Chair_Jungle_Lizard_1X1X1_icon"
+    "icon": "t_scen_Chair_Jungle_Lizard_1X1X1_icon",
+    "index": 475,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Chair"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Chair_Tudor",
     "category": "device",
-    "icon": "t_scen_Chair_Tudor_icon"
+    "icon": "t_scen_Chair_Tudor_icon",
+    "index": 476,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Chair"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Chair_Tudor_Tall",
     "category": "device",
-    "icon": "t_scen_Chair_Tudor_Tall_icon"
+    "icon": "t_scen_Chair_Tudor_Tall_icon",
+    "index": 477,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Chair"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Chest",
@@ -399,219 +913,466 @@
   {
     "name": "Chest_Adventure_End",
     "category": "device",
-    "icon": "t_devi_Chest_Adventure_End_icon"
+    "icon": "t_devi_Chest_Adventure_End_icon",
+    "index": 478,
+    "objectType": "Generated",
+    "biome": "Forest",
+    "rarityLevel": "Common"
   },
   {
     "name": "Chest_Big",
     "category": "device",
-    "icon": "t_devi_Chest_Big_icon"
+    "icon": "t_devi_Chest_Big_icon",
+    "index": 479,
+    "objectType": "Generated",
+    "biome": "Forest",
+    "rarityLevel": "Common"
   },
   {
     "name": "Chest_Big_Titan",
-    "category": "device"
+    "category": "device",
+    "index": 480,
+    "objectType": "Generated",
+    "biome": "",
+    "rarityLevel": "Common"
   },
   {
     "name": "Chest_Blacksmith_Major",
     "category": "device",
-    "icon": "t_devi_chest_blacksmith_major_icon"
+    "icon": "t_devi_chest_blacksmith_major_icon",
+    "index": 481,
+    "objectType": "InteractableDevice",
+    "biome": "Mountain",
+    "rarityLevel": "Rare",
+    "subCategory": "Storage"
   },
   {
     "name": "Chest_Blacksmith_Minor",
     "category": "device",
-    "icon": "t_devi_chest_blacksmith_minor_icon"
+    "icon": "t_devi_chest_blacksmith_minor_icon",
+    "index": 482,
+    "objectType": "InteractableDevice",
+    "biome": "Mountain",
+    "rarityLevel": "Uncommon",
+    "subCategory": "Storage"
   },
   {
     "name": "Chest_Christmas_Minor",
     "category": "device",
-    "icon": "t_devi_Chest_Christmas_Minor_icon"
+    "icon": "t_devi_Chest_Christmas_Minor_icon",
+    "index": 483,
+    "objectType": "InteractableDevice",
+    "biome": "Mountain",
+    "rarityLevel": "Uncommon",
+    "subCategory": "Storage"
   },
   {
     "name": "Chest_EndGame",
-    "category": "device"
+    "category": "device",
+    "index": 484,
+    "objectType": "InteractableDevice",
+    "biome": "",
+    "rarityLevel": "Uncommon",
+    "subCategory": "Storage"
   },
   {
     "name": "Chest_Generic_Major",
     "category": "device",
-    "icon": "t_devi_Chest_Generic_Major_icon"
+    "icon": "t_devi_Chest_Generic_Major_icon",
+    "index": 485,
+    "objectType": "InteractableDevice",
+    "biome": "Forest",
+    "rarityLevel": "Uncommon",
+    "subCategory": "Storage"
   },
   {
     "name": "Chest_Generic_Minor",
     "category": "device",
-    "icon": "t_devi_Chest_Generic_Minor_icon"
+    "icon": "t_devi_Chest_Generic_Minor_icon",
+    "index": 486,
+    "objectType": "InteractableDevice",
+    "biome": "Forest",
+    "rarityLevel": "Uncommon",
+    "subCategory": "Storage"
   },
   {
     "name": "Chest_Golden",
-    "category": "device"
+    "category": "device",
+    "index": 487,
+    "objectType": "InteractableDevice",
+    "biome": "Forest",
+    "rarityLevel": "Uncommon",
+    "subCategory": "Storage"
   },
   {
     "name": "Chest_Lizardmen_Major",
     "category": "device",
-    "icon": "t_devi_Chest_Lizardmen_Major_icon"
+    "icon": "t_devi_Chest_Lizardmen_Major_icon",
+    "index": 488,
+    "objectType": "InteractableDevice",
+    "biome": "Desert",
+    "rarityLevel": "Rare",
+    "subCategory": "Storage"
   },
   {
     "name": "Chest_Lizardmen_Minor",
     "category": "device",
-    "icon": "t_devi_Chest_Lizardmen_Minor_icon"
+    "icon": "t_devi_Chest_Lizardmen_Minor_icon",
+    "index": 489,
+    "objectType": "InteractableDevice",
+    "biome": "Desert",
+    "rarityLevel": "Uncommon",
+    "subCategory": "Storage"
   },
   {
     "name": "Chest_Major_Arrow_Titan",
-    "category": "device"
+    "category": "device",
+    "index": 490,
+    "objectType": "InteractableDevice",
+    "biome": "",
+    "rarityLevel": "Rare",
+    "subCategory": "Storage"
   },
   {
     "name": "Chest_Major_Bomb_Titan",
-    "category": "device"
+    "category": "device",
+    "index": 491,
+    "objectType": "InteractableDevice",
+    "biome": "",
+    "rarityLevel": "Rare",
+    "subCategory": "Storage"
   },
   {
     "name": "Chest_Major_Catalysts_Titan",
-    "category": "device"
+    "category": "device",
+    "index": 492,
+    "objectType": "InteractableDevice",
+    "biome": "",
+    "rarityLevel": "Rare",
+    "subCategory": "Storage"
   },
   {
     "name": "Chest_Major_Components_Titan",
-    "category": "device"
+    "category": "device",
+    "index": 493,
+    "objectType": "InteractableDevice",
+    "biome": "",
+    "rarityLevel": "Rare",
+    "subCategory": "Storage"
   },
   {
     "name": "Chest_Major_Cotton",
-    "category": "device"
+    "category": "device",
+    "index": 494,
+    "objectType": "InteractableDevice",
+    "biome": "Forest",
+    "rarityLevel": "Rare",
+    "subCategory": "Storage"
   },
   {
     "name": "Chest_Major_Food_Titan",
-    "category": "device"
+    "category": "device",
+    "index": 495,
+    "objectType": "InteractableDevice",
+    "biome": "",
+    "rarityLevel": "Rare",
+    "subCategory": "Storage"
   },
   {
     "name": "Chest_Major_Gunpowder",
-    "category": "device"
+    "category": "device",
+    "index": 496,
+    "objectType": "InteractableDevice",
+    "biome": "Forest",
+    "rarityLevel": "Rare",
+    "subCategory": "Storage"
   },
   {
     "name": "Chest_Major_Knots",
-    "category": "device"
+    "category": "device",
+    "index": 497,
+    "objectType": "InteractableDevice",
+    "biome": "Forest",
+    "rarityLevel": "Rare",
+    "subCategory": "Storage"
   },
   {
     "name": "Chest_Major_Knots_Titan",
-    "category": "device"
+    "category": "device",
+    "index": 498,
+    "objectType": "InteractableDevice",
+    "biome": "",
+    "rarityLevel": "Rare",
+    "subCategory": "Storage"
   },
   {
     "name": "Chest_Major_Metal",
-    "category": "device"
+    "category": "device",
+    "index": 499,
+    "objectType": "InteractableDevice",
+    "biome": "Forest",
+    "rarityLevel": "Rare",
+    "subCategory": "Storage"
   },
   {
     "name": "Chest_Major_Pelt",
-    "category": "device"
+    "category": "device",
+    "index": 500,
+    "objectType": "InteractableDevice",
+    "biome": "Forest",
+    "rarityLevel": "Rare",
+    "subCategory": "Storage"
   },
   {
     "name": "Chest_Major_Sand",
-    "category": "device"
+    "category": "device",
+    "index": 501,
+    "objectType": "InteractableDevice",
+    "biome": "Forest",
+    "rarityLevel": "Rare",
+    "subCategory": "Storage"
   },
   {
     "name": "Chest_Major_Stone",
-    "category": "device"
+    "category": "device",
+    "index": 502,
+    "objectType": "InteractableDevice",
+    "biome": "Forest",
+    "rarityLevel": "Rare",
+    "subCategory": "Storage"
   },
   {
     "name": "Chest_Major_Wax",
-    "category": "device"
+    "category": "device",
+    "index": 503,
+    "objectType": "InteractableDevice",
+    "biome": "Forest",
+    "rarityLevel": "Rare",
+    "subCategory": "Storage"
   },
   {
     "name": "Chest_Major_Wood",
-    "category": "device"
+    "category": "device",
+    "index": 504,
+    "objectType": "InteractableDevice",
+    "biome": "Forest",
+    "rarityLevel": "Rare",
+    "subCategory": "Storage"
   },
   {
     "name": "Chest_Minor_Arrow_Titan",
-    "category": "device"
+    "category": "device",
+    "index": 505,
+    "objectType": "InteractableDevice",
+    "biome": "",
+    "rarityLevel": "Uncommon",
+    "subCategory": "Storage"
   },
   {
     "name": "Chest_Minor_Bomb_Titan",
-    "category": "device"
+    "category": "device",
+    "index": 506,
+    "objectType": "InteractableDevice",
+    "biome": "",
+    "rarityLevel": "Uncommon",
+    "subCategory": "Storage"
   },
   {
     "name": "Chest_Minor_Catalysts_Titan",
-    "category": "device"
+    "category": "device",
+    "index": 507,
+    "objectType": "InteractableDevice",
+    "biome": "",
+    "rarityLevel": "Uncommon",
+    "subCategory": "Storage"
   },
   {
     "name": "Chest_Minor_Components_Titan",
-    "category": "device"
+    "category": "device",
+    "index": 508,
+    "objectType": "InteractableDevice",
+    "biome": "",
+    "rarityLevel": "Uncommon",
+    "subCategory": "Storage"
   },
   {
     "name": "Chest_Minor_Cotton",
-    "category": "device"
+    "category": "device",
+    "index": 509,
+    "objectType": "InteractableDevice",
+    "biome": "Forest",
+    "rarityLevel": "Uncommon",
+    "subCategory": "Storage"
   },
   {
     "name": "Chest_Minor_Food_Titan",
-    "category": "device"
+    "category": "device",
+    "index": 510,
+    "objectType": "InteractableDevice",
+    "biome": "",
+    "rarityLevel": "Uncommon",
+    "subCategory": "Storage"
   },
   {
     "name": "Chest_Minor_Gunpowder",
-    "category": "device"
+    "category": "device",
+    "index": 511,
+    "objectType": "InteractableDevice",
+    "biome": "Forest",
+    "rarityLevel": "Uncommon",
+    "subCategory": "Storage"
   },
   {
     "name": "Chest_Minor_Knots",
-    "category": "device"
+    "category": "device",
+    "index": 512,
+    "objectType": "InteractableDevice",
+    "biome": "Forest",
+    "rarityLevel": "Uncommon",
+    "subCategory": "Storage"
   },
   {
     "name": "Chest_Minor_Knots_Titan",
-    "category": "device"
+    "category": "device",
+    "index": 513,
+    "objectType": "InteractableDevice",
+    "biome": "",
+    "rarityLevel": "Uncommon",
+    "subCategory": "Storage"
   },
   {
     "name": "Chest_Minor_Metal",
-    "category": "device"
+    "category": "device",
+    "index": 514,
+    "objectType": "InteractableDevice",
+    "biome": "Forest",
+    "rarityLevel": "Uncommon",
+    "subCategory": "Storage"
   },
   {
     "name": "Chest_Minor_Pelt",
-    "category": "device"
+    "category": "device",
+    "index": 515,
+    "objectType": "InteractableDevice",
+    "biome": "Forest",
+    "rarityLevel": "Uncommon",
+    "subCategory": "Storage"
   },
   {
     "name": "Chest_Minor_Sand",
-    "category": "device"
+    "category": "device",
+    "index": 516,
+    "objectType": "InteractableDevice",
+    "biome": "Forest",
+    "rarityLevel": "Uncommon",
+    "subCategory": "Storage"
   },
   {
     "name": "Chest_Minor_Stone",
-    "category": "device"
+    "category": "device",
+    "index": 517,
+    "objectType": "InteractableDevice",
+    "biome": "Forest",
+    "rarityLevel": "Uncommon",
+    "subCategory": "Storage"
   },
   {
     "name": "Chest_Minor_Wax",
-    "category": "device"
+    "category": "device",
+    "index": 518,
+    "objectType": "InteractableDevice",
+    "biome": "Forest",
+    "rarityLevel": "Uncommon",
+    "subCategory": "Storage"
   },
   {
     "name": "Chest_Minor_Wood",
-    "category": "device"
+    "category": "device",
+    "index": 519,
+    "objectType": "InteractableDevice",
+    "biome": "Forest",
+    "rarityLevel": "Uncommon",
+    "subCategory": "Storage"
   },
   {
     "name": "Chest_Monkey_Major",
     "category": "device",
-    "icon": "t_devi_chest_monkey_major_icon"
+    "icon": "t_devi_chest_monkey_major_icon",
+    "index": 520,
+    "objectType": "InteractableDevice",
+    "biome": "Jungle",
+    "rarityLevel": "Epic",
+    "subCategory": "Storage"
   },
   {
     "name": "Chest_Monkey_Minor",
     "category": "device",
-    "icon": "t_devi_chest_monkey_minor_icon"
+    "icon": "t_devi_chest_monkey_minor_icon",
+    "index": 521,
+    "objectType": "InteractableDevice",
+    "biome": "Jungle",
+    "rarityLevel": "Rare",
+    "subCategory": "Storage"
   },
   {
     "name": "Chest_Survivalist_Major",
     "category": "device",
-    "icon": "t_devi_Chest_Survivalist_Major_icon"
+    "icon": "t_devi_Chest_Survivalist_Major_icon",
+    "index": 522,
+    "objectType": "InteractableDevice",
+    "biome": "Mountain",
+    "rarityLevel": "Rare",
+    "subCategory": "Storage"
   },
   {
     "name": "Chest_Survivalist_Minor",
     "category": "device",
-    "icon": "t_devi_Chest_Survivalist_Minor_icon"
+    "icon": "t_devi_Chest_Survivalist_Minor_icon",
+    "index": 523,
+    "objectType": "InteractableDevice",
+    "biome": "Mountain",
+    "rarityLevel": "Uncommon",
+    "subCategory": "Storage"
   },
   {
     "name": "Chest_Trader_Major",
     "category": "device",
-    "icon": "t_devi_Chest_Trader_Major_icon"
+    "icon": "t_devi_Chest_Trader_Major_icon",
+    "index": 524,
+    "objectType": "InteractableDevice",
+    "biome": "Forest",
+    "rarityLevel": "Epic",
+    "subCategory": "Storage"
   },
   {
     "name": "Chest_Trader_Minor",
     "category": "device",
-    "icon": "t_devi_Chest_Trader_Minor_icon"
+    "icon": "t_devi_Chest_Trader_Minor_icon",
+    "index": 525,
+    "objectType": "InteractableDevice",
+    "biome": "Forest",
+    "rarityLevel": "Rare",
+    "subCategory": "Storage"
   },
   {
     "name": "Chest_Yeti_Major",
     "category": "device",
-    "icon": "t_devi_Chest_Yeti_Major_icon"
+    "icon": "t_devi_Chest_Yeti_Major_icon",
+    "index": 526,
+    "objectType": "InteractableDevice",
+    "biome": "Mountain",
+    "rarityLevel": "Epic",
+    "subCategory": "Storage"
   },
   {
     "name": "Chest_Yeti_Minor",
     "category": "device",
-    "icon": "t_devi_Chest_Yeti_Minor_icon"
+    "icon": "t_devi_Chest_Yeti_Minor_icon",
+    "index": 527,
+    "objectType": "InteractableDevice",
+    "biome": "Mountain",
+    "rarityLevel": "Uncommon",
+    "subCategory": "Storage"
   },
   {
     "name": "ChestMinorLootPvP",
@@ -620,47 +1381,110 @@
   {
     "name": "Chimney_Tudor_A",
     "category": "device",
-    "icon": "t_scen_Chimney_Tudor_A_icon"
+    "icon": "t_scen_Chimney_Tudor_A_icon",
+    "index": 528,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Structural"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Chimney_Tudor_B",
     "category": "device",
-    "icon": "t_scen_Chimney_Tudor_B_icon"
+    "icon": "t_scen_Chimney_Tudor_B_icon",
+    "index": 529,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Structural"
+    },
+    "rarityLevel": "Epic"
   },
   {
     "name": "Chimney_Tudor_C",
     "category": "device",
-    "icon": "t_scen_Chimney_Tudor_C_icon"
+    "icon": "t_scen_Chimney_Tudor_C_icon",
+    "index": 530,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Structural"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Christmas_Snowman",
     "category": "device",
-    "icon": "t_scen_Christmas_Snowman_icon"
+    "icon": "t_scen_Christmas_Snowman_icon",
+    "index": 531,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Christmas_Tree",
     "category": "device",
-    "icon": "t_scen_Christmas_Tree_icon"
+    "icon": "t_scen_Christmas_Tree_icon",
+    "index": 532,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Legendary"
   },
   {
     "name": "Clock_Longcase",
     "category": "device",
-    "icon": "t_scen_Clock_Longcase_icon"
+    "icon": "t_scen_Clock_Longcase_icon",
+    "index": 534,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Storage"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Coffer_A",
     "category": "device",
-    "icon": "t_scen_Coffer_A_icon"
+    "icon": "t_scen_Coffer_A_icon",
+    "index": 535,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Storage"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Coffer_Desert_2x1",
     "category": "device",
-    "icon": "t_scen_Coffer_Desert_2X1_icon"
+    "icon": "t_scen_Coffer_Desert_2X1_icon",
+    "index": 536,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Storage"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Coffer_Tudor",
     "category": "device",
-    "icon": "t_scen_Coffer_Tudor_icon"
+    "icon": "t_scen_Coffer_Tudor_icon",
+    "index": 537,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Storage"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Cold_Weather_Survival_Kit",
@@ -669,7 +1493,14 @@
   {
     "name": "Collapsed_Doorway",
     "category": "device",
-    "icon": "t_scen_Collapsed_Doorway_icon"
+    "icon": "t_scen_Collapsed_Doorway_icon",
+    "index": 540,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Structural"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Compressor",
@@ -678,90 +1509,212 @@
   {
     "name": "Cornice_Metal_A",
     "category": "device",
-    "icon": "t_scen_Cornice_Metal_A_icon"
+    "icon": "t_scen_Cornice_Metal_A_icon",
+    "index": 541,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Structural"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Cornice_Metal_B",
     "category": "device",
-    "icon": "t_scen_Cornice_Metal_B_icon"
+    "icon": "t_scen_Cornice_Metal_B_icon",
+    "index": 542,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Structural"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Cornice_Metal_C",
     "category": "device",
-    "icon": "t_scen_Cornice_Metal_C_icon"
+    "icon": "t_scen_Cornice_Metal_C_icon",
+    "index": 543,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Structural"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Cornice_Stone_A",
     "category": "device",
-    "icon": "t_scen_Cornice_Stone_A_icon"
+    "icon": "t_scen_Cornice_Stone_A_icon",
+    "index": 544,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Structural"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Cornice_Stone_B",
     "category": "device",
-    "icon": "t_scen_Cornice_Stone_B_icon"
+    "icon": "t_scen_Cornice_Stone_B_icon",
+    "index": 545,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Structural"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Cornice_Stone_C",
     "category": "device",
-    "icon": "t_scen_Cornice_Stone_C_icon"
+    "icon": "t_scen_Cornice_Stone_C_icon",
+    "index": 546,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Structural"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Cornice_Wood_A",
     "category": "device",
-    "icon": "t_scen_Cornice_Wood_A_icon"
+    "icon": "t_scen_Cornice_Wood_A_icon",
+    "index": 547,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Structural"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Cornice_Wood_B",
     "category": "device",
-    "icon": "t_scen_Cornice_Wood_B_icon"
+    "icon": "t_scen_Cornice_Wood_B_icon",
+    "index": 548,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Structural"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Cornice_Wood_C",
     "category": "device",
-    "icon": "t_scen_Cornice_Wood_C_icon"
+    "icon": "t_scen_Cornice_Wood_C_icon",
+    "index": 549,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Structural"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Counter_Tudor_5x1x1",
     "category": "device",
-    "icon": "t_scen_Counter_Tudor_5X1X1_icon"
+    "icon": "t_scen_Counter_Tudor_5X1X1_icon",
+    "index": 551,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Table"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Cracked_Cover_Stone_3x1x3",
     "category": "device",
-    "icon": "t_scen_Cracked_Cover_Stone_3x1x3_icon"
+    "icon": "t_scen_Cracked_Cover_Stone_3x1x3_icon",
+    "index": 552,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Structural"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Cracked_Cover_Stone_3x3x1",
     "category": "device",
-    "icon": "t_scen_Cracked_Cover_Stone_3x3x1_icon"
+    "icon": "t_scen_Cracked_Cover_Stone_3x3x1_icon",
+    "index": 553,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Structural"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Crafting_Device",
-    "category": "device"
+    "category": "device",
+    "index": 555,
+    "objectType": "CraftingDevice",
+    "biome": "Forest",
+    "rarityLevel": "Common",
+    "subCategory": "Crafting"
   },
   {
     "name": "Crate_A",
     "category": "device",
-    "icon": "t_scen_crate_A_icon"
+    "icon": "t_scen_crate_A_icon",
+    "index": 556,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Storage"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Crate_B",
     "category": "device",
-    "icon": "t_scen_Crate_B_icon"
+    "icon": "t_scen_Crate_B_icon",
+    "index": 558,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Storage"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Crate_Keystone",
     "category": "device",
-    "icon": "t_scst_crate_keystone_icon"
+    "icon": "t_scst_crate_keystone_icon",
+    "index": 559,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Storage"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Crate_Keystone_Open",
     "category": "device",
-    "icon": "t_scst_crate_keystone_open_icon"
+    "icon": "t_scst_crate_keystone_open_icon",
+    "index": 560,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Storage"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "CustomSpawner_Cage_Wolf",
-    "category": "device"
+    "category": "device",
+    "index": 570,
+    "objectType": "InteractableDevice",
+    "biome": "Mountain",
+    "rarityLevel": "Rare",
+    "subCategory": "CustomSpawner"
   },
   {
     "name": "Dart_Trap",
@@ -778,7 +1731,14 @@
   {
     "name": "Drying_Rack_A",
     "category": "device",
-    "icon": "t_scen_Drying_Rack_A_icon"
+    "icon": "t_scen_Drying_Rack_A_icon",
+    "index": 593,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "ExitTeleporter",
@@ -791,57 +1751,133 @@
   {
     "name": "Fence_Jungle_Lizard_Stone",
     "category": "device",
-    "icon": "t_scst_Fence_Jungle_Lizard_Stone_icon"
+    "icon": "t_scst_Fence_Jungle_Lizard_Stone_icon",
+    "index": 599,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Fence"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Fence_Metal_A",
     "category": "device",
-    "icon": "t_scst_fence_metal_a_icon"
+    "icon": "t_scst_fence_metal_a_icon",
+    "index": 600,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Fence"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Fence_Panel_A",
     "category": "device",
-    "icon": "t_scst_fence_panel_a_icon"
+    "icon": "t_scst_fence_panel_a_icon",
+    "index": 601,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Fence"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Fence_Rope_A",
     "category": "device",
-    "icon": "t_scst_fence_rope_a_icon"
+    "icon": "t_scst_fence_rope_a_icon",
+    "index": 602,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Fence"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Fence_Stone_A",
     "category": "device",
-    "icon": "t_scst_fence_stone_a_icon"
+    "icon": "t_scst_fence_stone_a_icon",
+    "index": 603,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Fence"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Fence_Wood_A",
     "category": "device",
-    "icon": "t_scst_Fence_Wood_A_icon"
+    "icon": "t_scst_Fence_Wood_A_icon",
+    "index": 604,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Fence"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Fire_Pit_A",
     "category": "device",
-    "icon": "t_scen_Fire_Pit_A_icon"
+    "icon": "t_scen_Fire_Pit_A_icon",
+    "index": 608,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Fireworks_Device",
     "category": "device",
-    "icon": "t_devi_Fireworks_Device_icon"
+    "icon": "t_devi_Fireworks_Device_icon",
+    "index": 607,
+    "objectType": "CraftingDevice",
+    "biome": "Jungle",
+    "rarityLevel": "Common",
+    "subCategory": "Crafting"
   },
   {
     "name": "Fishing_Net_A",
     "category": "device",
-    "icon": "t_scen_Fishing_Net_A_icon"
+    "icon": "t_scen_Fishing_Net_A_icon",
+    "index": 609,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Flag_A",
     "category": "device",
-    "icon": "t_scst_flag_a_icon"
+    "icon": "t_scst_flag_a_icon",
+    "index": 610,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Sign"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Food_Primary",
     "category": "device",
-    "icon": "t_devi_Food_Primary_icon"
+    "icon": "t_devi_Food_Primary_icon",
+    "index": 612,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Common",
+    "subCategory": "Crafting"
   },
   {
     "name": "Forge",
@@ -850,26 +1886,63 @@
   {
     "name": "Fountain_Tudor_5x5x5",
     "category": "device",
-    "icon": "t_scen_Fountain_Tudor_5X5X5_icon"
+    "icon": "t_scen_Fountain_Tudor_5X5X5_icon",
+    "index": 613,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Freestanding_Banner_Explorer_1x3x1",
     "category": "device",
-    "icon": "t_scen_Freestanding_Banner_Explorer_1x3x1_icon"
+    "icon": "t_scen_Freestanding_Banner_Explorer_1x3x1_icon",
+    "index": 614,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Sign"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Freestanding_Banner_Settler_1x3x1",
     "category": "device",
-    "icon": "t_scen_Freestanding_Banner_Settler_1x3x1_icon"
+    "icon": "t_scen_Freestanding_Banner_Settler_1x3x1_icon",
+    "index": 615,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Sign"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Furniture_Device",
     "category": "device",
-    "icon": "t_devi_Miscellaneous_Secondary_icon"
+    "icon": "t_devi_Miscellaneous_Secondary_icon",
+    "index": 617,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Common",
+    "subCategory": "Crafting"
   },
   {
     "name": "Gear_Device",
-    "category": "device"
+    "category": "device",
+    "index": 618,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Common",
+    "subCategory": "Crafting"
   },
   {
     "name": "Generator",
@@ -878,241 +1951,575 @@
   {
     "name": "Glowing_WallDec_Stone_Large_A",
     "category": "device",
-    "icon": "t_scen_Glowing_WallDec_Stone_Large_A_icon"
+    "icon": "t_scen_Glowing_WallDec_Stone_Large_A_icon",
+    "index": 624,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Epic"
   },
   {
     "name": "Glowing_WallDec_Stone_Small_A",
     "category": "device",
-    "icon": "t_scen_Glowing_WallDec_Stone_Small_A_icon"
+    "icon": "t_scen_Glowing_WallDec_Stone_Small_A_icon",
+    "index": 625,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Gramophone_1x2x1",
     "category": "device",
-    "icon": "t_scen_Gramophone_1X2X1_icon"
+    "icon": "t_scen_Gramophone_1X2X1_icon",
+    "index": 626,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Grate",
     "category": "device",
-    "icon": "t_scen_Grate_icon"
+    "icon": "t_scen_Grate_icon",
+    "index": 633,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Grindstone_A",
     "category": "device",
-    "icon": "t_scen_grindStone_A_icon"
+    "icon": "t_scen_grindStone_A_icon",
+    "index": 635,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Halloween_Skull_1x1x1",
     "category": "device",
-    "icon": "t_scen_Halloween_Skull_1X1X1_icon"
+    "icon": "t_scen_Halloween_Skull_1X1X1_icon",
+    "index": 638,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Hanging_Awning_Tudor_1x1x1",
     "category": "device",
-    "icon": "t_scen_Hanging_Awning_Tudor_1X1X1_icon"
+    "icon": "t_scen_Hanging_Awning_Tudor_1X1X1_icon",
+    "index": 640,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Hanging_Awning_Tudor_1x2x2",
     "category": "device",
-    "icon": "t_scen_Hanging_Awning_Tudor_1X2X2_icon"
+    "icon": "t_scen_Hanging_Awning_Tudor_1X2X2_icon",
+    "index": 641,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Hanging_Banner_A",
     "category": "device",
-    "icon": "t_scen_Hanging_Banner_A_icon"
+    "icon": "t_scen_Hanging_Banner_A_icon",
+    "index": 642,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Epic"
   },
   {
     "name": "Hanging_Banner_Desert_1x3x1",
     "category": "device",
-    "icon": "t_scen_Hanging_Banner_Desert_1X3X1_icon"
+    "icon": "t_scen_Hanging_Banner_Desert_1X3X1_icon",
+    "index": 643,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Hanging_Banner_Desert_3x3x1",
     "category": "device",
-    "icon": "t_scen_Hanging_Banner_Desert_3X3X1_icon"
+    "icon": "t_scen_Hanging_Banner_Desert_3X3X1_icon",
+    "index": 644,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Epic"
   },
   {
     "name": "Hanging_Banner_Jungle_Lizard_1x3x1",
     "category": "device",
-    "icon": "t_scen_Hanging_Banner_Jungle_Lizard_1X3X1_icon"
+    "icon": "t_scen_Hanging_Banner_Jungle_Lizard_1X3X1_icon",
+    "index": 645,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Hanging_Banner_Jungle_Lizard_3x3x1",
     "category": "device",
-    "icon": "t_scen_Hanging_Banner_Jungle_Lizard_3X3X1_icon"
+    "icon": "t_scen_Hanging_Banner_Jungle_Lizard_3X3X1_icon",
+    "index": 646,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Hanging_Banner_Jungle_Lizard_B_3x3x1",
     "category": "device",
-    "icon": "t_scen_Hanging_Banner_Jungle_Lizard_B_3X3X1_icon"
+    "icon": "t_scen_Hanging_Banner_Jungle_Lizard_B_3X3X1_icon",
+    "index": 647,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Hanging_Banner_Monkey_Large",
     "category": "device",
-    "icon": "t_scen_Hanging_Banner_Monkey_Large_icon"
+    "icon": "t_scen_Hanging_Banner_Monkey_Large_icon",
+    "index": 648,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Epic"
   },
   {
     "name": "Hanging_Banner_Monkey_Small",
     "category": "device",
-    "icon": "t_scen_Hanging_Banner_Monkey_Small_icon"
+    "icon": "t_scen_Hanging_Banner_Monkey_Small_icon",
+    "index": 649,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Hanging_Banner_Mountain_1x3x1",
     "category": "device",
-    "icon": "t_scen_Hanging_Banner_Mountain_1x3x1_icon"
+    "icon": "t_scen_Hanging_Banner_Mountain_1x3x1_icon",
+    "index": 650,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Hanging_Banner_Mountain_3x3x1",
     "category": "device",
-    "icon": "t_scen_Hanging_Banner_Mountain_3x3x1_icon"
+    "icon": "t_scen_Hanging_Banner_Mountain_3x3x1_icon",
+    "index": 651,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Hanging_Bunting_Tudor",
     "category": "device",
-    "icon": "t_scen_Hanging_Bunting_Tudor_icon"
+    "icon": "t_scen_Hanging_Bunting_Tudor_icon",
+    "index": 652,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Hanging_Bunting_Tudor_Flag",
     "category": "device",
-    "icon": "t_scen_Hanging_Bunting_Tudor_Flag_icon"
+    "icon": "t_scen_Hanging_Bunting_Tudor_Flag_icon",
+    "index": 653,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Hanging_Canopy_A",
     "category": "device",
-    "icon": "t_scst_hanging_canopy_a_icon"
+    "icon": "t_scst_hanging_canopy_a_icon",
+    "index": 654,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Hanging_Canopy_B",
     "category": "device",
-    "icon": "t_scst_hanging_canopy_b_icon"
+    "icon": "t_scst_hanging_canopy_b_icon",
+    "index": 655,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Hanging_Canopy_C",
     "category": "device",
-    "icon": "t_scst_hanging_canopy_c_icon"
+    "icon": "t_scst_hanging_canopy_c_icon",
+    "index": 656,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Hanging_Christmas_Lights",
     "category": "device",
-    "icon": "t_scen_Hanging_Christmas_Lights_icon"
+    "icon": "t_scen_Hanging_Christmas_Lights_icon",
+    "index": 657,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Hanging_Christmas_Stocking",
     "category": "device",
-    "icon": "t_scen_Hanging_Christmas_Stocking_icon"
+    "icon": "t_scen_Hanging_Christmas_Stocking_icon",
+    "index": 658,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Hanging_Christmas_Wreath",
     "category": "device",
-    "icon": "t_scen_Hanging_Christmas_Wreath_icon"
+    "icon": "t_scen_Hanging_Christmas_Wreath_icon",
+    "index": 659,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Hanging_Herbs_A",
     "category": "device",
-    "icon": "t_scen_hanging_herbs_A_icon"
+    "icon": "t_scen_hanging_herbs_A_icon",
+    "index": 660,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Common"
   },
   {
     "name": "Hanging_Jewel_Lamp_A",
     "category": "device",
-    "icon": "t_scen_Hanging_Jewel_Lamp_A_icon"
+    "icon": "t_scen_Hanging_Jewel_Lamp_A_icon",
+    "index": 661,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Lighting"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Hanging_Jewel_Lamp_Large_A",
     "category": "device",
-    "icon": "t_scen_Hanging_Jewel_Lamp_Large_A_icon"
+    "icon": "t_scen_Hanging_Jewel_Lamp_Large_A_icon",
+    "index": 662,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Lighting"
+    },
+    "rarityLevel": "Epic"
   },
   {
     "name": "Hanging_Light_Buoy_Ball",
     "category": "device",
-    "icon": "t_scen_Hanging_Light_Buoy_Ball_icon"
+    "icon": "t_scen_Hanging_Light_Buoy_Ball_icon",
+    "index": 663,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Lighting"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Hanging_Meat_A",
     "category": "device",
-    "icon": "t_scen_hanging_meat_A_icon"
+    "icon": "t_scen_hanging_meat_A_icon",
+    "index": 664,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Common"
   },
   {
     "name": "Hanging_Mounted_Head_1x1x1",
     "category": "device",
-    "icon": "t_scen_Hanging_Mounted_Head_1X1X1_icon"
+    "icon": "t_scen_Hanging_Mounted_Head_1X1X1_icon",
+    "index": 665,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Hanging_Rough_Banner_A",
     "category": "device",
-    "icon": "t_scen_Hanging_Rough_Banner_A_icon"
+    "icon": "t_scen_Hanging_Rough_Banner_A_icon",
+    "index": 669,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Hanging_Tapestry_A",
     "category": "device",
-    "icon": "t_scen_Hanging_Tapestry_A_icon"
+    "icon": "t_scen_Hanging_Tapestry_A_icon",
+    "index": 670,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Hanging_Tapestry_B",
     "category": "device",
-    "icon": "t_scen_Hanging_Tapestry_B_icon"
+    "icon": "t_scen_Hanging_Tapestry_B_icon",
+    "index": 671,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Epic"
   },
   {
     "name": "Hanging_Tapestry_C",
     "category": "device",
-    "icon": "t_scen_Hanging_Tapestry_C_icon"
+    "icon": "t_scen_Hanging_Tapestry_C_icon",
+    "index": 672,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Hanging_Wall_Pot",
     "category": "device",
-    "icon": "t_scen_Hanging_Wall_Pot_icon"
+    "icon": "t_scen_Hanging_Wall_Pot_icon",
+    "index": 679,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Hanging_WallDec_Bamboo_Large_A",
     "category": "device",
-    "icon": "t_scen_Hanging_WallDec_Bamboo_Large_A_icon"
+    "icon": "t_scen_Hanging_WallDec_Bamboo_Large_A_icon",
+    "index": 675,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Hanging_WallDec_Bamboo_Small_A",
     "category": "device",
-    "icon": "t_scen_Hanging_WallDec_Bamboo_Small_A_icon"
+    "icon": "t_scen_Hanging_WallDec_Bamboo_Small_A_icon",
+    "index": 676,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Hanging_WallDec_Stone_C",
     "category": "device",
-    "icon": "t_scen_Hanging_WallDec_Stone_C_icon"
+    "icon": "t_scen_Hanging_WallDec_Stone_C_icon",
+    "index": 677,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Epic"
   },
   {
     "name": "Hanging_WallDecoration_Stone_A",
     "category": "device",
-    "icon": "t_scen_Hanging_WallDecoration_Stone_A_icon"
+    "icon": "t_scen_Hanging_WallDecoration_Stone_A_icon",
+    "index": 673,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Hanging_WallDecoration_Stone_B",
     "category": "device",
-    "icon": "t_scen_Hanging_WallDecoration_Stone_B_icon"
+    "icon": "t_scen_Hanging_WallDecoration_Stone_B_icon",
+    "index": 674,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Hanging_WallShield_A",
     "category": "device",
-    "icon": "t_scen_Hanging_WallShield_A_icon"
+    "icon": "t_scen_Hanging_WallShield_A_icon",
+    "index": 678,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Hanging_Yeti_Bunting_A",
     "category": "device",
-    "icon": "t_scen_Hanging_Yeti_Bunting_A_icon"
+    "icon": "t_scen_Hanging_Yeti_Bunting_A_icon",
+    "index": 680,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Hanging_Yeti_Bunting_B",
     "category": "device",
-    "icon": "t_scen_Hanging_Yeti_Bunting_B_icon"
+    "icon": "t_scen_Hanging_Yeti_Bunting_B_icon",
+    "index": 681,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Hay_Bale_A",
     "category": "device",
-    "icon": "t_scen_Hay_Bale_A_icon"
+    "icon": "t_scen_Hay_Bale_A_icon",
+    "index": 682,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Common"
   },
   {
     "name": "Hay_Bale_B",
     "category": "device",
-    "icon": "t_scen_Hay_Bale_B_icon"
+    "icon": "t_scen_Hay_Bale_B_icon",
+    "index": 683,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Common"
   },
   {
     "name": "HomeTeleporter",
-    "category": "device"
+    "category": "device",
+    "index": 686,
+    "objectType": "InteractableDevice",
+    "biome": "",
+    "rarityLevel": "Legendary",
+    "subCategory": "Misc"
   },
   {
     "name": "Hunters_Pack",
@@ -1129,27 +2536,63 @@
   {
     "name": "Instrument_Drum_A",
     "category": "device",
-    "icon": "t_scen_Instrument_Drum_A_icon"
+    "icon": "t_scen_Instrument_Drum_A_icon",
+    "index": 690,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Instrument"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Instrument_Gong_A",
     "category": "device",
-    "icon": "t_scen_Instrument_Gong_A_icon"
+    "icon": "t_scen_Instrument_Gong_A_icon",
+    "index": 691,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Instrument"
+    },
+    "rarityLevel": "Epic"
   },
   {
     "name": "Jail_Bench_A",
     "category": "device",
-    "icon": "t_scen_Jail_Bench_A_icon"
+    "icon": "t_scen_Jail_Bench_A_icon",
+    "index": 692,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Chair"
+    },
+    "rarityLevel": "Epic"
   },
   {
     "name": "Jail_Bench_B",
     "category": "device",
-    "icon": "t_scen_Jail_Bench_B_icon"
+    "icon": "t_scen_Jail_Bench_B_icon",
+    "index": 693,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Chair"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Keystone_Oven",
     "category": "device",
-    "icon": "t_devi_Keystone_Oven_icon"
+    "icon": "t_devi_Keystone_Oven_icon",
+    "index": 714,
+    "objectType": "Furniture",
+    "biome": "",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Common",
+    "subCategory": "Crafting"
   },
   {
     "name": "Kiln",
@@ -1158,662 +2601,1497 @@
   {
     "name": "Ladder_Metal",
     "category": "device",
-    "icon": "t_scst_ladder_metal_icon"
+    "icon": "t_scst_ladder_metal_icon",
+    "index": 729,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Ladder_Wood",
     "category": "device",
-    "icon": "t_scen_Ladder_Wood_icon"
+    "icon": "t_scen_Ladder_Wood_icon",
+    "index": 730,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Ladder_Wood_Jungle",
     "category": "device",
-    "icon": "t_scen_Ladder_Wood_Jungle_icon"
+    "icon": "t_scen_Ladder_Wood_Jungle_icon",
+    "index": 731,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Leaderboard",
     "category": "device",
-    "icon": "t_devi_Leaderboard_icon"
+    "icon": "t_devi_Leaderboard_icon",
+    "index": 732,
+    "objectType": "InteractableDevice",
+    "biome": "Forest",
+    "rarityLevel": "Common",
+    "subCategory": "Leaderboard"
   },
   {
     "name": "Leaderboard_CQ",
-    "category": "device"
+    "category": "device",
+    "index": 733,
+    "objectType": "InteractableDevice",
+    "biome": "Forest",
+    "rarityLevel": "Common",
+    "subCategory": "Leaderboard"
   },
   {
     "name": "Leaderboard_EndGame",
-    "category": "device"
+    "category": "device",
+    "index": 734,
+    "objectType": "InteractableDevice",
+    "biome": "Forest",
+    "rarityLevel": "Common",
+    "subCategory": "Leaderboard"
   },
   {
     "name": "Leaderboard_IslandCreator",
-    "category": "device"
+    "category": "device",
+    "index": 735,
+    "objectType": "InteractableDevice",
+    "biome": "Forest",
+    "rarityLevel": "Common",
+    "subCategory": "Leaderboard"
   },
   {
     "name": "Leaderboard_PVP",
     "category": "device",
-    "icon": "t_devi_Leaderboard_PVP_icon"
+    "icon": "t_devi_Leaderboard_PVP_icon",
+    "index": 736,
+    "objectType": "InteractableDevice",
+    "biome": "Forest",
+    "rarityLevel": "Common",
+    "subCategory": "Leaderboard"
   },
   {
     "name": "Leaderboard_Survival",
-    "category": "device"
+    "category": "device",
+    "index": 737,
+    "objectType": "InteractableDevice",
+    "biome": "Forest",
+    "rarityLevel": "Common",
+    "subCategory": "Leaderboard"
   },
   {
     "name": "Leather_Press",
-    "category": "device"
+    "category": "device",
+    "index": 738,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Common",
+    "subCategory": "Crafting"
   },
   {
     "name": "Light_BoneLamp_A",
     "category": "device",
-    "icon": "t_scen_Light_BoneLamp_A_icon"
+    "icon": "t_scen_Light_BoneLamp_A_icon",
+    "index": 740,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Lighting"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Light_Brazier_A",
     "category": "device",
-    "icon": "t_scen_Light_Brazier_A_icon"
+    "icon": "t_scen_Light_Brazier_A_icon",
+    "index": 743,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Lighting"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Light_Brazier_Wall_A",
     "category": "device",
-    "icon": "t_scen_Light_Brazier_Wall_A_icon"
+    "icon": "t_scen_Light_Brazier_Wall_A_icon",
+    "index": 745,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Lighting"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Light_Brazier_WallPost_A",
     "category": "device",
-    "icon": "t_scen_Light_Brazier_WallPost_A_icon"
+    "icon": "t_scen_Light_Brazier_WallPost_A_icon",
+    "index": 744,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Lighting"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Light_BrazierPost_A",
     "category": "device",
-    "icon": "t_scen_Light_BrazierPost_A_icon"
+    "icon": "t_scen_Light_BrazierPost_A_icon",
+    "index": 741,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Lighting"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Light_BrazierPost_B",
     "category": "device",
-    "icon": "t_scen_Light_BrazierPost_B_icon"
+    "icon": "t_scen_Light_BrazierPost_B_icon",
+    "index": 742,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Lighting"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Light_Candle_Cluster_A",
     "category": "device",
-    "icon": "t_scen_Light_Candle_Cluster_A_icon"
+    "icon": "t_scen_Light_Candle_Cluster_A_icon",
+    "index": 748,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Lighting"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Light_CandleStick_Small",
     "category": "device",
-    "icon": "t_scen_Light_CandleStick_Small_icon"
+    "icon": "t_scen_Light_CandleStick_Small_icon",
+    "index": 746,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Lighting"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Light_CandleStick_Tall",
     "category": "device",
-    "icon": "t_scen_Light_CandleStick_Tall_icon"
+    "icon": "t_scen_Light_CandleStick_Tall_icon",
+    "index": 747,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Lighting"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Light_Floor_Jungle_Lizard",
     "category": "device",
-    "icon": "t_scen_Light_Floor_Jungle_Lizard_icon"
+    "icon": "t_scen_Light_Floor_Jungle_Lizard_icon",
+    "index": 749,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Lighting"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Light_GasLamp_A",
     "category": "device",
-    "icon": "t_scen_Light_GasLamp_A_icon"
+    "icon": "t_scen_Light_GasLamp_A_icon",
+    "index": 750,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Lighting"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Light_GasLamp_B",
     "category": "device",
-    "icon": "t_scen_Light_GasLamp_B_icon"
+    "icon": "t_scen_Light_GasLamp_B_icon",
+    "index": 751,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Lighting"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Light_Hanging_Bone_Lamp",
     "category": "device",
-    "icon": "t_scen_Light_Hanging_Bone_Lamp_icon"
+    "icon": "t_scen_Light_Hanging_Bone_Lamp_icon",
+    "index": 752,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Lighting"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Light_Hanging_Bone_Lamp_3X3X3",
     "category": "device",
-    "icon": "t_scen_Light_Hanging_Bone_Lamp_3X3X3_icon"
+    "icon": "t_scen_Light_Hanging_Bone_Lamp_3X3X3_icon",
+    "index": 753,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Lighting"
+    },
+    "rarityLevel": "Epic"
   },
   {
     "name": "Light_Hanging_Chandelier_3x3x3",
     "category": "device",
-    "icon": "t_scen_Light_Hanging_Chandelier_3x3x3_icon"
+    "icon": "t_scen_Light_Hanging_Chandelier_3x3x3_icon",
+    "index": 754,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Lighting"
+    },
+    "rarityLevel": "Epic"
   },
   {
     "name": "Light_Hanging_Chandelier_A",
     "category": "device",
-    "icon": "t_scen_Light_Hanging_Chandelier_A_icon"
+    "icon": "t_scen_Light_Hanging_Chandelier_A_icon",
+    "index": 755,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Lighting"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Light_Hanging_Jungle_Lizard_1x2x1",
     "category": "device",
-    "icon": "t_scen_Light_Hanging_Jungle_Lizard_1X2X1_icon"
+    "icon": "t_scen_Light_Hanging_Jungle_Lizard_1X2X1_icon",
+    "index": 756,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Lighting"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Light_Hanging_Jungle_Lizard_3x3x3",
     "category": "device",
-    "icon": "t_scen_Light_Hanging_Jungle_Lizard_3X3X3_icon"
+    "icon": "t_scen_Light_Hanging_Jungle_Lizard_3X3X3_icon",
+    "index": 757,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Lighting"
+    },
+    "rarityLevel": "Epic"
   },
   {
     "name": "Light_Hanging_Lantern",
     "category": "device",
-    "icon": "t_scen_Light_Hanging_Lantern_icon"
+    "icon": "t_scen_Light_Hanging_Lantern_icon",
+    "index": 758,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Lighting"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Light_LampPost_A",
     "category": "device",
-    "icon": "t_scen_Light_LampPost_A_icon"
+    "icon": "t_scen_Light_LampPost_A_icon",
+    "index": 759,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Lighting"
+    },
+    "rarityLevel": "Epic"
   },
   {
     "name": "Light_Lantern_A",
     "category": "device",
-    "icon": "t_scen_Light_Lantern_A_icon"
+    "icon": "t_scen_Light_Lantern_A_icon",
+    "index": 760,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Lighting"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Light_Lantern_Jungle_Lizard_A",
     "category": "device",
-    "icon": "t_scen_Light_Lantern_Jungle_Lizard_A_icon"
+    "icon": "t_scen_Light_Lantern_Jungle_Lizard_A_icon",
+    "index": 761,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Lighting"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Light_Lantern_Jungle_Lizard_B",
     "category": "device",
-    "icon": "t_scen_Light_Lantern_Jungle_Lizard_B_icon"
+    "icon": "t_scen_Light_Lantern_Jungle_Lizard_B_icon",
+    "index": 762,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Lighting"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Light_Lantern_Stone_A",
     "category": "device",
-    "icon": "t_scen_Light_Lantern_Stone_A_icon"
+    "icon": "t_scen_Light_Lantern_Stone_A_icon",
+    "index": 763,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Lighting"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Light_Lantern_Wall",
     "category": "device",
-    "icon": "t_scen_Light_Lantern_Wall_icon"
+    "icon": "t_scen_Light_Lantern_Wall_icon",
+    "index": 764,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Lighting"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Light_Oil_Lamp_A",
     "category": "device",
-    "icon": "t_scen_Light_Oil_Lamp_A_icon"
+    "icon": "t_scen_Light_Oil_Lamp_A_icon",
+    "index": 765,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Lighting"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Light_Oil_Lamp_Tall_A",
     "category": "device",
-    "icon": "t_scen_Light_Oil_Lamp_Tall_A_icon"
+    "icon": "t_scen_Light_Oil_Lamp_Tall_A_icon",
+    "index": 766,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Lighting"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Light_Stone_3x3x3",
     "category": "device",
-    "icon": "t_scen_Light_Stone_3x3x3_icon"
+    "icon": "t_scen_Light_Stone_3x3x3_icon",
+    "index": 767,
+    "objectType": "Furniture",
+    "biome": "",
+    "furniture": {
+      "FurnitureType": "Lighting"
+    },
+    "rarityLevel": "Epic"
   },
   {
     "name": "Light_Stone_Ceiling_3x1x3",
     "category": "device",
-    "icon": "t_scen_Light_Stone_Ceiling_3x1x3_icon"
+    "icon": "t_scen_Light_Stone_Ceiling_3x1x3_icon",
+    "index": 768,
+    "objectType": "Furniture",
+    "biome": "",
+    "furniture": {
+      "FurnitureType": "Lighting"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Light_Stone_Floor_1x1x1",
     "category": "device",
-    "icon": "t_scen_Light_Stone_Floor_1x1x1_icon"
+    "icon": "t_scen_Light_Stone_Floor_1x1x1_icon",
+    "index": 769,
+    "objectType": "Furniture",
+    "biome": "",
+    "furniture": {
+      "FurnitureType": "Lighting"
+    },
+    "rarityLevel": "Epic"
   },
   {
     "name": "Light_Stone_Floor_3x1x3",
     "category": "device",
-    "icon": "t_scen_Light_Stone_Floor_3x1x3_icon"
+    "icon": "t_scen_Light_Stone_Floor_3x1x3_icon",
+    "index": 770,
+    "objectType": "Furniture",
+    "biome": "",
+    "furniture": {
+      "FurnitureType": "Lighting"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Light_Stone_Wall_3x3x1",
     "category": "device",
-    "icon": "t_scen_Light_Stone_Wall_3x3x1_icon"
+    "icon": "t_scen_Light_Stone_Wall_3x3x1_icon",
+    "index": 771,
+    "objectType": "Furniture",
+    "biome": "",
+    "furniture": {
+      "FurnitureType": "Lighting"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Light_Table_Jungle_Lizard",
     "category": "device",
-    "icon": "t_scen_Light_Table_Jungle_Lizard_icon"
+    "icon": "t_scen_Light_Table_Jungle_Lizard_icon",
+    "index": 772,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Lighting"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Light_Wall_BoneLamp",
     "category": "device",
-    "icon": "t_scen_Light_Wall_BoneLamp_icon"
+    "icon": "t_scen_Light_Wall_BoneLamp_icon",
+    "index": 773,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Lighting"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Light_Wall_Candle",
     "category": "device",
-    "icon": "t_scen_Light_Wall_Candle_icon"
+    "icon": "t_scen_Light_Wall_Candle_icon",
+    "index": 774,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Lighting"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Light_Wall_Jewel",
     "category": "device",
-    "icon": "t_scen_Light_Wall_Jewel_icon"
+    "icon": "t_scen_Light_Wall_Jewel_icon",
+    "index": 775,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Lighting"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Light_Wall_Oil_Lamp",
     "category": "device",
-    "icon": "t_scen_Light_Wall_Oil_Lamp_icon"
+    "icon": "t_scen_Light_Wall_Oil_Lamp_icon",
+    "index": 776,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Lighting"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Link_Chain",
     "category": "device",
-    "icon": "t_scst_Link_Chain_icon"
+    "icon": "t_scst_Link_Chain_icon",
+    "index": 777,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Link_Chain_Diagonal",
     "category": "device",
-    "icon": "t_scst_Link_Chain_Diagonal_icon"
+    "icon": "t_scst_Link_Chain_Diagonal_icon",
+    "index": 778,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Link_Rope",
     "category": "device",
-    "icon": "t_scst_Link_Rope_icon"
+    "icon": "t_scst_Link_Rope_icon",
+    "index": 779,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Link_Rope_Diagonal",
     "category": "device",
-    "icon": "t_scst_Link_Rope_Diagonal_icon"
+    "icon": "t_scst_Link_Rope_Diagonal_icon",
+    "index": 780,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Lobster_Pot_Large_A",
     "category": "device",
-    "icon": "t_scen_Lobster_Pot_Large_A_icon"
+    "icon": "t_scen_Lobster_Pot_Large_A_icon",
+    "index": 781,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Lobster_Pot_Small_A",
     "category": "device",
-    "icon": "t_scen_Lobster_Pot_Small_A_icon"
+    "icon": "t_scen_Lobster_Pot_Small_A_icon",
+    "index": 782,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Log_Pile_A",
     "category": "device",
-    "icon": "t_scen_Log_Pile_A_icon"
+    "icon": "t_scen_Log_Pile_A_icon",
+    "index": 894,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Common"
   },
   {
     "name": "LogicNetwork_CraftingDevice",
     "category": "device",
-    "icon": "t_devi_LogicNetwork_CraftingDevice_icon"
+    "icon": "t_devi_LogicNetwork_CraftingDevice_icon",
+    "index": 783,
+    "objectType": "Furniture",
+    "biome": "",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Legendary",
+    "subCategory": "Crafting"
   },
   {
     "name": "LogicNetwork_Exploding_Barrel",
     "category": "device",
-    "icon": "t_devi_Logicnetwork_Exploding_Barrel_icon"
+    "icon": "t_devi_Logicnetwork_Exploding_Barrel_icon",
+    "index": 786,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Forest",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Exploding_Barrel_Titan",
     "category": "device",
-    "icon": "t_devi_Logicnetwork_Exploding_Barrel_Titan_icon"
+    "icon": "t_devi_Logicnetwork_Exploding_Barrel_Titan_icon",
+    "index": 787,
+    "objectType": "LogicNetworkDevice",
+    "biome": "",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Input_Manual_Switch",
     "category": "device",
-    "icon": "t_devi_Logicnetwork_Input_Manual_Switch_icon"
+    "icon": "t_devi_Logicnetwork_Input_Manual_Switch_icon",
+    "index": 789,
+    "objectType": "LogicNetworkDevice",
+    "biome": "",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Input_PressurePad",
     "category": "device",
-    "icon": "t_devi_LogicNetwork_Input_PressurePad_icon"
+    "icon": "t_devi_LogicNetwork_Input_PressurePad_icon",
+    "index": 790,
+    "objectType": "LogicNetworkDevice",
+    "biome": "",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Input_PressurePad_A",
     "category": "device",
-    "icon": "t_devi_Logicnetwork_Input_Pressurepad_A_icon"
+    "icon": "t_devi_Logicnetwork_Input_Pressurepad_A_icon",
+    "index": 791,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Forest",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Input_PressurePad_Large",
     "category": "device",
-    "icon": "t_devi_Logicnetwork_Input_Pressurepad_Large_icon"
+    "icon": "t_devi_Logicnetwork_Input_Pressurepad_Large_icon",
+    "index": 792,
+    "objectType": "LogicNetworkDevice",
+    "biome": "",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Input_PressurePad_Large_A",
     "category": "device",
-    "icon": "t_devi_Logicnetwork_Input_Pressurepad_Large_A_icon"
+    "icon": "t_devi_Logicnetwork_Input_Pressurepad_Large_A_icon",
+    "index": 793,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Forest",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Input_Target_Des",
     "category": "device",
-    "icon": "t_devi_Logicnetwork_Input_Target_Des_icon"
+    "icon": "t_devi_Logicnetwork_Input_Target_Des_icon",
+    "index": 794,
+    "objectType": "LogicNetworkDevice",
+    "biome": "",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Input_Target_Des_Tudor",
     "category": "device",
-    "icon": "t_devi_Logicnetwork_Input_Target_Des_Tudor_icon"
+    "icon": "t_devi_Logicnetwork_Input_Target_Des_Tudor_icon",
+    "index": 795,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Forest",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Input_Target_Indes_Tudor",
     "category": "device",
-    "icon": "t_devi_Logicnetwork_Input_Target_Indes_Tudor_icon"
+    "icon": "t_devi_Logicnetwork_Input_Target_Indes_Tudor_icon",
+    "index": 797,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Forest",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Input_Target_Indestructible",
     "category": "device",
-    "icon": "t_devi_Logicnetwork_Input_Target_Indestructible_icon"
+    "icon": "t_devi_Logicnetwork_Input_Target_Indestructible_icon",
+    "index": 796,
+    "objectType": "LogicNetworkDevice",
+    "biome": "",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Input_WallSwitch_Tudor",
     "category": "device",
-    "icon": "t_devi_Logicnetwork_Input_Wallswitch_Tudor_icon"
+    "icon": "t_devi_Logicnetwork_Input_Wallswitch_Tudor_icon",
+    "index": 798,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Forest",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Logic_And",
     "category": "device",
-    "icon": "t_devi_LogicNetwork_Logic_AND_icon"
+    "icon": "t_devi_LogicNetwork_Logic_AND_icon",
+    "index": 799,
+    "objectType": "LogicNetworkDevice",
+    "biome": "",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Logic_Latch",
     "category": "device",
-    "icon": "t_devi_LogicNetwork_Logic_Latch_icon"
+    "icon": "t_devi_LogicNetwork_Logic_Latch_icon",
+    "index": 800,
+    "objectType": "LogicNetworkDevice",
+    "biome": "",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Logic_Not",
     "category": "device",
-    "icon": "t_devi_LogicNetwork_Logic_NOT_icon"
+    "icon": "t_devi_LogicNetwork_Logic_NOT_icon",
+    "index": 801,
+    "objectType": "LogicNetworkDevice",
+    "biome": "",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Arctic_Bear_ArmouredIce",
-    "category": "device"
+    "category": "device",
+    "index": 802,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Mountain",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Arctic_Bear_Fighter",
-    "category": "device"
+    "category": "device",
+    "index": 803,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Mountain",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Arctic_Bear_Whelp",
-    "category": "device"
+    "category": "device",
+    "index": 804,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Mountain",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Arctic_BigCat_Fighter",
-    "category": "device"
+    "category": "device",
+    "index": 805,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Mountain",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Arctic_BigCat_Sabretooth",
-    "category": "device"
+    "category": "device",
+    "index": 806,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Mountain",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Arctic_BigCat_Whelp",
-    "category": "device"
+    "category": "device",
+    "index": 807,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Mountain",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Arctic_FennecFox",
-    "category": "device"
+    "category": "device",
+    "index": 808,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Mountain",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Arctic_Goat",
-    "category": "device"
+    "category": "device",
+    "index": 809,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Mountain",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Arctic_Minecritter",
-    "category": "device"
+    "category": "device",
+    "index": 810,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Mountain",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Arctic_Penguin",
-    "category": "device"
+    "category": "device",
+    "index": 811,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Mountain",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Arctic_Rabbit",
-    "category": "device"
+    "category": "device",
+    "index": 812,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Mountain",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Arctic_Wolf_Fighter",
-    "category": "device"
+    "category": "device",
+    "index": 813,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Mountain",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Arctic_Wolf_IceFang",
-    "category": "device"
+    "category": "device",
+    "index": 814,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Mountain",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Arctic_Wolf_Leader",
-    "category": "device"
+    "category": "device",
+    "index": 815,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Mountain",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Arctic_Wolf_Whelp",
-    "category": "device"
+    "category": "device",
+    "index": 816,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Mountain",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Arctic_Yeti_Brute",
-    "category": "device"
+    "category": "device",
+    "index": 817,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Mountain",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Arctic_Yeti_Fighter",
-    "category": "device"
+    "category": "device",
+    "index": 818,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Mountain",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Arctic_Yeti_Runt",
-    "category": "device"
+    "category": "device",
+    "index": 819,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Mountain",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Desert_BigCat_Fighter",
-    "category": "device"
+    "category": "device",
+    "index": 820,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Desert",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Desert_BigCat_Leader",
-    "category": "device"
+    "category": "device",
+    "index": 821,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Desert",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Desert_BigCat_Veteran",
-    "category": "device"
+    "category": "device",
+    "index": 822,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Desert",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Desert_BigCat_Whelp",
-    "category": "device"
+    "category": "device",
+    "index": 823,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Desert",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Desert_Boar",
-    "category": "device"
+    "category": "device",
+    "index": 824,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Desert",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Desert_Chicken",
-    "category": "device"
+    "category": "device",
+    "index": 825,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Desert",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Desert_FennecFox",
-    "category": "device"
+    "category": "device",
+    "index": 826,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Desert",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Desert_FiringCactus",
-    "category": "device"
+    "category": "device",
+    "index": 827,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Desert",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Desert_Minecritter",
-    "category": "device"
+    "category": "device",
+    "index": 828,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Desert",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Desert_Rabbit",
-    "category": "device"
+    "category": "device",
+    "index": 829,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Desert",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Desert_Scarab_Fighter",
-    "category": "device"
+    "category": "device",
+    "index": 830,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Desert",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Desert_Scarab_Flyer",
-    "category": "device"
+    "category": "device",
+    "index": 831,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Desert",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Desert_Scarab_Rhino",
-    "category": "device"
+    "category": "device",
+    "index": 832,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Desert",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Desert_Scarab_Soldier",
-    "category": "device"
+    "category": "device",
+    "index": 833,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Desert",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Desert_Scarab_Spitter",
-    "category": "device"
+    "category": "device",
+    "index": 834,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Desert",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Firey_Chicken",
     "category": "device",
-    "icon": "t_devi_Logicnetwork_mob_spawner_firey_chicken_icon"
+    "icon": "t_devi_Logicnetwork_mob_spawner_firey_chicken_icon",
+    "index": 835,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Forest",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Forest_Bear_Fighter",
-    "category": "device"
+    "category": "device",
+    "index": 836,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Forest",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Forest_Bear_Leader",
-    "category": "device"
+    "category": "device",
+    "index": 837,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Forest",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Forest_Bear_Whelp",
-    "category": "device"
+    "category": "device",
+    "index": 838,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Forest",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Forest_Boar",
-    "category": "device"
+    "category": "device",
+    "index": 839,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Forest",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Forest_Chicken",
-    "category": "device"
+    "category": "device",
+    "index": 840,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Forest",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Forest_Minecritter",
-    "category": "device"
+    "category": "device",
+    "index": 841,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Forest",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Forest_Pig",
-    "category": "device"
+    "category": "device",
+    "index": 842,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Forest",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Forest_Rabbit",
-    "category": "device"
+    "category": "device",
+    "index": 843,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Forest",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Forest_Sheep",
-    "category": "device"
+    "category": "device",
+    "index": 844,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Forest",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Forest_Skitterling_Bomber",
-    "category": "device"
+    "category": "device",
+    "index": 845,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Forest",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Forest_Skitterling_Fighter",
-    "category": "device"
+    "category": "device",
+    "index": 846,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Forest",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Forest_Skitterling_Leader",
-    "category": "device"
+    "category": "device",
+    "index": 847,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Forest",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Forest_Skitterling_Spitter",
-    "category": "device"
+    "category": "device",
+    "index": 848,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Forest",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Forest_Wolf_Fighter",
-    "category": "device"
+    "category": "device",
+    "index": 849,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Forest",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Forest_Wolf_Leader",
-    "category": "device"
+    "category": "device",
+    "index": 850,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Forest",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Forest_Wolf_Thornfang",
-    "category": "device"
+    "category": "device",
+    "index": 851,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Forest",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Forest_Wolf_Whelp",
-    "category": "device"
+    "category": "device",
+    "index": 852,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Forest",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Jungle_Bear_Poison",
-    "category": "device"
+    "category": "device",
+    "index": 853,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Jungle",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Jungle_BigCat_Fighter",
-    "category": "device"
+    "category": "device",
+    "index": 854,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Jungle",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Jungle_BigCat_Leader",
-    "category": "device"
+    "category": "device",
+    "index": 855,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Jungle",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Jungle_Boar",
-    "category": "device"
+    "category": "device",
+    "index": 856,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Jungle",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Jungle_Chicken",
-    "category": "device"
+    "category": "device",
+    "index": 857,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Jungle",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Jungle_Colossaur_Brute",
-    "category": "device"
+    "category": "device",
+    "index": 858,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Jungle",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Jungle_Colossaur_Fighter",
-    "category": "device"
+    "category": "device",
+    "index": 859,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Jungle",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Jungle_Colossaur_Whelp",
-    "category": "device"
+    "category": "device",
+    "index": 860,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Jungle",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Jungle_ExplodingFrog",
-    "category": "device"
+    "category": "device",
+    "index": 861,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Jungle",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Jungle_Frog",
-    "category": "device"
+    "category": "device",
+    "index": 862,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Jungle",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Jungle_Minecritter",
-    "category": "device"
+    "category": "device",
+    "index": 863,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Jungle",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Jungle_Pig",
-    "category": "device"
+    "category": "device",
+    "index": 864,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Jungle",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Jungle_Raptor_Fighter",
-    "category": "device"
+    "category": "device",
+    "index": 865,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Jungle",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Jungle_Raptor_Hunter",
-    "category": "device"
+    "category": "device",
+    "index": 866,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Jungle",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Jungle_Raptor_Leader",
-    "category": "device"
+    "category": "device",
+    "index": 867,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Jungle",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Jungle_Raptor_Spitter",
-    "category": "device"
+    "category": "device",
+    "index": 868,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Jungle",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Midwinter_Chicken",
-    "category": "device"
+    "category": "device",
+    "index": 869,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Mountain",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Midwinter_FennecFox",
-    "category": "device"
+    "category": "device",
+    "index": 870,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Mountain",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_Midwinter_Pig",
-    "category": "device"
+    "category": "device",
+    "index": 871,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Mountain",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Mob_Spawner_SpittingPlant",
-    "category": "device"
+    "category": "device",
+    "index": 872,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Forest",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Network_Delay",
     "category": "device",
-    "icon": "devi_LogicNetwork_Network_Delay_icon"
+    "icon": "devi_LogicNetwork_Network_Delay_icon",
+    "index": 873,
+    "objectType": "LogicNetworkDevice",
+    "biome": "",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Network_Delay_1sec",
     "category": "device",
-    "icon": "devi_LogicNetwork_Network_Delay_icon"
+    "icon": "devi_LogicNetwork_Network_Delay_icon",
+    "index": 874,
+    "objectType": "LogicNetworkDevice",
+    "biome": "",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Network_Delay_5sec",
     "category": "device",
-    "icon": "devi_LogicNetwork_Network_Delay_icon"
+    "icon": "devi_LogicNetwork_Network_Delay_icon",
+    "index": 875,
+    "objectType": "LogicNetworkDevice",
+    "biome": "",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Network_Delay_Halfsec",
     "category": "device",
-    "icon": "devi_LogicNetwork_Network_Delay_icon"
+    "icon": "devi_LogicNetwork_Network_Delay_icon",
+    "index": 876,
+    "objectType": "LogicNetworkDevice",
+    "biome": "",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Network_Relay",
     "category": "device",
-    "icon": "t_devi_Logicnetwork_Network_Relay_icon"
+    "icon": "t_devi_Logicnetwork_Network_Relay_icon",
+    "index": 877,
+    "objectType": "LogicNetworkDevice",
+    "biome": "",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Output_3DLetters_A",
     "category": "device",
-    "icon": "t_devi_Logicnetwork_Output_3DLetters_A_icon"
+    "icon": "t_devi_Logicnetwork_Output_3DLetters_A_icon",
+    "index": 878,
+    "objectType": "LogicNetworkDevice",
+    "biome": "",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Output_3DLetters_N",
@@ -1823,92 +4101,185 @@
   {
     "name": "LogicNetwork_Output_DartTrap",
     "category": "device",
-    "icon": "t_devi_LogicNetwork_Output_DartTrap_icon"
+    "icon": "t_devi_LogicNetwork_Output_DartTrap_icon",
+    "index": 879,
+    "objectType": "LogicNetworkDevice",
+    "biome": "",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Output_DartTrap_02",
     "category": "device",
-    "icon": "t_devi_Logicnetwork_Output_Darttrap_02_icon"
+    "icon": "t_devi_Logicnetwork_Output_Darttrap_02_icon",
+    "index": 880,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Forest",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Output_Door",
     "category": "device",
-    "icon": "t_devi_LogicNetwork_Output_Door_icon"
+    "icon": "t_devi_LogicNetwork_Output_Door_icon",
+    "index": 881,
+    "objectType": "LogicNetworkDevice",
+    "biome": "",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Output_Lamp",
     "category": "device",
-    "icon": "t_devi_LogicNetwork_Output_Lamp_icon"
+    "icon": "t_devi_LogicNetwork_Output_Lamp_icon",
+    "index": 882,
+    "objectType": "LogicNetworkDevice",
+    "biome": "",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Output_Lamp_Tudor",
     "category": "device",
-    "icon": "t_devi_Logicnetwork_Output_Lamp_Tudor_icon"
+    "icon": "t_devi_Logicnetwork_Output_Lamp_Tudor_icon",
+    "index": 883,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Forest",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Output_Platform_A",
     "category": "device",
-    "icon": "t_devi_Logicnetwork_Output_Platform_A_icon"
+    "icon": "t_devi_Logicnetwork_Output_Platform_A_icon",
+    "index": 884,
+    "objectType": "LogicNetworkDevice",
+    "biome": "",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Output_Platform_B",
     "category": "device",
-    "icon": "t_devi_Logicnetwork_Output_Platform_B_icon"
+    "icon": "t_devi_Logicnetwork_Output_Platform_B_icon",
+    "index": 885,
+    "objectType": "LogicNetworkDevice",
+    "biome": "",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Output_SoundEmitter_Alarm",
     "category": "device",
-    "icon": "t_devi_LogicNetwork_Output_SoundEmitter_icon"
+    "icon": "t_devi_LogicNetwork_Output_SoundEmitter_icon",
+    "index": 888,
+    "objectType": "LogicNetworkDevice",
+    "biome": "",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Output_SoundEmitter_Synth",
     "category": "device",
-    "icon": "t_devi_LogicNetwork_Output_SoundEmitter_icon"
+    "icon": "t_devi_LogicNetwork_Output_SoundEmitter_icon",
+    "index": 889,
+    "objectType": "LogicNetworkDevice",
+    "biome": "",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Output_SoundEmitter_Timer",
     "category": "device",
-    "icon": "t_devi_LogicNetwork_Output_SoundEmitter_icon"
+    "icon": "t_devi_LogicNetwork_Output_SoundEmitter_icon",
+    "index": 890,
+    "objectType": "LogicNetworkDevice",
+    "biome": "",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Output_SoundEmitter_Tudor_Alarm",
     "category": "device",
-    "icon": "t_devi_Logicnetwork_Output_Soundemitter_Tudor_icon"
+    "icon": "t_devi_Logicnetwork_Output_Soundemitter_Tudor_icon",
+    "index": 891,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Forest",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Output_SoundEmitter_Tudor_Synth",
     "category": "device",
-    "icon": "t_devi_Logicnetwork_Output_Soundemitter_Tudor_icon"
+    "icon": "t_devi_Logicnetwork_Output_Soundemitter_Tudor_icon",
+    "index": 892,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Forest",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "LogicNetwork_Output_SoundEmitter_Tudor_Timer",
     "category": "device",
-    "icon": "t_devi_Logicnetwork_Output_Soundemitter_Tudor_icon"
+    "icon": "t_devi_Logicnetwork_Output_Soundemitter_Tudor_icon",
+    "index": 893,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Forest",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "Loom",
     "category": "device",
-    "icon": "t_devi_Miscellaneous_Primary_icon"
+    "icon": "t_devi_Miscellaneous_Primary_icon",
+    "index": 895,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Common",
+    "subCategory": "Crafting"
   },
   {
     "name": "Lumo_Out_Door_Forest",
     "category": "device",
-    "icon": "t_devi_Lumo_Out_Door_Forest_icon"
+    "icon": "t_devi_Lumo_Out_Door_Forest_icon",
+    "index": 896,
+    "objectType": "LogicNetworkDevice",
+    "biome": "",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "Lumo_Out_FireworkLauncher_Xu",
     "category": "device",
-    "icon": "t_devi_Lumo_Out_Fireworklauncher_Xu_icon"
+    "icon": "t_devi_Lumo_Out_Fireworklauncher_Xu_icon",
+    "index": 897,
+    "objectType": "LogicNetworkDevice",
+    "biome": "Jungle",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "Lumo_Toggle_Titan",
     "category": "device",
-    "icon": "t_devi_Lumo_Toggle_Titan_icon"
+    "icon": "t_devi_Lumo_Toggle_Titan_icon",
+    "index": 898,
+    "objectType": "LogicNetworkDevice",
+    "biome": "",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "Lumo_Viewpoint_Titan",
     "category": "device",
-    "icon": "t_devi_Lumo_Viewpoint_Titan_icon"
+    "icon": "t_devi_Lumo_Viewpoint_Titan_icon",
+    "index": 899,
+    "objectType": "LogicNetworkDevice",
+    "biome": "",
+    "rarityLevel": "Legendary",
+    "subCategory": "Logic"
   },
   {
     "name": "Magical_Symbol",
@@ -1917,36 +4288,84 @@
   {
     "name": "Mailbox",
     "category": "device",
-    "icon": "t_devi_Mailbox_icon"
+    "icon": "t_devi_Mailbox_icon",
+    "index": 901,
+    "objectType": "InteractableDevice",
+    "biome": "Forest",
+    "rarityLevel": "Common",
+    "subCategory": "Misc"
   },
   {
     "name": "Manhole_Cover_A",
     "category": "device",
-    "icon": "t_scen_Manhole_Cover_A_icon"
+    "icon": "t_scen_Manhole_Cover_A_icon",
+    "index": 902,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Metal_Primary",
     "category": "device",
-    "icon": "t_devi_Metal_Primary_icon"
+    "icon": "t_devi_Metal_Primary_icon",
+    "index": 905,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Common",
+    "subCategory": "Crafting"
   },
   {
     "name": "Mine_Cart_A",
     "category": "device",
-    "icon": "t_scen_Mine_Cart_A_icon"
+    "icon": "t_scen_Mine_Cart_A_icon",
+    "index": 911,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Miscellaneous_Primary",
     "category": "device",
-    "icon": "t_devi_Miscellaneous_Primary_icon"
+    "icon": "t_devi_Miscellaneous_Primary_icon",
+    "index": 912,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Common",
+    "subCategory": "Crafting"
   },
   {
     "name": "Miscellaneous_Secondary",
     "category": "device",
-    "icon": "t_devi_Miscellaneous_Secondary_icon"
+    "icon": "t_devi_Miscellaneous_Secondary_icon",
+    "index": 913,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Common",
+    "subCategory": "Crafting"
   },
   {
     "name": "NotSavable_Chest_Generic_Major",
-    "category": "device"
+    "category": "device",
+    "index": 1044,
+    "objectType": "InteractableDevice",
+    "biome": "Forest",
+    "rarityLevel": "Rare",
+    "subCategory": "Storage"
   },
   {
     "name": "Oven",
@@ -1956,217 +4375,518 @@
   {
     "name": "Pack_Starter_Shield_Bronze",
     "category": "device",
-    "icon": "t_scen_Pack_Starter_Shield_Bronze_icon"
+    "icon": "t_scen_Pack_Starter_Shield_Bronze_icon",
+    "index": 1046,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Pack_Starter_Statue_Gold",
     "category": "device",
-    "icon": "t_scen_Pack_Starter_Statue_Gold_icon"
+    "icon": "t_scen_Pack_Starter_Statue_Gold_icon",
+    "index": 1047,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Pack_Starter_Statue_Silver",
     "category": "device",
-    "icon": "t_scen_Pack_Starter_Statue_Silver_icon"
+    "icon": "t_scen_Pack_Starter_Statue_Silver_icon",
+    "index": 1048,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Paperscreen_1x1x1",
     "category": "device",
-    "icon": "t_scst_Paperscreen_1x1x1_icon"
+    "icon": "t_scst_Paperscreen_1x1x1_icon",
+    "index": 1050,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Paperscreen_1x2x1",
     "category": "device",
-    "icon": "t_scst_Paperscreen_1x2x1_icon"
+    "icon": "t_scst_Paperscreen_1x2x1_icon",
+    "index": 1051,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Paperscreen_2x3x1",
     "category": "device",
-    "icon": "t_scst_Paperscreen_2x3x1_icon"
+    "icon": "t_scst_Paperscreen_2x3x1_icon",
+    "index": 1052,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Parcel_A",
     "category": "device",
-    "icon": "t_scen_Parcel_A_icon"
+    "icon": "t_scen_Parcel_A_icon",
+    "index": 1053,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Storage"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Pillar_Jungle_Lizard_Wood",
     "category": "device",
-    "icon": "t_scst_Pillar_Jungle_Lizard_Wood_icon"
+    "icon": "t_scst_Pillar_Jungle_Lizard_Wood_icon",
+    "index": 1056,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Structural"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Pillar_Stone_Basic",
     "category": "device",
-    "icon": "t_scst_Pillar_Stone_Basic_icon"
+    "icon": "t_scst_Pillar_Stone_Basic_icon",
+    "index": 1057,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Structural"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Pillar_Stone_Desert",
     "category": "device",
-    "icon": "t_scst_Pillar_Stone_Desert_icon"
+    "icon": "t_scst_Pillar_Stone_Desert_icon",
+    "index": 1058,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Structural"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Pillar_Stone_Titan",
     "category": "device",
-    "icon": "t_scst_Pillar_Stone_Titan_icon"
+    "icon": "t_scst_Pillar_Stone_Titan_icon",
+    "index": 1059,
+    "objectType": "Furniture",
+    "biome": "",
+    "furniture": {
+      "FurnitureType": "Structural"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Plate_Gold_Pan_A",
     "category": "device",
-    "icon": "t_scen_Plate_Gold_Pan_A_icon"
+    "icon": "t_scen_Plate_Gold_Pan_A_icon",
+    "index": 1063,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Tableware"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Plate_Offering_A",
     "category": "device",
-    "icon": "t_scen_Plate_Offering_A_icon"
+    "icon": "t_scen_Plate_Offering_A_icon",
+    "index": 1064,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Tableware"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Plate_Offering_B",
     "category": "device",
-    "icon": "t_scst_plate_offering_b_icon"
+    "icon": "t_scst_plate_offering_b_icon",
+    "index": 1065,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Tableware"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Plate_PestleAndMortar_A",
     "category": "device",
-    "icon": "t_scst_plate_pestleandmortar_a_icon"
+    "icon": "t_scst_plate_pestleandmortar_a_icon",
+    "index": 1066,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Tableware"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Plate_WoodenBowl_A",
     "category": "device",
-    "icon": "t_scen_Plate_WoodenBowl_A_icon"
+    "icon": "t_scen_Plate_WoodenBowl_A_icon",
+    "index": 1067,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Tableware"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Plinth_Stone_Basic_Down",
     "category": "device",
-    "icon": "t_scst_Plinth_Stone_Basic_Down_icon"
+    "icon": "t_scst_Plinth_Stone_Basic_Down_icon",
+    "index": 1068,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Structural"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Plinth_Stone_Basic_Up",
     "category": "device",
-    "icon": "t_scst_Plinth_Stone_Basic_Up_icon"
+    "icon": "t_scst_Plinth_Stone_Basic_Up_icon",
+    "index": 1069,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Structural"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Plinth_Stone_Desert_Down",
     "category": "device",
-    "icon": "t_scst_Plinth_Stone_Desert_Down_icon"
+    "icon": "t_scst_Plinth_Stone_Desert_Down_icon",
+    "index": 1070,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Structural"
+    },
+    "rarityLevel": "Epic"
   },
   {
     "name": "Plinth_Stone_Desert_Up",
     "category": "device",
-    "icon": "t_scst_Plinth_Stone_Desert_Up_icon"
+    "icon": "t_scst_Plinth_Stone_Desert_Up_icon",
+    "index": 1071,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Structural"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Post_Bamboo_A",
     "category": "device",
-    "icon": "t_scst_Post_Bamboo_A_icon"
+    "icon": "t_scst_Post_Bamboo_A_icon",
+    "index": 1072,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Sign"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Post_Metal_A",
     "category": "device",
-    "icon": "t_scst_post_metal_a_icon"
+    "icon": "t_scst_post_metal_a_icon",
+    "index": 1073,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Sign"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Post_Rough_Banner_A",
     "category": "device",
-    "icon": "t_scst_post_rough_banner_a_icon"
+    "icon": "t_scst_post_rough_banner_a_icon",
+    "index": 1074,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Sign"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Post_SignPost_A",
     "category": "device",
-    "icon": "t_scst_post_signpost_a_icon"
+    "icon": "t_scst_post_signpost_a_icon",
+    "index": 1075,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Sign"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Post_Skull_A",
     "category": "device",
-    "icon": "t_scst_post_skull_a_icon"
+    "icon": "t_scst_post_skull_a_icon",
+    "index": 1076,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Sign"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Post_SpikePost_A",
     "category": "device",
-    "icon": "t_scst_post_spikepost_a_icon"
+    "icon": "t_scst_post_spikepost_a_icon",
+    "index": 1077,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Sign"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Pot_Cauldron_A",
     "category": "device",
-    "icon": "t_scen_Pot_Cauldron_A_icon"
+    "icon": "t_scen_Pot_Cauldron_A_icon",
+    "index": 1078,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Pot"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Pot_Cauldron_B",
     "category": "device",
-    "icon": "t_scen_Pot_Cauldron_B_icon"
+    "icon": "t_scen_Pot_Cauldron_B_icon",
+    "index": 1079,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Pot"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Pot_Cauldron_C",
     "category": "device",
-    "icon": "t_scen_pot_cauldron_C_icon"
+    "icon": "t_scen_pot_cauldron_C_icon",
+    "index": 1080,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Pot"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Pot_Cauldron_D",
     "category": "device",
-    "icon": "t_scen_Pot_Cauldron_D_icon"
+    "icon": "t_scen_Pot_Cauldron_D_icon",
+    "index": 1081,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Pot"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Pot_Desert_A",
     "category": "device",
-    "icon": "t_scen_Pot_Desert_A_icon"
+    "icon": "t_scen_Pot_Desert_A_icon",
+    "index": 1082,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Pot"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Pot_Desert_B",
     "category": "device",
-    "icon": "t_scen_Pot_Desert_B_icon"
+    "icon": "t_scen_Pot_Desert_B_icon",
+    "index": 1083,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Pot"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Pot_Desert_C",
     "category": "device",
-    "icon": "t_scen_Pot_Desert_C_icon"
+    "icon": "t_scen_Pot_Desert_C_icon",
+    "index": 1084,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Pot"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Pot_Desert_D",
     "category": "device",
-    "icon": "t_scen_pot_desert_D_icon"
+    "icon": "t_scen_pot_desert_D_icon",
+    "index": 1085,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Pot"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Pot_Ornate_A",
     "category": "device",
-    "icon": "t_scen_Pot_Ornate_A_icon"
+    "icon": "t_scen_Pot_Ornate_A_icon",
+    "index": 1086,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Pot"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Pot_Ornate_B",
     "category": "device",
-    "icon": "t_scen_Pot_Ornate_B_icon"
+    "icon": "t_scen_Pot_Ornate_B_icon",
+    "index": 1087,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Pot"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Pot_Ornate_C",
     "category": "device",
-    "icon": "t_scen_Pot_Ornate_C_icon"
+    "icon": "t_scen_Pot_Ornate_C_icon",
+    "index": 1088,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Pot"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Pot_Ornate_Tall_A",
     "category": "device",
-    "icon": "t_scen_Pot_Ornate_Tall_A_icon"
+    "icon": "t_scen_Pot_Ornate_Tall_A_icon",
+    "index": 1089,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Pot"
+    },
+    "rarityLevel": "Epic"
   },
   {
     "name": "Pot_Ornate_Tall_B",
     "category": "device",
-    "icon": "t_scen_Pot_Ornate_Tall_B_icon"
+    "icon": "t_scen_Pot_Ornate_Tall_B_icon",
+    "index": 1090,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Pot"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Pot_Ornate_Tall_C",
     "category": "device",
-    "icon": "t_scen_Pot_Ornate_Tall_C_icon"
+    "icon": "t_scen_Pot_Ornate_Tall_C_icon",
+    "index": 1091,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Pot"
+    },
+    "rarityLevel": "Epic"
   },
   {
     "name": "Pot_Yeti_A",
     "category": "device",
-    "icon": "t_scen_Pot_Yeti_A_icon"
+    "icon": "t_scen_Pot_Yeti_A_icon",
+    "index": 1092,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Pot"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Pot_Yeti_B",
     "category": "device",
-    "icon": "t_scen_Pot_Yeti_B_icon"
+    "icon": "t_scen_Pot_Yeti_B_icon",
+    "index": 1093,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Pot"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Pot_Yeti_C",
     "category": "device",
-    "icon": "t_scen_Pot_Yeti_C_icon"
+    "icon": "t_scen_Pot_Yeti_C_icon",
+    "index": 1094,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Pot"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Potting_Table",
@@ -2175,100 +4895,230 @@
   {
     "name": "Pumpkin_Lantern_A",
     "category": "device",
-    "icon": "t_scen_Pumpkin_Lantern_A_icon"
+    "icon": "t_scen_Pumpkin_Lantern_A_icon",
+    "index": 1111,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Lighting"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "PVP_Banner_Blue",
     "category": "device",
-    "icon": "t_scen_PVP_Banner_Blue_icon"
+    "icon": "t_scen_PVP_Banner_Blue_icon",
+    "index": 1112,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Sign"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "PVP_Banner_Red",
     "category": "device",
-    "icon": "t_scen_PVP_Banner_Red_icon"
+    "icon": "t_scen_PVP_Banner_Red_icon",
+    "index": 1113,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Sign"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "PvP_Barricade_Metal_A",
     "category": "device",
-    "icon": "t_scst_pvp_barricade_metal_a_icon"
+    "icon": "t_scst_pvp_barricade_metal_a_icon",
+    "index": 1114,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Fence"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "PvP_Barricade_Metal_B",
     "category": "device",
-    "icon": "t_scst_pvp_barricade_metal_b_icon"
+    "icon": "t_scst_pvp_barricade_metal_b_icon",
+    "index": 1115,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Fence"
+    },
+    "rarityLevel": "Epic"
   },
   {
     "name": "PvP_Barricade_Metal_C",
     "category": "device",
-    "icon": "t_scst_pvp_barricade_metal_c_icon"
+    "icon": "t_scst_pvp_barricade_metal_c_icon",
+    "index": 1116,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Fence"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "PvP_Barricade_Wood_A",
     "category": "device",
-    "icon": "t_scst_pvp_barricade_wood_a_icon"
+    "icon": "t_scst_pvp_barricade_wood_a_icon",
+    "index": 1117,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Fence"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "PvP_Barricade_Wood_B_01",
     "category": "device",
-    "icon": "t_scst_pvp_barricade_wood_b_01_icon"
+    "icon": "t_scst_pvp_barricade_wood_b_01_icon",
+    "index": 1118,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Fence"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "PvP_Barricade_Wood_B_02",
     "category": "device",
-    "icon": "t_scst_pvp_barricade_wood_b_02_icon"
+    "icon": "t_scst_pvp_barricade_wood_b_02_icon",
+    "index": 1119,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Fence"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "PvP_Barricade_Wood_C_01",
     "category": "device",
-    "icon": "t_scst_pvp_barricade_wood_c_01_icon"
+    "icon": "t_scst_pvp_barricade_wood_c_01_icon",
+    "index": 1120,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Fence"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "PvP_Barricade_Wood_C_02",
     "category": "device",
-    "icon": "t_scst_pvp_barricade_wood_c_02_icon"
+    "icon": "t_scst_pvp_barricade_wood_c_02_icon",
+    "index": 1121,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Fence"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "PvP_Barricade_Wood_C_03",
     "category": "device",
-    "icon": "t_scst_pvp_barricade_wood_c_03_icon"
+    "icon": "t_scst_pvp_barricade_wood_c_03_icon",
+    "index": 1122,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Fence"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "PVP_Post",
     "category": "device",
-    "icon": "t_devi_PVP_Post_icon"
+    "icon": "t_devi_PVP_Post_icon",
+    "index": 1125,
+    "objectType": "InteractableDevice",
+    "biome": "Forest",
+    "rarityLevel": "Common",
+    "subCategory": "Multiplayer"
   },
   {
     "name": "PVP_Post_Builder",
     "category": "device",
-    "icon": "t_devi_PVP_Post_Builder_icon"
+    "icon": "t_devi_PVP_Post_Builder_icon",
+    "index": 1126,
+    "objectType": "InteractableDevice",
+    "biome": "Forest",
+    "rarityLevel": "Common",
+    "subCategory": "Multiplayer"
   },
   {
     "name": "PVP_Survival_ArenaCentre",
-    "category": "device"
+    "category": "device",
+    "index": 1127,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "PVP_Survival_SpawnLandingPad",
-    "category": "device"
+    "category": "device",
+    "index": 1128,
+    "objectType": "Furniture",
+    "biome": "",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "RaceTimerCheckpoint",
     "category": "device",
-    "icon": "t_devi_Racecheckpointgate_icon"
+    "icon": "t_devi_Racecheckpointgate_icon",
+    "index": 1367,
+    "objectType": "InteractableDevice",
+    "biome": "",
+    "rarityLevel": "Common",
+    "subCategory": "Multiplayer"
   },
   {
     "name": "RaceTimerEnd",
     "category": "device",
-    "icon": "t_devi_RaceTimerEnd_icon"
+    "icon": "t_devi_RaceTimerEnd_icon",
+    "index": 1368,
+    "objectType": "InteractableDevice",
+    "biome": "Forest",
+    "rarityLevel": "Common",
+    "subCategory": "Multiplayer"
   },
   {
     "name": "RaceTimerStart",
     "category": "device",
-    "icon": "t_devi_RaceTimerStart_icon"
+    "icon": "t_devi_RaceTimerStart_icon",
+    "index": 1369,
+    "objectType": "InteractableDevice",
+    "biome": "Forest",
+    "rarityLevel": "Common",
+    "subCategory": "Multiplayer"
   },
   {
     "name": "Rail",
     "category": "device",
-    "icon": "t_scst_Rail_icon"
+    "icon": "t_scst_Rail_icon",
+    "index": 1370,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Epic"
   },
   {
     "name": "ReturnTeleporter",
@@ -2277,816 +5127,1956 @@
   {
     "name": "Reward_Banner_BuildCake",
     "category": "device",
-    "icon": "t_scen_Reward_Banner_BuildCake_icon"
+    "icon": "t_scen_Reward_Banner_BuildCake_icon",
+    "index": 1376,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Sign"
+    },
+    "rarityLevel": "Legendary"
   },
   {
     "name": "Reward_Banner_BuildComp_Runner_1",
     "category": "device",
-    "icon": "t_scen_Reward_Banner_BuildComp_Runner_1_icon"
+    "icon": "t_scen_Reward_Banner_BuildComp_Runner_1_icon",
+    "index": 1377,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Sign"
+    },
+    "rarityLevel": "Legendary"
   },
   {
     "name": "Reward_Banner_BuildComp_Runner_2",
     "category": "device",
-    "icon": "t_scen_Reward_Banner_BuildComp_Runner_2_icon"
+    "icon": "t_scen_Reward_Banner_BuildComp_Runner_2_icon",
+    "index": 1378,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Sign"
+    },
+    "rarityLevel": "Legendary"
   },
   {
     "name": "Reward_Banner_BuildComp_Winner",
     "category": "device",
-    "icon": "t_scen_Reward_Banner_BuildComp_Winner_icon"
+    "icon": "t_scen_Reward_Banner_BuildComp_Winner_icon",
+    "index": 1379,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Sign"
+    },
+    "rarityLevel": "Legendary"
   },
   {
     "name": "Reward_Banner_CommunityReward",
     "category": "device",
-    "icon": "t_scen_Reward_Banner_CommunityReward_icon"
+    "icon": "t_scen_Reward_Banner_CommunityReward_icon",
+    "index": 1380,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Sign"
+    },
+    "rarityLevel": "Legendary"
   },
   {
     "name": "Reward_Banner_KillDev_PvP",
     "category": "device",
-    "icon": "t_scen_Reward_Banner_KillDev_PvP_icon"
+    "icon": "t_scen_Reward_Banner_KillDev_PvP_icon",
+    "index": 1381,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Sign"
+    },
+    "rarityLevel": "Legendary"
   },
   {
     "name": "Reward_Banner_MostDeaths",
     "category": "device",
-    "icon": "t_scen_Reward_Banner_MostDeaths_icon"
+    "icon": "t_scen_Reward_Banner_MostDeaths_icon",
+    "index": 1382,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Sign"
+    },
+    "rarityLevel": "Legendary"
   },
   {
     "name": "River_Lily_Flower_A",
     "category": "device",
-    "icon": "t_scen_River_Lily_Flower_A_icon"
+    "icon": "t_scen_River_Lily_Flower_A_icon",
+    "index": 1383,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Common"
   },
   {
     "name": "River_Lily_Pad_A",
     "category": "device",
-    "icon": "t_scen_River_Lily_Pad_A_icon"
+    "icon": "t_scen_River_Lily_Pad_A_icon",
+    "index": 1384,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Common"
   },
   {
     "name": "River_Lily_Pad_Large_A",
     "category": "device",
-    "icon": "t_scen_River_Lily_Pad_Large_A_icon"
+    "icon": "t_scen_River_Lily_Pad_Large_A_icon",
+    "index": 1385,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Common"
   },
   {
     "name": "River_Reeds_A",
     "category": "device",
-    "icon": "t_scen_River_Reeds_A_icon"
+    "icon": "t_scen_River_Reeds_A_icon",
+    "index": 1386,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Common"
   },
   {
     "name": "Rock_A",
     "category": "device",
-    "icon": "t_scen_Rock_A_icon"
+    "icon": "t_scen_Rock_A_icon",
+    "index": 1387,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Common"
   },
   {
     "name": "Rock_B",
     "category": "device",
-    "icon": "t_scen_Rock_B_icon"
+    "icon": "t_scen_Rock_B_icon",
+    "index": 1388,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Common"
   },
   {
     "name": "Rock_Pile_A",
     "category": "device",
-    "icon": "t_scen_Rock_Pile_A_icon"
+    "icon": "t_scen_Rock_Pile_A_icon",
+    "index": 1389,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Common"
   },
   {
     "name": "Roof_Tile_Clay",
     "category": "device",
-    "icon": "t_scst_roof_tile_clay_icon"
+    "icon": "t_scst_roof_tile_clay_icon",
+    "index": 1390,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Tiles"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Roof_Tile_Thatch",
     "category": "device",
-    "icon": "t_scst_roof_tile_thatch_icon"
+    "icon": "t_scst_roof_tile_thatch_icon",
+    "index": 1391,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Tiles"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Roof_Tile_Wood",
     "category": "device",
-    "icon": "t_scst_roof_tile_wood_icon"
+    "icon": "t_scst_roof_tile_wood_icon",
+    "index": 1392,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Tiles"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Rope_Bucket_A",
     "category": "device",
-    "icon": "t_scst_rope_bucket_a_icon"
+    "icon": "t_scst_rope_bucket_a_icon",
+    "index": 1393,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Rope_Hook_A",
     "category": "device",
-    "icon": "t_scst_rope_hook_a_icon"
+    "icon": "t_scst_rope_hook_a_icon",
+    "index": 1394,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Rope_Piece_A",
     "category": "device",
-    "icon": "t_scst_rope_piece_a_icon"
+    "icon": "t_scst_rope_piece_a_icon",
+    "index": 1395,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Rope_Sandbags_A",
     "category": "device",
-    "icon": "t_scst_rope_sandbags_a_icon"
+    "icon": "t_scst_rope_sandbags_a_icon",
+    "index": 1396,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Rubble_1x1x1_A",
     "category": "device",
-    "icon": "t_scen_Rubble_1X1X1_A_icon"
+    "icon": "t_scen_Rubble_1X1X1_A_icon",
+    "index": 1397,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Common"
   },
   {
     "name": "Rubble_1x1x1_B",
     "category": "device",
-    "icon": "t_scen_Rubble_1X1X1_B_icon"
+    "icon": "t_scen_Rubble_1X1X1_B_icon",
+    "index": 1398,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Common"
   },
   {
     "name": "Rubble_1x1x1_C",
     "category": "device",
-    "icon": "t_scen_Rubble_1X1X1_C_icon"
+    "icon": "t_scen_Rubble_1X1X1_C_icon",
+    "index": 1399,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Common"
   },
   {
     "name": "Rubble_1x1x1_D",
     "category": "device",
-    "icon": "t_scen_Rubble_1X1X1_D_icon"
+    "icon": "t_scen_Rubble_1X1X1_D_icon",
+    "index": 1400,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Common"
   },
   {
     "name": "Rug_3x1x3_Rough",
     "category": "device",
-    "icon": "t_scen_Rug_3X1X3_Rough_icon"
+    "icon": "t_scen_Rug_3X1X3_Rough_icon",
+    "index": 1401,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Rug"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Rug_A",
     "category": "device",
-    "icon": "t_scen_Rug_A_icon"
+    "icon": "t_scen_Rug_A_icon",
+    "index": 1402,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Rug"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Rug_Large_A",
     "category": "device",
-    "icon": "t_scen_Rug_Large_A_icon"
+    "icon": "t_scen_Rug_Large_A_icon",
+    "index": 1403,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Rug"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Rug_Rabbit",
     "category": "device",
-    "icon": "t_scen_Rug_Rabbit_icon"
+    "icon": "t_scen_Rug_Rabbit_icon",
+    "index": 1404,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Rug"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Rug_Roll_A",
     "category": "device",
-    "icon": "t_scen_Rug_Roll_A_icon"
+    "icon": "t_scen_Rug_Roll_A_icon",
+    "index": 1405,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Rug"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Rug_Roll_Long_A",
     "category": "device",
-    "icon": "t_scen_Rug_Roll_Long_A_icon"
+    "icon": "t_scen_Rug_Roll_Long_A_icon",
+    "index": 1406,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Rug"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Rug_Runner_A",
     "category": "device",
-    "icon": "t_scen_Rug_Runner_A_icon"
+    "icon": "t_scen_Rug_Runner_A_icon",
+    "index": 1407,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Rug"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Rug_Rustic_A",
     "category": "device",
-    "icon": "t_scen_Rug_Rustic_A_icon"
+    "icon": "t_scen_Rug_Rustic_A_icon",
+    "index": 1408,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Rug"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Sack_A",
     "category": "device",
-    "icon": "t_scen_sack_A_icon"
+    "icon": "t_scen_sack_A_icon",
+    "index": 1409,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Sarcophagus_A",
     "category": "device",
-    "icon": "t_scen_sarcophagus_A_icon"
+    "icon": "t_scen_sarcophagus_A_icon",
+    "index": 1411,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Shrine"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Sarcophagus_B",
     "category": "device",
-    "icon": "t_scen_sarcophagus_B_icon"
+    "icon": "t_scen_sarcophagus_B_icon",
+    "index": 1412,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Shrine"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Sarcophagus_C",
     "category": "device",
-    "icon": "t_scen_sarcophagus_C_icon"
+    "icon": "t_scen_sarcophagus_C_icon",
+    "index": 1413,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Shrine"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Sarcophagus_D",
     "category": "device",
-    "icon": "t_scen_Sarcophagus_D_icon"
+    "icon": "t_scen_Sarcophagus_D_icon",
+    "index": 1414,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Shrine"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Sarcophagus_E",
     "category": "device",
-    "icon": "t_scen_Sarcophagus_E_icon"
+    "icon": "t_scen_Sarcophagus_E_icon",
+    "index": 1415,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Shrine"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Scaffold_Bamboo",
     "category": "device",
-    "icon": "t_scst_Scaffold_Bamboo_icon"
+    "icon": "t_scst_Scaffold_Bamboo_icon",
+    "index": 1417,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Scarecrow_A",
     "category": "device",
-    "icon": "t_scen_scarecrow_A_icon"
+    "icon": "t_scen_scarecrow_A_icon",
+    "index": 1418,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Epic"
   },
   {
     "name": "Scroll_Holder_A",
     "category": "device",
-    "icon": "t_scen_scroll_holder_A_icon"
+    "icon": "t_scen_scroll_holder_A_icon",
+    "index": 1419,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Storage"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Scroll_Stand_1x2x1",
     "category": "device",
-    "icon": "t_scen_Scroll_Stand_1X2X1_icon"
+    "icon": "t_scen_Scroll_Stand_1X2X1_icon",
+    "index": 1421,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Storage"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Sewer_Grate_A",
     "category": "device",
-    "icon": "t_scen_Sewer_Grate_A_icon"
+    "icon": "t_scen_Sewer_Grate_A_icon",
+    "index": 1424,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Shelf_A",
     "category": "device",
-    "icon": "t_scen_Shelf_A_icon"
+    "icon": "t_scen_Shelf_A_icon",
+    "index": 1425,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Storage"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Shelter_Small_A",
     "category": "device",
-    "icon": "t_scen_Shelter_Small_A_icon"
+    "icon": "t_scen_Shelter_Small_A_icon",
+    "index": 1426,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Structural"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Shrine_Rustic_A",
     "category": "device",
-    "icon": "t_scen_Shrine_Rustic_A_icon"
+    "icon": "t_scen_Shrine_Rustic_A_icon",
+    "index": 1427,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Shrine"
+    },
+    "rarityLevel": "Epic"
   },
   {
     "name": "Shrine_Stone_A",
     "category": "device",
-    "icon": "t_scen_Shrine_Stone_A_icon"
+    "icon": "t_scen_Shrine_Stone_A_icon",
+    "index": 1428,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Shrine"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Sign_Arrow_Metal",
     "category": "device",
-    "icon": "t_scga_Sign_Arrow_Metal_icon"
+    "icon": "t_scga_Sign_Arrow_Metal_icon",
+    "index": 1439,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Sign"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Sign_Arrow_Metal_Glowing",
     "category": "device",
-    "icon": "t_scga_Sign_Arrow_Metal_Glowing_icon"
+    "icon": "t_scga_Sign_Arrow_Metal_Glowing_icon",
+    "index": 1440,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Sign"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Sign_Arrow_Stone",
     "category": "device",
-    "icon": "t_scga_Sign_Arrow_Stone_icon"
+    "icon": "t_scga_Sign_Arrow_Stone_icon",
+    "index": 1441,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Sign"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Sign_Arrow_Wood",
     "category": "device",
-    "icon": "t_scga_Sign_Arrow_Wood_icon"
+    "icon": "t_scga_Sign_Arrow_Wood_icon",
+    "index": 1442,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Sign"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Sloped_Stone_Dec_End",
     "category": "device",
-    "icon": "t_scst_Sloped_Stone_Dec_End_icon"
+    "icon": "t_scst_Sloped_Stone_Dec_End_icon",
+    "index": 1445,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Structural"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Sloped_Stone_Dec_Mid",
     "category": "device",
-    "icon": "t_scst_Sloped_Stone_Dec_Mid_icon"
+    "icon": "t_scst_Sloped_Stone_Dec_Mid_icon",
+    "index": 1446,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Structural"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Social_Freestanding_Banner_BuildOff_3x9x1",
     "category": "device",
-    "icon": "t_scst_Social_Freestanding_Banner_BuildOff_3x9x1_icon"
+    "icon": "t_scst_Social_Freestanding_Banner_BuildOff_3x9x1_icon",
+    "index": 1450,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Sign"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Social_FreeStanding_Banner_Explorer",
     "category": "device",
-    "icon": "t_scst_social_freestanding_banner_explorer_icon"
+    "icon": "t_scst_social_freestanding_banner_explorer_icon",
+    "index": 1451,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Sign"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Social_FreeStanding_Banner_Fighter",
     "category": "device",
-    "icon": "t_scst_social_freestanding_banner_fighter_icon"
+    "icon": "t_scst_social_freestanding_banner_fighter_icon",
+    "index": 1452,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Sign"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Social_FreeStanding_Banner_Settler",
     "category": "device",
-    "icon": "t_scst_social_freestanding_banner_settler_icon"
+    "icon": "t_scst_social_freestanding_banner_settler_icon",
+    "index": 1453,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Sign"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Social_Ship_Wheel",
     "category": "device",
-    "icon": "t_scst_social_ship_wheel_icon"
+    "icon": "t_scst_social_ship_wheel_icon",
+    "index": 1458,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Sign"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Social_Sign_A",
     "category": "device",
-    "icon": "t_scst_social_sign_a_icon"
+    "icon": "t_scst_social_sign_a_icon",
+    "index": 1459,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Sign"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Social_Sign_B",
     "category": "device",
-    "icon": "t_scst_social_sign_b_icon"
+    "icon": "t_scst_social_sign_b_icon",
+    "index": 1460,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Sign"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Social_Sign_C",
     "category": "device",
-    "icon": "t_scst_social_sign_c_icon"
+    "icon": "t_scst_social_sign_c_icon",
+    "index": 1461,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Sign"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Social_Sign_D",
     "category": "device",
-    "icon": "t_scst_social_sign_d_icon"
+    "icon": "t_scst_social_sign_d_icon",
+    "index": 1462,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Sign"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Social_Sign_Large_A",
     "category": "device",
-    "icon": "t_scst_social_sign_large_a_icon"
+    "icon": "t_scst_social_sign_large_a_icon",
+    "index": 1464,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Sign"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Social_Sign_Large_B",
     "category": "device",
-    "icon": "t_scst_social_sign_large_b_icon"
+    "icon": "t_scst_social_sign_large_b_icon",
+    "index": 1465,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Sign"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Social_Sign_Large_C",
     "category": "device",
-    "icon": "t_scst_social_sign_large_c_icon"
+    "icon": "t_scst_social_sign_large_c_icon",
+    "index": 1466,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Sign"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Social_Sign_Large_D",
     "category": "device",
-    "icon": "t_scst_social_sign_large_d_icon"
+    "icon": "t_scst_social_sign_large_d_icon",
+    "index": 1467,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Sign"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Social_Square_Banner_BuildOff_6x6x1",
     "category": "device",
-    "icon": "t_scst_Social_Square_Banner_BuildOff_6x6x1_icon"
+    "icon": "t_scst_Social_Square_Banner_BuildOff_6x6x1_icon",
+    "index": 1468,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Sign"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Social_Square_Banner_Explorer",
     "category": "device",
-    "icon": "t_scst_social_square_banner_explorer_icon"
+    "icon": "t_scst_social_square_banner_explorer_icon",
+    "index": 1469,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Sign"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Social_Square_Banner_Fighter",
     "category": "device",
-    "icon": "t_scst_social_square_banner_fighter_icon"
+    "icon": "t_scst_social_square_banner_fighter_icon",
+    "index": 1470,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Sign"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Social_Square_Banner_Settler",
     "category": "device",
-    "icon": "t_scst_social_square_banner_settler_icon"
+    "icon": "t_scst_social_square_banner_settler_icon",
+    "index": 1471,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Sign"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Social_Wall_Banner_BuildOff_3x6x1",
     "category": "device",
-    "icon": "t_scst_Social_Wall_Banner_BuildOff_3x6x1_icon"
+    "icon": "t_scst_Social_Wall_Banner_BuildOff_3x6x1_icon",
+    "index": 1472,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Sign"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Social_Wall_Banner_Explorer",
     "category": "device",
-    "icon": "t_scst_social_wall_banner_explorer_icon"
+    "icon": "t_scst_social_wall_banner_explorer_icon",
+    "index": 1473,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Sign"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Social_Wall_Banner_Fighter",
     "category": "device",
-    "icon": "t_scst_social_wall_banner_fighter_icon"
+    "icon": "t_scst_social_wall_banner_fighter_icon",
+    "index": 1474,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Sign"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Social_Wall_Banner_Settler",
     "category": "device",
-    "icon": "t_scst_social_wall_banner_settler_icon"
+    "icon": "t_scst_social_wall_banner_settler_icon",
+    "index": 1475,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Sign"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Social_Ware_Apples",
     "category": "device",
-    "icon": "t_scen_Social_Ware_Apples_icon"
+    "icon": "t_scen_Social_Ware_Apples_icon",
+    "index": 1476,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Social_Ware_Meat",
     "category": "device",
-    "icon": "t_scen_Social_Ware_Meat_icon"
+    "icon": "t_scen_Social_Ware_Meat_icon",
+    "index": 1477,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Social_Ware_Mushrooms",
     "category": "device",
-    "icon": "t_scen_Social_Ware_Mushrooms_icon"
+    "icon": "t_scen_Social_Ware_Mushrooms_icon",
+    "index": 1478,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Social_Ware_Pumpkins",
     "category": "device",
-    "icon": "t_scen_Social_Ware_Pumpkins_icon"
+    "icon": "t_scen_Social_Ware_Pumpkins_icon",
+    "index": 1479,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Social_Weapon_Daggers",
     "category": "device",
-    "icon": "t_scen_Social_Weapon_Daggers_icon"
+    "icon": "t_scen_Social_Weapon_Daggers_icon",
+    "index": 1481,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Social_Weapon_Halberds",
     "category": "device",
-    "icon": "t_scen_Social_Weapon_Halberds_icon"
+    "icon": "t_scen_Social_Weapon_Halberds_icon",
+    "index": 1482,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Social_Weapon_Sheilds",
     "category": "device",
-    "icon": "t_scen_Social_Weapon_Sheilds_icon"
+    "icon": "t_scen_Social_Weapon_Sheilds_icon",
+    "index": 1483,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Social_Weapon_Swords",
     "category": "device",
-    "icon": "t_scen_Social_Weapon_Swords_icon"
+    "icon": "t_scen_Social_Weapon_Swords_icon",
+    "index": 1484,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Decoration"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "SpiderWeb_A",
     "category": "device",
-    "icon": "t_scen_spiderWeb_A_icon"
+    "icon": "t_scen_spiderWeb_A_icon",
+    "index": 1496,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Common"
   },
   {
     "name": "SpiderWeb_B",
     "category": "device",
-    "icon": "t_scen_SpiderWeb_B_icon"
+    "icon": "t_scen_SpiderWeb_B_icon",
+    "index": 1497,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Common"
   },
   {
     "name": "SpiderWeb_C",
     "category": "device",
-    "icon": "t_scen_SpiderWeb_C_icon"
+    "icon": "t_scen_SpiderWeb_C_icon",
+    "index": 1498,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Common"
   },
   {
     "name": "Spike_Trap",
     "category": "device",
-    "icon": "t_scga_Spike_Trap_icon"
+    "icon": "t_scga_Spike_Trap_icon",
+    "index": 1499,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Spike_Trap_Large",
     "category": "device",
-    "icon": "t_scga_Spike_Trap_Large_icon"
+    "icon": "t_scga_Spike_Trap_Large_icon",
+    "index": 1500,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Spike_Trap_Large_Titan",
     "category": "device",
-    "icon": "t_scga_Spike_Trap_Large_Titan_icon"
+    "icon": "t_scga_Spike_Trap_Large_Titan_icon",
+    "index": 1501,
+    "objectType": "Furniture",
+    "biome": "",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Spike_Trap_Titan",
     "category": "device",
-    "icon": "t_scga_Spike_Trap_Titan_icon"
+    "icon": "t_scga_Spike_Trap_Titan_icon",
+    "index": 1502,
+    "objectType": "Furniture",
+    "biome": "",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Spring_Trap",
     "category": "device",
-    "icon": "t_devi_Spring_Trap_icon"
+    "icon": "t_devi_Spring_Trap_icon",
+    "index": 1503,
+    "objectType": "InteractableDevice",
+    "biome": "Forest",
+    "rarityLevel": "Uncommon",
+    "subCategory": "Multiplayer"
   },
   {
     "name": "Spring_Trap_Large",
     "category": "device",
-    "icon": "t_devi_Spring_Trap_Large_icon"
+    "icon": "t_devi_Spring_Trap_Large_icon",
+    "index": 1504,
+    "objectType": "InteractableDevice",
+    "biome": "Forest",
+    "rarityLevel": "Uncommon",
+    "subCategory": "Multiplayer"
   },
   {
     "name": "Stalacmite_Ice_Large",
     "category": "device",
-    "icon": "t_scen_Stalacmite_Ice_Large_icon"
+    "icon": "t_scen_Stalacmite_Ice_Large_icon",
+    "index": 1506,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Stalacmite_Ice_Medium",
     "category": "device",
-    "icon": "t_scen_Stalacmite_Ice_Medium_icon"
+    "icon": "t_scen_Stalacmite_Ice_Medium_icon",
+    "index": 1507,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Stalacmite_Ice_Small",
     "category": "device",
-    "icon": "t_scen_Stalacmite_Ice_Small_icon"
+    "icon": "t_scen_Stalacmite_Ice_Small_icon",
+    "index": 1508,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Stalacmite_Large",
     "category": "device",
-    "icon": "t_scen_Stalacmite_Large_icon"
+    "icon": "t_scen_Stalacmite_Large_icon",
+    "index": 1509,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Common"
   },
   {
     "name": "Stalacmite_Medium",
     "category": "device",
-    "icon": "t_scen_Stalacmite_Medium_icon"
+    "icon": "t_scen_Stalacmite_Medium_icon",
+    "index": 1510,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Common"
   },
   {
     "name": "Stalacmite_Small",
     "category": "device",
-    "icon": "t_scen_Stalacmite_Small_icon"
+    "icon": "t_scen_Stalacmite_Small_icon",
+    "index": 1511,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Common"
   },
   {
     "name": "Stalactite_Ice_Large",
     "category": "device",
-    "icon": "t_scen_Stalactite_Ice_Large_icon"
+    "icon": "t_scen_Stalactite_Ice_Large_icon",
+    "index": 1512,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Stalactite_Ice_Medium",
     "category": "device",
-    "icon": "t_scen_Stalactite_Ice_Medium_icon"
+    "icon": "t_scen_Stalactite_Ice_Medium_icon",
+    "index": 1513,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Stalactite_Ice_Small",
     "category": "device",
-    "icon": "t_scen_Stalactite_Ice_Small_icon"
+    "icon": "t_scen_Stalactite_Ice_Small_icon",
+    "index": 1514,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Stalactite_Large",
     "category": "device",
-    "icon": "t_scen_Stalactite_Large_icon"
+    "icon": "t_scen_Stalactite_Large_icon",
+    "index": 1515,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Common"
   },
   {
     "name": "Stalactite_Medium",
     "category": "device",
-    "icon": "t_scen_Stalactite_Medium_icon"
+    "icon": "t_scen_Stalactite_Medium_icon",
+    "index": 1516,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Common"
   },
   {
     "name": "Stalactite_Small",
     "category": "device",
-    "icon": "t_scen_Stalactite_Small_icon"
+    "icon": "t_scen_Stalactite_Small_icon",
+    "index": 1517,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Common"
   },
   {
     "name": "Statue_Stone_A",
     "category": "device",
-    "icon": "t_scen_statue_stone_A_icon"
+    "icon": "t_scen_statue_stone_A_icon",
+    "index": 1518,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Statue"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Statue_Stone_B",
     "category": "device",
-    "icon": "t_scen_statue_stone_B_icon"
+    "icon": "t_scen_statue_stone_B_icon",
+    "index": 1519,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Statue"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Statue_Yeti_A",
     "category": "device",
-    "icon": "t_scen_Statue_Yeti_A_icon"
+    "icon": "t_scen_Statue_Yeti_A_icon",
+    "index": 1520,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Statue"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Statue_Yeti_B",
     "category": "device",
-    "icon": "t_scen_Statue_Yeti_B_icon"
+    "icon": "t_scen_Statue_Yeti_B_icon",
+    "index": 1521,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Statue"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Steps_Metal_A",
     "category": "device",
-    "icon": "t_scst_Steps_Metal_A_icon"
+    "icon": "t_scst_Steps_Metal_A_icon",
+    "index": 1522,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Structural"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Steps_Stone_A",
     "category": "device",
-    "icon": "t_scst_Steps_Stone_A_icon"
+    "icon": "t_scst_Steps_Stone_A_icon",
+    "index": 1523,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Structural"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Steps_Wood_A",
     "category": "device",
-    "icon": "t_scst_Steps_Wood_A_icon"
+    "icon": "t_scst_Steps_Wood_A_icon",
+    "index": 1524,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Structural"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Stone_Primary",
     "category": "device",
-    "icon": "t_devi_Stone_Primary_icon"
+    "icon": "t_devi_Stone_Primary_icon",
+    "index": 1526,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Common",
+    "subCategory": "Crafting"
   },
   {
     "name": "Table_1x1_A",
     "category": "device",
-    "icon": "t_scen_Table_1x1_A_icon"
+    "icon": "t_scen_Table_1x1_A_icon",
+    "index": 1533,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Table"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Table_1x1_Bamboo_A",
     "category": "device",
-    "icon": "t_scen_Table_1x1_Bamboo_A_icon"
+    "icon": "t_scen_Table_1x1_Bamboo_A_icon",
+    "index": 1534,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Table"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Table_1x2_A",
     "category": "device",
-    "icon": "t_scen_Table_1x2_A_icon"
+    "icon": "t_scen_Table_1x2_A_icon",
+    "index": 1535,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Table"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Table_1x2_Bamboo_A",
     "category": "device",
-    "icon": "t_scen_Table_1x2_Bamboo_A_icon"
+    "icon": "t_scen_Table_1x2_Bamboo_A_icon",
+    "index": 1536,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Table"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Table_2x2_A",
     "category": "device",
-    "icon": "t_scen_Table_2x2_A_icon"
+    "icon": "t_scen_Table_2x2_A_icon",
+    "index": 1537,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Table"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Table_Desert_1x1",
     "category": "device",
-    "icon": "t_scen_Table_Desert_1x1_icon"
+    "icon": "t_scen_Table_Desert_1x1_icon",
+    "index": 1538,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Table"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Table_Desert_2x1",
     "category": "device",
-    "icon": "t_scen_Table_Desert_2x1_icon"
+    "icon": "t_scen_Table_Desert_2x1_icon",
+    "index": 1539,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Table"
+    },
+    "rarityLevel": "Epic"
   },
   {
     "name": "Table_Tudor_1x2",
     "category": "device",
-    "icon": "t_scen_Table_Tudor_1x2_icon"
+    "icon": "t_scen_Table_Tudor_1x2_icon",
+    "index": 1540,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Table"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Table_Tudor_2x2",
     "category": "device",
-    "icon": "t_scen_Table_Tudor_2x2_icon"
+    "icon": "t_scen_Table_Tudor_2x2_icon",
+    "index": 1541,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Table"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Tableware_Bakers_Set",
     "category": "device",
-    "icon": "t_scen_Tableware_Bakers_Set_icon"
+    "icon": "t_scen_Tableware_Bakers_Set_icon",
+    "index": 1528,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Tableware"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Tableware_Clay",
     "category": "device",
-    "icon": "t_scen_Tableware_Clay_icon"
+    "icon": "t_scen_Tableware_Clay_icon",
+    "index": 1529,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Tableware"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Tableware_Inkwell",
     "category": "device",
-    "icon": "t_scen_Tableware_Inkwell_icon"
+    "icon": "t_scen_Tableware_Inkwell_icon",
+    "index": 1530,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Tableware"
+    },
+    "rarityLevel": "Epic"
   },
   {
     "name": "Tableware_Metal",
     "category": "device",
-    "icon": "t_scen_Tableware_Metal_icon"
+    "icon": "t_scen_Tableware_Metal_icon",
+    "index": 1531,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Tableware"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Tableware_Wood",
     "category": "device",
-    "icon": "t_scen_Tableware_Wood_icon"
+    "icon": "t_scen_Tableware_Wood_icon",
+    "index": 1532,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Tableware"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Tent",
     "category": "device",
-    "icon": "t_scst_Tent_icon"
+    "icon": "t_scst_Tent_icon",
+    "index": 1542,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Totem_Large_A",
     "category": "device",
-    "icon": "t_scen_Totem_Large_A_icon"
+    "icon": "t_scen_Totem_Large_A_icon",
+    "index": 1568,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Statue"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Totem_Small_A",
     "category": "device",
-    "icon": "t_scen_Totem_Small_A_icon"
+    "icon": "t_scen_Totem_Small_A_icon",
+    "index": 1569,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Statue"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Totem_Wood_A",
     "category": "device",
-    "icon": "t_scen_Totem_Wood_A_icon"
+    "icon": "t_scen_Totem_Wood_A_icon",
+    "index": 1570,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Statue"
+    },
+    "rarityLevel": "Epic"
   },
   {
     "name": "Totem_Wood_B",
     "category": "device",
-    "icon": "t_scen_Totem_Wood_B_icon"
+    "icon": "t_scen_Totem_Wood_B_icon",
+    "index": 1571,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Statue"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Totem_Wood_C",
     "category": "device",
-    "icon": "t_scen_Totem_Wood_C_icon"
+    "icon": "t_scen_Totem_Wood_C_icon",
+    "index": 1572,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Statue"
+    },
+    "rarityLevel": "Epic"
   },
   {
     "name": "Tree_Log_A",
     "category": "device",
-    "icon": "t_scen_Tree_Log_A_icon"
+    "icon": "t_scen_Tree_Log_A_icon",
+    "index": 1580,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Common"
   },
   {
     "name": "Tree_MossyLog_A",
     "category": "device",
-    "icon": "t_scen_Tree_MossyLog_A_icon"
+    "icon": "t_scen_Tree_MossyLog_A_icon",
+    "index": 1581,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Common"
   },
   {
     "name": "Tree_Stump_A",
     "category": "device",
-    "icon": "t_scen_Tree_Stump_A_icon"
+    "icon": "t_scen_Tree_Stump_A_icon",
+    "index": 1582,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Trough_A",
     "category": "device",
-    "icon": "t_scen_trough_A_icon"
+    "icon": "t_scen_trough_A_icon",
+    "index": 1583,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Vine_Jungle_A",
     "category": "device",
-    "icon": "t_scen_Vine_Jungle_A_icon"
+    "icon": "t_scen_Vine_Jungle_A_icon",
+    "index": 1585,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Common"
   },
   {
     "name": "Vine_Jungle_B",
     "category": "device",
-    "icon": "t_scen_Vine_Jungle_B_icon"
+    "icon": "t_scen_Vine_Jungle_B_icon",
+    "index": 1586,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Other"
+    },
+    "rarityLevel": "Common"
   },
   {
     "name": "Wagon_Wheel_A",
     "category": "device",
-    "icon": "t_scen_Wagon_Wheel_A_icon"
+    "icon": "t_scen_Wagon_Wheel_A_icon",
+    "index": 1588,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Wardrobe_Jungle_Lizard_2x3x1",
     "category": "device",
-    "icon": "t_scen_Wardrobe_Jungle_Lizard_2X3X1_icon"
+    "icon": "t_scen_Wardrobe_Jungle_Lizard_2X3X1_icon",
+    "index": 1589,
+    "objectType": "Furniture",
+    "biome": "Jungle",
+    "furniture": {
+      "FurnitureType": "Storage"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Wardrobe_Tudor",
     "category": "device",
-    "icon": "t_scen_Wardrobe_Tudor_icon"
+    "icon": "t_scen_Wardrobe_Tudor_icon",
+    "index": 1590,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Storage"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Weapon_Secondary",
     "category": "device",
-    "icon": "t_devi_Weapon_Secondary_icon"
+    "icon": "t_devi_Weapon_Secondary_icon",
+    "index": 1780,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Common",
+    "subCategory": "Crafting"
   },
   {
     "name": "Window_Boarded_1x1x1",
     "category": "device",
-    "icon": "t_scen_Window_Boarded_1x1x1_icon"
+    "icon": "t_scen_Window_Boarded_1x1x1_icon",
+    "index": 1782,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Window"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Window_Boarded_Large",
     "category": "device",
-    "icon": "t_scen_Window_Boarded_Large_icon"
+    "icon": "t_scen_Window_Boarded_Large_icon",
+    "index": 1783,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Window"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Window_Boarded_Small",
     "category": "device",
-    "icon": "t_scen_Window_Boarded_Small_icon"
+    "icon": "t_scen_Window_Boarded_Small_icon",
+    "index": 1784,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Window"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Window_Jail_1x1x1",
     "category": "device",
-    "icon": "t_scen_Window_Jail_1x1x1_icon"
+    "icon": "t_scen_Window_Jail_1x1x1_icon",
+    "index": 1785,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Window"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Window_Jail_1x2x1",
     "category": "device",
-    "icon": "t_scen_Window_Jail_1x2x1_icon"
+    "icon": "t_scen_Window_Jail_1x2x1_icon",
+    "index": 1786,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Window"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Window_Jail_2x3x1",
     "category": "device",
-    "icon": "t_scen_Window_Jail_2x3x1_icon"
+    "icon": "t_scen_Window_Jail_2x3x1_icon",
+    "index": 1787,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Window"
+    },
+    "rarityLevel": "Epic"
   },
   {
     "name": "Window_Metal_2x3x1",
     "category": "device",
-    "icon": "t_scen_Window_Metal_2x3x1_icon"
+    "icon": "t_scen_Window_Metal_2x3x1_icon",
+    "index": 1788,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Window"
+    },
+    "rarityLevel": "Epic"
   },
   {
     "name": "Window_Metal_A",
     "category": "device",
-    "icon": "t_scen_Window_Metal_A_icon"
+    "icon": "t_scen_Window_Metal_A_icon",
+    "index": 1789,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Window"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Window_Metal_Tall_A",
     "category": "device",
-    "icon": "t_scen_Window_Metal_Tall_A_icon"
+    "icon": "t_scen_Window_Metal_Tall_A_icon",
+    "index": 1790,
+    "objectType": "Furniture",
+    "biome": "Desert",
+    "furniture": {
+      "FurnitureType": "Window"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Window_Shutter_1x1x1",
     "category": "device",
-    "icon": "t_scen_Window_Shutter_1x1x1_icon"
+    "icon": "t_scen_Window_Shutter_1x1x1_icon",
+    "index": 1791,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Window"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Window_Shutter_A",
     "category": "device",
-    "icon": "t_scen_Window_Shutter_A_icon"
+    "icon": "t_scen_Window_Shutter_A_icon",
+    "index": 1792,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Window"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Window_Shutter_B",
     "category": "device",
-    "icon": "t_scen_Window_Shutter_B_icon"
+    "icon": "t_scen_Window_Shutter_B_icon",
+    "index": 1794,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Window"
+    },
+    "rarityLevel": "Epic"
   },
   {
     "name": "Window_Stone_2x3x1",
     "category": "device",
-    "icon": "t_scen_Window_Stone_2x3x1_icon"
+    "icon": "t_scen_Window_Stone_2x3x1_icon",
+    "index": 1796,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Window"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Window_Stone_A",
     "category": "device",
-    "icon": "t_scen_Window_Stone_A_icon"
+    "icon": "t_scen_Window_Stone_A_icon",
+    "index": 1797,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Window"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Window_Stone_Tall_A",
     "category": "device",
-    "icon": "t_scen_Window_Stone_Tall_A_icon"
+    "icon": "t_scen_Window_Stone_Tall_A_icon",
+    "index": 1798,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Window"
+    },
+    "rarityLevel": "Rare"
   },
   {
     "name": "Window_Wood_2x3x1",
-    "category": "device"
+    "category": "device",
+    "index": 1799,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Window"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Window_Wood_A",
     "category": "device",
-    "icon": "t_scen_Window_Wood_A_icon"
+    "icon": "t_scen_Window_Wood_A_icon",
+    "index": 1800,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Window"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Window_Wood_Tall_A",
     "category": "device",
-    "icon": "t_scen_Window_Wood_Tall_A_icon"
+    "icon": "t_scen_Window_Wood_Tall_A_icon",
+    "index": 1801,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Window"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Wood_Primary",
     "category": "device",
-    "icon": "t_devi_Wood_Primary_icon"
+    "icon": "t_devi_Wood_Primary_icon",
+    "index": 1805,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Common",
+    "subCategory": "Crafting"
   },
   {
     "name": "Wood_Stove_A",
     "category": "device",
-    "icon": "t_scen_wood_stove_A_icon"
+    "icon": "t_scen_wood_stove_A_icon",
+    "index": 1806,
+    "objectType": "Furniture",
+    "biome": "Mountain",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Wood_Stove_Small",
     "category": "device",
-    "icon": "t_scen_Wood_Stove_Small_icon"
+    "icon": "t_scen_Wood_Stove_Small_icon",
+    "index": 1807,
+    "objectType": "Furniture",
+    "biome": "Forest",
+    "furniture": {
+      "FurnitureType": "Equipment"
+    },
+    "rarityLevel": "Uncommon"
   },
   {
     "name": "Workbench",

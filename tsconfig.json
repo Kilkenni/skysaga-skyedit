@@ -15,5 +15,5 @@
     "allowSyntheticDefaultImports": true,
     "types": ["node"],
   },
-  "include": ["src", "temp/extract_names.js", "temp/filter_names.js", "tools"]
+  "include": ["src", "temp", "tools"]
 }
