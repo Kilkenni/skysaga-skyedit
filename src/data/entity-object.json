@@ -185,11 +185,13 @@
   },
   {
     "name": "Cutscene_Pick",
-    "category": "object"
+    "category": "object",
+    "icon": "t_drop_Quest_Item_FamilyPickaxe_icon"
   },
   {
     "name": "Cutscene_Sword",
-    "category": "object"
+    "category": "object",
+    "icon": "t_drop_Quest_Item_OldSword_icon"
   },
   {
     "name": "Damaged_Stone_Voxel",
@@ -247,7 +249,8 @@
   },
   {
     "name": "Door_Stone_Double_5x8_Checkpoint",
-    "category": "object"
+    "category": "object",
+    "icon": "t_devi_Door_Stone_Double_5x8_icon"
   },
   {
     "name": "Door_Stone_Double_A",

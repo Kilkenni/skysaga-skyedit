@@ -33,11 +33,13 @@
   },
   {
     "name": "HUB_NPC_Explorer",
-    "category": "npc"
+    "category": "npc",
+    "icon": "t_gear_Explorer_Generic_Medium_1_Head_icon"
   },
   {
     "name": "HUB_NPC_Explorer_OldCity",
-    "category": "npc"
+    "category": "npc",
+    "icon": "t_gear_Explorer_Generic_Medium_1_Head_icon"
   },
   {
     "name": "HUB_NPC_ExplorerShop",
@@ -185,7 +187,8 @@
   },
   {
     "name": "QUEST_NPC_Forest_Mastery_Agnes_Black",
-    "category": "npc"
+    "category": "npc",
+    "icon": "t_gear_BndtDefHead _boss_uni_icon"
   },
   {
     "name": "QUEST_NPC_Forest_Mastery_Barnaby_Wyatt",

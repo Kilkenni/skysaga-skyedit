@@ -30,7 +30,8 @@
   },
   {
     "name": "Anvil",
-    "category": "device"
+    "category": "device",
+    "icon": "t_scen_Anvil_2X1X1_icon"
   },
   {
     "name": "Anvil_2x1x1",
@@ -304,7 +305,8 @@
   },
   {
     "name": "Camp_Fire_With_Smoke",
-    "category": "device"
+    "category": "device",
+    "icon": "t_devi_Camp_Fire_icon"
   },
   {
     "name": "Cart_A",
@@ -337,7 +339,8 @@
   },
   {
     "name": "Cave_Crystal_Clump_A_Lit",
-    "category": "device"
+    "category": "device",
+    "icon": "t_scen_Cave_Crystal_Clump_A_icon"
   },
   {
     "name": "Cave_Crystal_Clump_Large",
@@ -861,7 +864,8 @@
   },
   {
     "name": "Furniture_Device",
-    "category": "device"
+    "category": "device",
+    "icon": "t_devi_Miscellaneous_Secondary_icon"
   },
   {
     "name": "Gear_Device",
@@ -1788,15 +1792,18 @@
   },
   {
     "name": "LogicNetwork_Network_Delay_1sec",
-    "category": "device"
+    "category": "device",
+    "icon": "devi_LogicNetwork_Network_Delay_icon"
   },
   {
     "name": "LogicNetwork_Network_Delay_5sec",
-    "category": "device"
+    "category": "device",
+    "icon": "devi_LogicNetwork_Network_Delay_icon"
   },
   {
     "name": "LogicNetwork_Network_Delay_Halfsec",
-    "category": "device"
+    "category": "device",
+    "icon": "devi_LogicNetwork_Network_Delay_icon"
   },
   {
     "name": "LogicNetwork_Network_Relay",
@@ -1850,31 +1857,38 @@
   },
   {
     "name": "LogicNetwork_Output_SoundEmitter_Alarm",
-    "category": "device"
+    "category": "device",
+    "icon": "t_devi_LogicNetwork_Output_SoundEmitter_icon"
   },
   {
     "name": "LogicNetwork_Output_SoundEmitter_Synth",
-    "category": "device"
+    "category": "device",
+    "icon": "t_devi_LogicNetwork_Output_SoundEmitter_icon"
   },
   {
     "name": "LogicNetwork_Output_SoundEmitter_Timer",
-    "category": "device"
+    "category": "device",
+    "icon": "t_devi_LogicNetwork_Output_SoundEmitter_icon"
   },
   {
     "name": "LogicNetwork_Output_SoundEmitter_Tudor_Alarm",
-    "category": "device"
+    "category": "device",
+    "icon": "t_devi_Logicnetwork_Output_Soundemitter_Tudor_icon"
   },
   {
     "name": "LogicNetwork_Output_SoundEmitter_Tudor_Synth",
-    "category": "device"
+    "category": "device",
+    "icon": "t_devi_Logicnetwork_Output_Soundemitter_Tudor_icon"
   },
   {
     "name": "LogicNetwork_Output_SoundEmitter_Tudor_Timer",
-    "category": "device"
+    "category": "device",
+    "icon": "t_devi_Logicnetwork_Output_Soundemitter_Tudor_icon"
   },
   {
     "name": "Loom",
-    "category": "device"
+    "category": "device",
+    "icon": "t_devi_Miscellaneous_Primary_icon"
   },
   {
     "name": "Lumo_Out_Door_Forest",
@@ -2238,7 +2252,8 @@
   },
   {
     "name": "RaceTimerCheckpoint",
-    "category": "device"
+    "category": "device",
+    "icon": "t_devi_Racecheckpointgate_icon"
   },
   {
     "name": "RaceTimerEnd",
