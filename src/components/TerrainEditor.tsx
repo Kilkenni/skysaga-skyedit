@@ -314,6 +314,7 @@ export default function TerrainEditor() {
     },
     locked: boolean,
     leftDown: boolean,
+    needsRender: boolean,
   }
 
   const threeRef = useRef<ThreeInstance>({
@@ -358,7 +359,13 @@ export default function TerrainEditor() {
     },
     locked: false,
     leftDown: false,
+    needsRender: true,
   });
+
+  // mark current render as stale so redraw will run
+  function invalidate3d() {
+    threeRef.current.needsRender = true;
+  }
 
   const width = mapData.gridX * CHUNK;
   const depth = mapData.gridZ * CHUNK;
@@ -2284,6 +2291,7 @@ export default function TerrainEditor() {
     if (viewMode !== "3d")
       return undefined;
     initThree();
+    threeRef.current.needsRender = true;
     rebuildInstances();
     rebuildEntityMarkers();
     const canvas = canvas3dRef.current;
@@ -2297,6 +2305,7 @@ export default function TerrainEditor() {
       st.renderer.setSize(w, h, true);
       st.camera.aspect = w / Math.max(h, 1);
       st.camera.updateProjectionMatrix();
+      st.needsRender = true;
     }
     resize();
     window.addEventListener("resize", resize);
@@ -2317,6 +2326,15 @@ export default function TerrainEditor() {
       dt = Math.min(dt, 0.05);
 
       const st = threeRef.current;
+      const continuous =
+        (globalThis as { __continuous3d?: boolean }).__continuous3d !== false;
+      // (flipped to `=== true` once the triggers are in; see below)
+
+      if (st.renderer && st.scene && st.camera && (st.needsRender || continuous)) {
+        st.needsRender = false;
+        console.count("render3d");
+        st.renderer.render(st.scene, st.camera);
+      }
 
       if (mode === "orbit") {
         const rotFactor = 1 - Math.exp(-dt / 0.09);
@@ -2345,6 +2363,7 @@ export default function TerrainEditor() {
         }
       } else {
         if (st.locked) {
+          st.needsRender = true;
           const k = st.keys;
           const fwd = { x: -Math.sin(st.fly.yaw), z: -Math.cos(st.fly.yaw) };
           const right = { x: Math.cos(st.fly.yaw), z: -Math.sin(st.fly.yaw) };
@@ -2393,7 +2412,7 @@ export default function TerrainEditor() {
       }
 
       if (st.renderer && st.scene && st.camera) {
-        // console.count("render3d"); // tracker for optimization
+        console.count("render3d"); // tracker for optimization
         st.renderer.render(st.scene, st.camera);
       }
     }
