@@ -1,7 +1,7 @@
 /*
-What does an empty cell look like? A new Uint16Array is zero-filled, so “empty” must be 0. But the editor’s “air” constant is AIR = 255, and the generator writes it when it carves (caves, for example). So at the boundary, writing AIR must store 0 (the whole word, meta included), and reading 0 must give back “nothing”. Block 0 is already excluded from placeable blocks, which is what makes this safe. It’s easy to get one direction wrong.
+What does an empty cell look like? A new Uint16Array is zero-filled. But the editor’s “air” constant is AIR = 255, and the generator writes it when it carves (caves, for example).
 
-3. A raw typed array is dangerous at the edges. The store accepted any coordinates, because it’s a Map. A flat grid doesn’t: if x >= width, the index silently lands in the next row, and the write corrupts a neighbor instead of failing. And the packing (block | meta << 8) would be repeated at every call site.
+A raw typed array is dangerous at the edges. The store accepted any coordinates, because it’s a Map. A flat grid doesn’t: if x >= width, the index silently lands in the next row, and the write corrupts a neighbor instead of failing. And the packing (block | meta << 8) would be repeated at every call site.
 
 Both are best handled by a small class, the same way VoxelStore hid its internals:
 
@@ -11,22 +11,16 @@ get/getBlock, plus a cells() generator that yields only non-empty cells. The wra
 
 Then the function returns grid: VoxelGrid instead of the raw array, and the 12 setVoxel calls become grid.set(...) with almost no change.
 
-Your checksum test will also reveal whether the original generator ever wrote out-of-bounds voxels (leaves overhanging the edge, for instance). The old store would have kept them, and the grid wouldn’t. If the voxel hashes differ after the move, that’s the first place to look.
-
-Initializing with 255 is the better call. It keeps one convention everywhere, and it removes the translation at the boundary that I proposed. A grid filled with 255 reads as block 255 (AIR) with meta 0, which is exactly “empty”, so nothing needs translating on the way in or out.
-
-Two small details when you write the class:
+Checksum test will also reveal whether the original generator ever wrote out-of-bounds voxels (leaves overhanging the edge, for instance). The old store would have kept them, and the grid wouldn’t. If the voxel hashes differ after the move, that’s the first place to look.
 
 Canonical empty. When set receives AIR, store meta 0 too, whatever meta was passed. Otherwise two “empty” cells can have different bit patterns (255 versus 5 << 8 | 255), and any later comparison or checksum of the raw array would disagree about cells that are both empty.
 cells() skips by block, not by word. It tests block === AIR (the low byte), so it doesn’t depend on the high byte being zero.
-
-Next action: write VoxelGrid on its own and check it in the console, as we did with compressJson. Paste it when it’s done.
 */
 
 import { AIR } from "./constants";
 import { BlockId, VoxelCell } from "./lib/VoxelStore";
 
-interface GridDimensions {
+interface MapDimensions {
   width: number,
   height: number, 
   depth: number,
@@ -41,7 +35,7 @@ class VoxelGrid  {
     depth: number,
   }
 
-  constructor(gridDimensions:GridDimensions) {
+  constructor(gridDimensions:MapDimensions) {
     const {width, depth, height} = gridDimensions;
     if(width < 1 || !Number.isInteger(width) ||
       depth < 1 || !Number.isInteger(depth) ||
@@ -89,17 +83,17 @@ class VoxelGrid  {
   get(x: number, y: number, z: number):VoxelCell|undefined {
     const index = this.#index(x, y, z);
     const block = this.#grid[index];
-    if(block === AIR)
+    if(block === AIR || block === undefined)
       return undefined;
     return {
       x, y, z,
       block,
-      meta: this.#meta[index]
+      meta: this.#meta[index]!
     }
   }
 
   /** The block id at the cell */
-  getBlock(x: number, y: number, z: number): BlockId {
+  getBlock(x: number, y: number, z: number): BlockId|undefined {
     const index = this.#index(x, y, z);
     const block = this.#grid[index];
     return block;
@@ -115,9 +109,9 @@ class VoxelGrid  {
       for (let z = 0; z < depth; z++ ) {
         for ( let x = 0; x < width; x++, index++) {
           const block = this.#grid[index];
-          if (block === AIR)
-            continue; // skip empty blocks
-          const meta = this.#meta[index];
+          if (block === AIR || block === undefined)
+            continue; // skip empty blocks or the results that yield no block - if (x, y, z) is out of bounds. The latter should not happen.
+          const meta = this.#meta[index]!;
           yield { x, y, z, block, meta };
         }
       }
@@ -126,6 +120,6 @@ class VoxelGrid  {
 }
 
 export {
-  GridDimensions,
+  MapDimensions,
   VoxelGrid,
 }

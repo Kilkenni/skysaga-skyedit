@@ -102,7 +102,7 @@ class EntityStore {
     const entIndex = this.#entities.findIndex((entity) => entity.id === id);
     if(entIndex < 0)
       return false; // no entity with this ID
-    const before = this.#entities[entIndex];
+    const before = this.#entities[entIndex]!;
     const after = {...structuredClone(before), ...structuredClone(patch), id}; // id is important here - patch should not modify it
     if(JSON.stringify(before) === JSON.stringify(after))
       return false;

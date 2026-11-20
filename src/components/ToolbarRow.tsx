@@ -1,8 +1,8 @@
 import { STRINGS } from "../i18n/strings";
 import { inputStyle, actionBtn } from "../styles/inline";
 import { clamp, clampBlockId } from "../lib/numbers";
-import { RoadParams } from "./TerrainEditor";
 import ToolButton from "./ToolbarButton";
+import { RoadParams } from "../lib/tools";
 
 export interface Tool {
   id:string,

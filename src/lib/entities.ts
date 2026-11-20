@@ -1,4 +1,4 @@
-import { MapDimensions } from "../components/TerrainEditor";
+import { MapDimensions } from "../VoxelGrid";
 import { isNum } from "./numbers";
 import { mulberry32 } from "./noise";
 

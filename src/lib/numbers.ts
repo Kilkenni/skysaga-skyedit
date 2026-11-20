@@ -46,6 +46,8 @@ function parseWeightedIdList(str: string):WeightedList {
     .split(/[,\s]+/)
     .map((s) => {
       const parts = s.split(":");
+      if(!parts[0])
+        return null;
       const id = parseInt(parts[0], 10);
       if (!Number.isInteger(id) || id < 0 || id >= AIR) 
         return null;
@@ -63,7 +65,7 @@ function pickWeighted(list: WeightedList, randFn:()=> number) {
     if (r < elem.weight) return elem.id;
     r -= elem.weight;
   }
-  return list[list.length - 1].id;
+  return list[list.length - 1]!.id;
 }
 
 export {

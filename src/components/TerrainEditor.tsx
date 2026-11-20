@@ -1,17 +1,15 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import * as THREE from "three";
 import {
-  CHUNK, CELL_BASE, REAL_BIOMES, MAX_CHUNKS, MAP_SIZES, mapSizeKey, ENTITIES, ENTITY_CATEGORY, ENTITY_CATALOGUE, ENTITY_COLORS,
-  BLOCK_NAMES, AIR, DEFAULT_PALETTE, STORAGE_KEY, TEXTURES_STORAGE_KEY, STRUCTURES_STORAGE_KEY,
-  EntityCategory,
+  CHUNK, CELL_BASE, MAX_CHUNKS, MAP_SIZES, mapSizeKey, ENTITIES, ENTITY_CATEGORY, ENTITY_CATALOGUE, ENTITY_COLORS,
+  BLOCK_NAMES, AIR, DEFAULT_PALETTE, STORAGE_KEY, TEXTURES_STORAGE_KEY, STRUCTURES_STORAGE_KEY, EntityCategory,
 } from "../constants";
 import { STRINGS } from "../i18n/strings";
 import { colorForId, cssColor } from "../lib/colors";
 import { keyOf } from "../lib/keys";
 import { clamp, clampBlockId, isNum, } from "../lib/numbers";
 import { rotateStructure90, getRotatedStructure, generateStructureThumbnail, Structure } from "../lib/structures";
-import { inputStyle, actionBtn } from "../styles/inline";
-import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react';
+import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react'
 import RandomPanel from "./RandomPanel";
 import StructuresPanel from "./StructuresPanel";
 import BulkTexturePanel from "./BulkTexturePanel";
@@ -26,11 +24,11 @@ import ToolbarRow from "./ToolbarRow";
 import LayerNav from "./LayerNav";
 import { BlockId, VoxelCell, VoxelStore, VoxelStoreEvent } from "../lib/VoxelStore";
 import {storage, createNamedStore, writeJson, readJson } from "../lib/storage.ts";
-import {Hotbar, PaletteEntry, usePalette} from "../hooks/usePalette.ts"
+import {usePalette} from "../hooks/usePalette.ts"
 import PaletteHotbar from "./PaletteHotbar.tsx";
-import { NormalizedParams, normalizeRngParameters, RngParams, TreeParams, VegParams } from "../lib/mapParamNormalizer.ts";
-import { hotkeyLabel, isFreehand, PAN_KEYS, TOOL_BY_CODE, TOOL_BY_ID } from "../lib/tools.ts";
-import { generateTerrain, regenerateDeco, regenerateOre, regenerateVeg } from "../lib/mapGenerator.ts";
+import { getDefaultRngParams, NormalizedParams, normalizeRngParameters, RngParams, TreeParams, VegParams } from "../lib/ssRngParams.ts";
+import { hotkeyLabel, isFreehand, PAN_KEYS, RoadParams, TOOL_BY_CODE, TOOL_BY_ID } from "../lib/tools.ts";
+import { generateTerrain, regenerateDeco, regenerateOre, regenerateVeg, RngSnapshot } from "../lib/ssMapGenerator.ts";
 import { EntityData, EntityDataId, parseEntities, exportEntity, findAirshipSpot, getEntityYaw, orientationXZ } from "../lib/entities.ts";
 import { EntityStore, EntityStoreEvent } from "../lib/EntityStore.ts";
 import { useEntityList } from "../hooks/useEntityList.ts";
@@ -38,65 +36,8 @@ import { canPlaceEntity, Cell, footprintCells, PlaceCheck } from "../lib/placeme
 import Toolbar from "./tools/Toolbar.tsx";
 import EntityInstancesList from "./EntityInstancesList.tsx";
 import { drawEntityGlyph } from "../rendering/entityGlyph.ts";
-
-export interface MapData {
-  gridX: number,
-  gridY: number,
-  gridZ: number,
-  biomeName: string,
-  gameMode: number
-}
-
-const DEFAULT_MAP_DATA:Readonly<MapData> = {
-  gridX: 6,
-  gridY: 4,
-  gridZ: 6,
-  biomeName: "Forest",
-  gameMode: 1,
-}
-
-export interface RngSnapshot {
-  width: number,
-  depth: number,
-  height: number,
-  heightMap: Int16Array,
-  isWaterMap: Uint8Array
-}
-
-export interface LevelData {
-  mapSizeChunks: { x:number, y:number, z:number },
-  biomeName: string,
-  gameMode: number,
-  voxels: VoxelCell[],
-  entities: EntityData[],
-  paletteLabels?: PaletteEntry[],
-  hotbar?: Hotbar,
-  cameraMode?: "orbit" | "fly",
-}
-
-export interface MapDimensions {
-  width: number,
-  depth: number,
-  height: number,
-}
-
-type DeepReadonly<T> =
-  T extends (infer U)[] ? ReadonlyArray<DeepReadonly<U>> :
-  T extends object ? { readonly [K in keyof T]: DeepReadonly<T[K]> } :
-  T;
-
-//explicitly exclude optionals from default to avoid making them readonly
-const DEFAULT_LEVEL_DATA:DeepReadonly< Pick<LevelData, "mapSizeChunks" | "biomeName" | "gameMode" | "voxels" | "entities"> > = {
-  mapSizeChunks: {
-    x: DEFAULT_MAP_DATA.gridX,
-    y: DEFAULT_MAP_DATA.gridY,
-    z: DEFAULT_MAP_DATA.gridZ,
-  },
-  biomeName: DEFAULT_MAP_DATA.biomeName,
-  gameMode: DEFAULT_MAP_DATA.gameMode,
-  voxels: [],
-  entities: [],
-}
+import { DEFAULT_MAP_DATA, getDefaultLevelData, LevelData, MapData } from "../lib/ssLevelData.ts";
+import { MapDimensions } from "../VoxelGrid.ts";
 
 const DEFAULT_SETTINGS = {
   ZOOM_WHEEL_STEP: 1.05,
@@ -107,7 +48,6 @@ const DEFAULT_SETTINGS = {
 
 // For calculating entity shadow: the biggest footprint in the catalogue (194 cells today, PVP_Post)
 const MAX_FOOTPRINT = Math.max(1, ...Object.values(ENTITY_CATALOGUE.footprints).map((f) => f.length));
-
 
 function refusalMessage(check: Extract<PlaceCheck, { ok: false }>, name: string) {
   switch (check.reason) {
@@ -122,116 +62,10 @@ function refusalMessage(check: Extract<PlaceCheck, { ok: false }>, name: string)
   }
 }
 
-export function getDefaultLevelData():LevelData {
-  return {
-    ...DEFAULT_LEVEL_DATA,
-    mapSizeChunks: { ...DEFAULT_LEVEL_DATA.mapSizeChunks },
-    voxels: [],
-    entities: [],
-  }
-}
-
-export const DEFAULT_RNG_PARAMS:Readonly<RngParams> = {
-  randMinH: 0,
-  randMaxH: 25,
-
-  randGroundDepth: 43,
-  randBaseBlock: 24,
-  randSurfaceBlock: 1, 
-  randDecoBlocks: "", 
-  randDecoChance: 0,
-
-  randIsland: true,
-  randIslandMode: "floating",
-  randIslandSize: "small", 
-  randIslandIrregularity: 55,
-  randBottomRoughness: 20,
-  randMaxThickness: 25,
-
-  randArchipelago: false,
-  randIslandCount: 3,
-
-  randSeaLevel: 15,
-  randSeaBlock: 50,
-  
-  randHills: true,
-  randHillStrength: 40,
-  randMountains: false,
-  randMountainHeight: 35,
-  randPlateaus: false,
-  randPlateauHeight: 20,
-  randValleys: false,
-  randValleyDepth: 15,
-
-  randRivers: false,
-  randRiverBlock: 50,
-  randRiverWidth: 3,
-  randWaterfalls: false,
-  randWaterfallDrop: 5,
-
-  randLakes: false,
-  randLakeBlock: 50,
-  randLakeSize: 5,
-
-  randCaves: false,
-  randCaveDensity: 35,
-  randCaveGlow: false,
-  randCaveGlowChance: 3,
-  randCaveGlowBlock: 21,
-
-  randTrees: false,
-  randTreeDensity: 15,
-  randTreeMinHeight: 3,
-  randTreeMaxHeight: 6,
-  randTreeWoodBlock: 5,
-  randTreeLeavesBlock: 14,
-  randTreeSpacing: 3,
-  randForests: false,
-  randForestDensity: 45,
-
-  randBushes: false,
-  randBushDensity: 15,
-  randBushBlock: 14,
-  randBushSpacing: 1,
-
-  randAltitudeBlocks: false,
-  randBeachLevel: 50,
-  randBeachBlock: 24, 
-  randSnowLevel: 85,
-  randSnowBlock: 10,
-
-  randSmoothShore: false,
-  randShoreRadius: 2,
-  randShoreBlock: 24,
-  randShoreCoverage: 45,
-
-  randOres: false,
-  randOreBlocks: "25,26,42",
-  randOreCount: 40,
-  randOreVeinSize: 2,
-  randOreBigChance: 8, 
-  randOreBigSize: 5,
-
-  randErosion: false,
-  randErosionStrength: 40,
-  randErosionIterations: 2,
-}
-
-// Tools
-
-export interface RoadParams {
-  roadPending: {x: number, z: number}|null,
-  roadWidth: number,
-  roadBlock: number,
-}
-
 export default function TerrainEditor() {
-  // FIXED (2026-08-21): "Sky_Island" does not exist in Alpha v10 36731's
-  // GeoData.json (confirmed via direct search - zero matches). Real biomes
-  // for this build: Desert, Forest, Jungle, Mountain, NPCfriend. Using
+  // Biomes for build 36731: Desert, Forest, Jungle, Mountain, NPCfriend. Using
   // "Forest" as the default since that's what the server currently sends,
-  // but this is just a free-text field - change it to whichever real biome
-  // name you want per-map.
+  // but this is just a free-text field - change it to whichever real biome name you want per-map.
   const [mapData, setMapData] = useState<MapData>(DEFAULT_MAP_DATA);
   const paletteObj = usePalette({ onChange: scheduleSave })
   const { selectedBlock,
@@ -284,7 +118,7 @@ export default function TerrainEditor() {
 
   const [showRandomPanel, setShowRandomPanel] = useState(false);
 
-  const [rngParameters, setRngParameters] = useState<RngParams>({...DEFAULT_RNG_PARAMS});
+  const [rngParameters, setRngParameters] = useState<RngParams>(getDefaultRngParams);
   function updateRngParameter<K extends keyof RngParams>(paramName: K, value: RngParams[K]) {
     setRngParameters(prev => ({...prev, [paramName]: value}) );
   }
@@ -295,7 +129,7 @@ export default function TerrainEditor() {
   const [presets, setPresets] = useState<string[]>([]);
   const [newPresetName, setNewPresetName] = useState("Preset 1");
 
-  const lastHeightMapRef = useRef<RngSnapshot>(null);
+  const lastRngSnapshotRef = useRef<RngSnapshot>(null);
 
   const [openPopover, setOpenPopover] = useState<string|null>(null);
   const popoverAnchorRef = useRef<any>(null);
@@ -310,18 +144,11 @@ export default function TerrainEditor() {
   const [placingRotation, setPlacingRotation] = useState<number>(0);
   const placingStructureRef = useRef<number|null>(null);
   const placingRotationRef = useRef<number>(0);
-  const structureThumbsRef = useRef(new Map());
-  const [thumbVersion, setThumbVersion] = useState(0);
 
   const [placingEntityName, setPlacingEntityName] = useState<string|null>(null);
   const placingEntityRef = useRef<string|null>(null);
   const [showEntitiesPanel, setShowEntitiesPanel] = useState(false);
   
-  
-  
-  // Search filter for the block palette - needed once BLOCK_NAMES grew from
-  // 48 (Alpha 3-era stub table) to the real 146-entry Alpha v10 36731 list;
-  // an unfiltered flat scroll of 146 rows was unusable.
   const entityMarkersGroupRef = useRef<THREE.Group | null>(null);
   const [viewMode, setViewMode] = useState<"2d"|"3d">("2d");
   
@@ -353,7 +180,7 @@ export default function TerrainEditor() {
           syncVoxel3D(change.x, change.y, change.z, change.prevBlock, change.newBlock);
       }
     }
-    draw();
+    requestDraw();
   };
   onEntityEventRef.current = () => {
      scheduleSave();
@@ -366,9 +193,10 @@ export default function TerrainEditor() {
     const s = shadowEntityRef.current;
     if (!s)
       return;
-    s.root.removeFromParent();
+    s.root.parent?.remove(s.root); //s.root.removeFromParent(); in newer versions of THREE
     s.root.traverse((obj) => {
-      if (obj instanceof THREE.InstancedMesh) obj.dispose();   // instance buffers
+      if (obj instanceof THREE.InstancedMesh) 
+        obj.dispose();   // instance buffers
       if (obj instanceof THREE.Mesh || obj instanceof THREE.Line) {
         obj.geometry.dispose();
         const m = obj.material;
@@ -486,6 +314,7 @@ export default function TerrainEditor() {
     },
     locked: boolean,
     leftDown: boolean,
+    needsRender: boolean,
   }
 
   const threeRef = useRef<ThreeInstance>({
@@ -530,7 +359,13 @@ export default function TerrainEditor() {
     },
     locked: false,
     leftDown: false,
+    needsRender: true,
   });
+
+  // mark current render as stale so redraw will run
+  function invalidate3d() {
+    threeRef.current.needsRender = true;
+  }
 
   const width = mapData.gridX * CHUNK;
   const depth = mapData.gridZ * CHUNK;
@@ -925,19 +760,6 @@ export default function TerrainEditor() {
   }
 
   // ---- structure rotation & preview ----
-
-  function ensureStructureThumb(entry) {
-    if (!structureThumbsRef.current.has(entry.id)) {
-      try {
-        structureThumbsRef.current.set(entry.id, generateStructureThumbnail(entry));
-        setThumbVersion((v) => v + 1);
-      } catch (e) {
-        // canvas not available yet, will retry on next render
-      }
-    }
-    return structureThumbsRef.current.get(entry.id);
-  }
-
   function stampStructureAt(anchorX: number, anchorY: number, anchorZ: number, entry: Structure, rotationSteps) {
     const dims = dimsRef.current;
     const rotated = getRotatedStructure(entry, rotationSteps);
@@ -1259,19 +1081,19 @@ export default function TerrainEditor() {
     
     setStatus(STRINGS.en.generatedSeed(seed));
 
-    lastHeightMapRef.current = {
+    lastRngSnapshotRef.current = {
       width,
       depth,
       height,
-      heightMap/*: heightMap.slice()*/,
-      isWaterMap/*: Array.from(isWaterMap)*/,
+      heightMap,
+      isWaterMap,
     };
   }
 
   // ---- targeted regeneration (decor / trees / ore only, reuses last heightMap) ----
 
   function regenerateDecoHandler(params:RngParams) {
-    const snap = lastHeightMapRef.current;
+    const snap = lastRngSnapshotRef.current;
     if (!snap || snap.width !== width || snap.depth !== depth || snap.height !== height) {
       setStatus(STRINGS.en.regenNeedsGenerate);
       return;
@@ -1286,7 +1108,7 @@ export default function TerrainEditor() {
   }
 
   function regenerateVegHandler(params:RngParams) {
-    const snap = lastHeightMapRef.current;
+    const snap = lastRngSnapshotRef.current;
     if (!snap || snap.width !== width || snap.depth !== depth || snap.height !== height) {
       setStatus(STRINGS.en.regenNeedsGenerate);
       return;
@@ -1303,7 +1125,7 @@ export default function TerrainEditor() {
 
   function regenerateOreHandler(params:RngParams):void {
     
-    const snap = lastHeightMapRef.current;
+    const snap = lastRngSnapshotRef.current;
     if (!snap || snap.width !== width || snap.depth !== depth || snap.height !== height) {
       setStatus(STRINGS.en.regenNeedsGenerate);
       return;
@@ -1353,6 +1175,7 @@ export default function TerrainEditor() {
   }
 
   function updateCameraFromOrbit() {
+    invalidate3d();
     const st = threeRef.current;
     if (!st.camera) return;
     const { theta, phi, radius, target } = st.orbit;
@@ -1364,6 +1187,7 @@ export default function TerrainEditor() {
   }
 
   function updateCameraFromFly() {
+    invalidate3d();
     const st = threeRef.current;
     if (!st.camera) return;
     st.camera.rotation.order = "YXZ";
@@ -1378,6 +1202,7 @@ export default function TerrainEditor() {
       for (const mat of materials)
         mat.dispose();
     }
+    invalidate3d();
     const st = threeRef.current;
     const scene = st.scene;
     if (!scene) return;
@@ -1508,6 +1333,7 @@ export default function TerrainEditor() {
   }
 
   function rebuildEntityMarkers():void {
+    invalidate3d();
     const st = threeRef.current;
     const scene = st.scene;
     if (!scene) return;
@@ -1517,10 +1343,10 @@ export default function TerrainEditor() {
       scene.remove(entityMarkersGroupRef.current);
       entityMarkersGroupRef.current.traverse((obj) => {
         if (obj instanceof THREE.Mesh) { // TS-related guard. InstancedMesh extends Mesh, so this is fine
-          if (obj.geometry)
-            obj.geometry.dispose();
-          if (obj.material)
-            obj.material.dispose();
+          obj.geometry?.dispose();
+          obj.material?.dispose();
+        }
+        if (obj instanceof THREE.InstancedMesh) {
           obj.dispose(); // frees this mesh's instance buffers only
         }
       });
@@ -1546,21 +1372,6 @@ export default function TerrainEditor() {
     const arrowGeometry = new THREE.ConeGeometry(0.12, 0.7, 8); // yaw pointer: base radius, height, segments
     arrowGeometry.translate(0, 0.35, 0);       // base at the local origin, tip toward +Y
     arrowGeometry.rotateX(Math.PI / 2);        // 90 degrees rotation, turn +Y into +Z: the cone now points along +Z (yaw 0)
-
-    // const materials: Map<string, THREE.Mesh> = new Map;
-    // function materialFor(category: EntityCategory, cell: boolean) {
-    //   const key = category + (cell ? ":cell" : "");
-    //   if (!materials[key]) {
-    //     materials[key] = new THREE.MeshLambertMaterial({
-    //       color: ENTITY_COLORS[category] || 0xff5fa2,
-    //       transparent: cell,
-    //       opacity: cell ? 0.35 : 1,
-    //       depthWrite: !cell,
-    //     });
-    //   }
-    //   return materials[key];
-    // }
-
 
     // an InstancedMesh needs its size up front, let's calculate it
     const instancesData = instances.map((entity) => ({ entity, category: ENTITY_CATEGORY.get(entity.name) || "service", cells: footprintCells(entity, ENTITY_CATALOGUE) }));
@@ -1621,28 +1432,12 @@ export default function TerrainEditor() {
       group.add(arrowMesh);
     }
 
- //old code
-/*
-    for (const inst of instances) {
-      const category = ENTITY_CATEGORY.get(inst.name) || "service";
-      if (ENTITY_CATALOGUE.footprints[inst.name]) {
-        // for (const [cx, cy, cz] of ENTITY_CATALOGUE.footprints[inst.name]!) {
-        //   const cellMesh = new THREE.Mesh(cellGeometry, materialFor(category, true));
-        //   cellMesh.position.set(inst.x + cx + 0.5, inst.y + cy + 0.5, inst.z + cz + 0.5);
-        //   group.add(cellMesh);
-        // }
-      } else {
-        const mesh = new THREE.Mesh(markerGeometry, materialFor(category, false));
-        mesh.position.set(inst.x + 0.5, inst.y + 0.45, inst.z + 0.5);
-        group.add(mesh);
-      }
-    }
-*/
     scene.add(group);
     entityMarkersGroupRef.current = group;
   }
 
   function getOrCreateGroup(blockId: number) {
+    invalidate3d();
     const st = threeRef.current;
     if(!st.scene) 
       return;
@@ -1662,6 +1457,7 @@ export default function TerrainEditor() {
   }
 
   function growGroup(blockId: number) {
+    invalidate3d();
     const st = threeRef.current;
     if(!st.scene) 
       return;
@@ -1687,6 +1483,7 @@ export default function TerrainEditor() {
   }
 
   function addInstance(blockId: number, x:number, y:number, z:number) {
+    invalidate3d();
     if (blockId === AIR)
       return;
     let g = getOrCreateGroup(blockId);
@@ -1715,6 +1512,7 @@ export default function TerrainEditor() {
   }
 
   function removeInstanceAtCoord(blockId: number, x:number, y:number, z:number) {
+    invalidate3d();
     const st = threeRef.current;
     const g = st.groups.get(blockId);
     if (!g)
@@ -2065,6 +1863,7 @@ export default function TerrainEditor() {
   }
 
   function hideShadow() {
+    invalidate3d();
     if (shadowEntityRef.current) {
       shadowEntityRef.current.footprintCells.count = 0;
       shadowEntityRef.current.root.visible = false;
@@ -2083,6 +1882,7 @@ export default function TerrainEditor() {
 
     if (key === shadowKeyRef.current)
       return;   // nothing relevant changed: do no work
+    invalidate3d();
     if (key === "") { 
       hideShadow();
       shadowKeyRef.current = key;
@@ -2469,6 +2269,8 @@ export default function TerrainEditor() {
     if (viewMode !== "3d")
       return undefined;
     initThree();
+    // threeRef.current.needsRender = true;
+    invalidate3d();
     rebuildInstances();
     rebuildEntityMarkers();
     const canvas = canvas3dRef.current;
@@ -2482,6 +2284,7 @@ export default function TerrainEditor() {
       st.renderer.setSize(w, h, true);
       st.camera.aspect = w / Math.max(h, 1);
       st.camera.updateProjectionMatrix();
+      st.needsRender = true;
     }
     resize();
     window.addEventListener("resize", resize);
@@ -2493,6 +2296,7 @@ export default function TerrainEditor() {
 
     let raf: number;
     let lastTime = performance.now();
+    // 3D animation-frame loop
     function loop() {
       raf = requestAnimationFrame(loop);
       const now = performance.now();
@@ -2529,6 +2333,7 @@ export default function TerrainEditor() {
         }
       } else {
         if (st.locked) {
+          st.needsRender = true;
           const k = st.keys;
           const fwd = { x: -Math.sin(st.fly.yaw), z: -Math.cos(st.fly.yaw) };
           const right = { x: Math.cos(st.fly.yaw), z: -Math.sin(st.fly.yaw) };
@@ -2576,7 +2381,14 @@ export default function TerrainEditor() {
         }
       }
 
-      if (st.renderer && st.scene && st.camera) {
+      // set to "true" in console to disable render staleness filter for debugging. This *will* hit performance.
+      const continuous =
+        (globalThis as { __continuous3d?: boolean }).__continuous3d === true; 
+
+      // redraw only when stale
+      if (st.renderer && st.scene && st.camera && (st.needsRender || continuous)) {
+        st.needsRender = false;
+        // console.count("render3d"); // tracker for debugging performance optimization
         st.renderer.render(st.scene, st.camera);
       }
     }
@@ -2603,8 +2415,10 @@ export default function TerrainEditor() {
       return;
     if (prev === "2d" && viewMode === "3d")
       syncOrbitFrom2D();
-    else if (prev === "3d" && viewMode === "2d")
+    else if (prev === "3d" && viewMode === "2d") {
       syncViewFrom3D();
+      draw();
+    }
   }, [viewMode]);
 
   function setOrbitPivot(p: THREE.Vector3):void {
@@ -2797,9 +2611,22 @@ export default function TerrainEditor() {
     }
   )), [entityInstances] );
 
+  // optimization for 2d redraws: scheduling, not repeated calls
+  const rafDrawRef = useRef<number | null>(null);
+  const requestDraw = useCallback(() => {
+    if (rafDrawRef.current !== null) return;    // already scheduled this frame
+    rafDrawRef.current = requestAnimationFrame(() => {
+      rafDrawRef.current = null;
+      drawRef.current();
+    });
+  }, []);
+  
+
   // ---- canvas drawing (2D) ----
   const draw = useCallback(() => {
     // const t0 = performance.now();
+    if (viewModeRef.current !== "2d") // only re-render when in 2d mode
+      return;
     const cell = CELL_BASE * zoomRef.current;   // same source as the pan, never a stale render value
 
     const canvas = canvasRef.current;
@@ -2814,6 +2641,7 @@ export default function TerrainEditor() {
       canvas.width = cw;
       canvas.height = ch;
     }
+    // console.count("draw2d"); // tracker for optimization
 
     const ctx = canvas.getContext("2d");
     if(!ctx)
@@ -3172,11 +3000,11 @@ export default function TerrainEditor() {
         paintMirrored(x, currentLayer, z, selectedBlock);
       else
         setVoxelMirrored(x, currentLayer, z, tool === "eraser" ? AIR : selectedBlock, 0);
-      draw();
+      requestDraw();
     } else if (tool === "rect-fill" || tool === "rect-hollow" || tool === "rect-erase" || tool === "copy") {
       rectStartRef.current = { x, z };
       previewRectRef.current = { x0: x, z0: z, x1: x, z1: z };
-      draw();
+      requestDraw();
     } else if (tool === "bucket") {
       floodFill(x, z);
     }
@@ -3191,7 +3019,7 @@ export default function TerrainEditor() {
     refreshEntityShadow2d();
     if (tool === "road" && roadStartRef.current) {
       roadHoverRef.current = { x: clamp(pos.x, 0, width - 1), z: clamp(pos.z, 0, depth - 1) };
-      draw(); // road preview
+      requestDraw(); // road preview
     }
   }
 
@@ -3202,7 +3030,7 @@ export default function TerrainEditor() {
       setPan(v.panX + (e.clientX - pd.x), v.panY + (e.clientY - pd.y));
       pd.x = e.clientX;
       pd.y = e.clientY;
-      draw();
+      requestDraw();
       return;
     }
 
@@ -3218,11 +3046,11 @@ export default function TerrainEditor() {
         paintMirrored(x, currentLayer, z, selectedBlock);
       else
         setVoxelMirrored(x, currentLayer, z, tool === "eraser" ? AIR : selectedBlock, 0);
-      draw();
+      requestDraw();
     } else if (tool === "rect-fill" || tool === "rect-hollow" || tool === "rect-erase" || tool === "copy") {
       if (rectStartRef.current) {
         previewRectRef.current = { x0: rectStartRef.current.x, z0: rectStartRef.current.z, x1: x, z1: z };
-        draw();
+        requestDraw();
       }
     }
   }
@@ -3244,7 +3072,7 @@ export default function TerrainEditor() {
       }
       rectStartRef.current = null;
       previewRectRef.current = null;
-      draw();
+      requestDraw();
     } else if (tool === "copy") {
       if (previewRectRef.current) {
         const { x0, z0, x1, z1 } = previewRectRef.current;
@@ -3252,7 +3080,7 @@ export default function TerrainEditor() {
       }
       rectStartRef.current = null;
       previewRectRef.current = null;
-      draw();
+      requestDraw();
     }
   }
 
@@ -3446,7 +3274,7 @@ export default function TerrainEditor() {
     }
     entities.translateAll(dx, dy, dz);
     terrain.replaceAll(cells.map((c) => ({ x: c.x + dx, y: c.y + dy, z: c.z + dz, block: c.block, meta: c.meta })));
-    lastHeightMapRef.current = null; // the "regenerate trees/ore" snapshot no longer matches
+    lastRngSnapshotRef.current = null; // the "regenerate trees/ore" snapshot no longer matches
     setCurrentLayer((layer) => clamp(layer + dy, 0, height - 1)); // Follow the Y layer if it shifts
     setStatus(STRINGS.en.shiftDone(dx, dy, dz));
   }
@@ -3600,7 +3428,7 @@ export default function TerrainEditor() {
       return;
     terrain.replaceAll([]);
     entities.clear();      // debounced autosave doesn't see the old entities
-    lastHeightMapRef.current = null;      // otherwise regenerate* would run on the old map's heightmap
+    lastRngSnapshotRef.current = null;      // otherwise regenerate* would run on the old map's heightmap
     setCurrentLayer(0);
     setStatus("New map");
   }
@@ -3721,7 +3549,6 @@ export default function TerrainEditor() {
           {showStructuresPanel && (
             <StructuresPanel
               deleteStructure={deleteStructure}
-              ensureStructureThumb={ensureStructureThumb}
               importStructureFiles={importStructureFiles}
 
               openPopover={openPopover}
@@ -3735,7 +3562,6 @@ export default function TerrainEditor() {
               setPlacingStructureId={setPlacingStructureId}
               setStructureCount={setStructureCount}
               structures={structures}
-              thumbVersion={thumbVersion}
               toggleStructure={toggleStructure}
               updateStructureField={updateStructureField}
             />

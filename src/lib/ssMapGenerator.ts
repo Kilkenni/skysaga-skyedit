@@ -1,11 +1,18 @@
-import { MapDimensions, RngSnapshot } from "../components/TerrainEditor";
 import { AIR } from "../constants";
-import { VoxelGrid } from "../VoxelGrid";
+import { MapDimensions, VoxelGrid } from "../VoxelGrid";
 import { BlockId, VoxelCell, VoxelStore, VoxelWriter } from "./VoxelStore";
-import { NormalizedParams, TreeParams, VegParams } from "./mapParamNormalizer";
+import { NormalizedParams, TreeParams, VegParams } from "./ssRngParams";
 import { makeValueNoise, makeValueNoise3D, mulberry32 } from "./noise";
 import { pickWeighted } from "./numbers";
 import { getRotatedStructure, Structure } from "./structures";
+
+interface RngSnapshot {
+  width: number,
+  depth: number,
+  height: number,
+  heightMap: Int16Array,
+  isWaterMap: Uint8Array
+}
 
 // HELPER FUNCTIONS
 
@@ -140,13 +147,14 @@ function placeOres(
     const ox = Math.floor(rand() * dims.width);
     const oz = Math.floor(rand() * dims.depth);
     const colH = heightMap[ox * dims.depth + oz];
-    if (colH < 3) 
+    if (!colH || colH < 3) 
       continue;
     const maxY = Math.min(colH - 2, groundDepth - 1);
     if (maxY < 1) 
       continue;
     const oy = 1 + Math.floor(rand() * maxY);
     const oreBlock = ore.blockList[Math.floor(rand() * ore.blockList.length)];
+    if (!oreBlock) continue;
 
     if (rand() < ore.bigVeinChance) {
       // rare jackpot: a chain of overlapping blobs forming one large,
@@ -233,6 +241,7 @@ function regenerateDeco(
       for (let z = 0; z < depth; z++) {
         const idx = x * depth + z;
         const groundH = snapshot.heightMap[idx];
+        if (!groundH) continue;
         const isWater = !!snapshot.isWaterMap[idx];
         if (!isPlantableColumn(groundH, isWater, height, normParams.water.seaLevel, normParams.island.isFloating))
           continue;
@@ -276,6 +285,7 @@ function regenerateVeg(
       for (let z = 0; z < dims.depth; z++) {
         const idx = x * dims.depth + z;
         const groundH = snapshot.heightMap[idx];
+        if (!groundH) continue;
         const isWater = !!snapshot.isWaterMap[idx];
         if (!isPlantableColumn(groundH, isWater, dims.height, normParams.water.seaLevel, normParams.island.isFloating)) 
           continue;
@@ -492,7 +502,7 @@ function generateTerrain(
           for (let z = 0; z < depth; z++) {
             const idx = x * depth + z;
             const h0 = heightMap[idx];
-            if (h0 <= 0 || isWaterMap[idx])
+            if (!h0 || h0 <= 0 || isWaterMap[idx])
               continue;
             let sum = h0;
             let count = 1;
@@ -503,11 +513,11 @@ function generateTerrain(
               [x, z + 1],
             ];
             for (const [nx, nz] of nbrs) {
-              if (nx < 0 || nx >= width || nz < 0 || nz >= depth)   
+              if (!nx || nx < 0 || nx >= width || !nz || nz < 0 || nz >= depth)   
                 continue;
               const nIdx = nx * depth + nz;
               const nh = heightMap[nIdx];
-              if (nh <= 0 || isWaterMap[nIdx])
+              if (!nh || nh <= 0 || isWaterMap[nIdx])
                 continue;
               sum += nh;
               count++;
@@ -530,7 +540,7 @@ function generateTerrain(
       for (let x = 0; x < width; x++) {
         for (let z = 0; z < depth; z++) {
           const idx = x * depth + z;
-          if (heightMap[idx] <= 0 || isWaterMap[idx])
+          if (!heightMap[idx] || heightMap[idx] <= 0 || isWaterMap[idx])
             continue;
           let nearWater = false;
           for (let dx = -normParams.shore.radius; dx <= normParams.shore.radius && !nearWater; dx++) {
@@ -542,7 +552,7 @@ function generateTerrain(
               if (nx < 0 || nx >= width || nz < 0 || nz >= depth) 
                 continue;
               const nIdx = nx * depth + nz;
-              if (isWaterMap[nIdx] || heightMap[nIdx] <= 0) 
+              if (isWaterMap[nIdx] || !heightMap[nIdx] || heightMap[nIdx] <= 0) 
                 nearWater = true;
             }
           }
@@ -563,6 +573,7 @@ function generateTerrain(
       for (let z = 0; z < depth; z++) {
         const idx = x * depth + z;
         const groundH = heightMap[idx];
+        if(!groundH) continue;
 
         if (groundH <= 0) {
           if (normParams.island.isFloating)
@@ -591,7 +602,7 @@ function generateTerrain(
         let bottomY = 0;
         if (raggedBottom && !isWater) {
           if (normParams.island.bottomRoughness > 0 && falloffMap && bottomNoiseCoarse && bottomNoiseFine) {
-            const f = falloffMap[idx];
+            const f = falloffMap[idx] ?? 0;
             const bn = bottomNoiseCoarse(x, z) * 0.6 + bottomNoiseFine(x, z) * 0.4;
             bottomY = Math.round(bn * normParams.island.bottomRoughness * f);
           }
@@ -615,7 +626,7 @@ function generateTerrain(
             continue;
           }
           const isSurface = y === groundH - 1;
-          const block = isSurface ? (isWater ? waterBlock : columnSurfaceBlock) : normParams.block.base;
+          const block = isSurface ? (isWater && waterBlock ? waterBlock : columnSurfaceBlock) : normParams.block.base;
           grid.set(x, y, z, block);
         }
 
@@ -675,6 +686,7 @@ function generateTerrain(
           if (!isWaterMap[idx] || waterBlockMap[idx] !== normParams.rivers.block) 
             continue;
           const riverH = heightMap[idx];
+          if (!riverH) continue;
           const nbrs: [number, number][] = [
             [x - 1, z],
             [x + 1, z],
@@ -688,7 +700,7 @@ function generateTerrain(
             if (isWaterMap[nIdx]) 
               continue;
             const nH = heightMap[nIdx];
-            if (nH <= 0) 
+            if (!nH || nH <= 0) 
               continue;
             if (riverH - nH >= normParams.rivers.waterfallDropThreshold) {
               for (let y = nH; y < riverH && y < height; y++) {
@@ -721,7 +733,7 @@ function generateTerrain(
             const ax = Math.floor(rand() * Math.max(1, width - sx));
             const az = Math.floor(rand() * Math.max(1, depth - sz));
             const surfaceH = heightMap[ax * depth + az];
-            if (surfaceH <= 0)
+            if (!surfaceH || surfaceH <= 0)
               continue;
 
             if (st.requireFlat) {
@@ -734,7 +746,7 @@ function generateTerrain(
                   const hh = heightMap[ 
                     Math.min(width - 1, ax + cx) * depth + Math.min(depth - 1, az + cz) 
                   ];
-                  if (hh <= 0) {
+                  if (!hh || hh <= 0) {
                     flatOk = false;
                     break;
                   }
@@ -796,4 +808,5 @@ function generateTerrain(
     regenerateDeco,
     regenerateVeg,
     regenerateOre,
+    RngSnapshot
   }

@@ -16,7 +16,7 @@ export const CELL_BASE = 14;
 // 5 that exist. "NPCfriend" is the social-hub biome (not available for home
 // islands per its own GeoData entry, but included since it's still a real,
 // selectable biome for other purposes).
-export const REAL_BIOMES = ["Desert", "Forest", "Jungle", "Mountain", "NPCfriend"];
+export const BIOMES = ["Desert", "Forest", "Jungle", "Mountain", "NPCfriend"];
 
 export const MAX_CHUNKS = { x: 32, y: 7, z: 32 };
 
