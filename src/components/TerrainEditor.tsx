@@ -1175,6 +1175,7 @@ export default function TerrainEditor() {
   }
 
   function updateCameraFromOrbit() {
+    invalidate3d();
     const st = threeRef.current;
     if (!st.camera) return;
     const { theta, phi, radius, target } = st.orbit;
@@ -1186,6 +1187,7 @@ export default function TerrainEditor() {
   }
 
   function updateCameraFromFly() {
+    invalidate3d();
     const st = threeRef.current;
     if (!st.camera) return;
     st.camera.rotation.order = "YXZ";
@@ -1200,6 +1202,7 @@ export default function TerrainEditor() {
       for (const mat of materials)
         mat.dispose();
     }
+    invalidate3d();
     const st = threeRef.current;
     const scene = st.scene;
     if (!scene) return;
@@ -1330,6 +1333,7 @@ export default function TerrainEditor() {
   }
 
   function rebuildEntityMarkers():void {
+    invalidate3d();
     const st = threeRef.current;
     const scene = st.scene;
     if (!scene) return;
@@ -1368,21 +1372,6 @@ export default function TerrainEditor() {
     const arrowGeometry = new THREE.ConeGeometry(0.12, 0.7, 8); // yaw pointer: base radius, height, segments
     arrowGeometry.translate(0, 0.35, 0);       // base at the local origin, tip toward +Y
     arrowGeometry.rotateX(Math.PI / 2);        // 90 degrees rotation, turn +Y into +Z: the cone now points along +Z (yaw 0)
-
-    // const materials: Map<string, THREE.Mesh> = new Map;
-    // function materialFor(category: EntityCategory, cell: boolean) {
-    //   const key = category + (cell ? ":cell" : "");
-    //   if (!materials[key]) {
-    //     materials[key] = new THREE.MeshLambertMaterial({
-    //       color: ENTITY_COLORS[category] || 0xff5fa2,
-    //       transparent: cell,
-    //       opacity: cell ? 0.35 : 1,
-    //       depthWrite: !cell,
-    //     });
-    //   }
-    //   return materials[key];
-    // }
-
 
     // an InstancedMesh needs its size up front, let's calculate it
     const instancesData = instances.map((entity) => ({ entity, category: ENTITY_CATEGORY.get(entity.name) || "service", cells: footprintCells(entity, ENTITY_CATALOGUE) }));
@@ -1443,28 +1432,12 @@ export default function TerrainEditor() {
       group.add(arrowMesh);
     }
 
- //old code
-/*
-    for (const inst of instances) {
-      const category = ENTITY_CATEGORY.get(inst.name) || "service";
-      if (ENTITY_CATALOGUE.footprints[inst.name]) {
-        // for (const [cx, cy, cz] of ENTITY_CATALOGUE.footprints[inst.name]!) {
-        //   const cellMesh = new THREE.Mesh(cellGeometry, materialFor(category, true));
-        //   cellMesh.position.set(inst.x + cx + 0.5, inst.y + cy + 0.5, inst.z + cz + 0.5);
-        //   group.add(cellMesh);
-        // }
-      } else {
-        const mesh = new THREE.Mesh(markerGeometry, materialFor(category, false));
-        mesh.position.set(inst.x + 0.5, inst.y + 0.45, inst.z + 0.5);
-        group.add(mesh);
-      }
-    }
-*/
     scene.add(group);
     entityMarkersGroupRef.current = group;
   }
 
   function getOrCreateGroup(blockId: number) {
+    invalidate3d();
     const st = threeRef.current;
     if(!st.scene) 
       return;
@@ -1484,6 +1457,7 @@ export default function TerrainEditor() {
   }
 
   function growGroup(blockId: number) {
+    invalidate3d();
     const st = threeRef.current;
     if(!st.scene) 
       return;
@@ -1509,6 +1483,7 @@ export default function TerrainEditor() {
   }
 
   function addInstance(blockId: number, x:number, y:number, z:number) {
+    invalidate3d();
     if (blockId === AIR)
       return;
     let g = getOrCreateGroup(blockId);
@@ -1537,6 +1512,7 @@ export default function TerrainEditor() {
   }
 
   function removeInstanceAtCoord(blockId: number, x:number, y:number, z:number) {
+    invalidate3d();
     const st = threeRef.current;
     const g = st.groups.get(blockId);
     if (!g)
@@ -1887,6 +1863,7 @@ export default function TerrainEditor() {
   }
 
   function hideShadow() {
+    invalidate3d();
     if (shadowEntityRef.current) {
       shadowEntityRef.current.footprintCells.count = 0;
       shadowEntityRef.current.root.visible = false;
@@ -1905,6 +1882,7 @@ export default function TerrainEditor() {
 
     if (key === shadowKeyRef.current)
       return;   // nothing relevant changed: do no work
+    invalidate3d();
     if (key === "") { 
       hideShadow();
       shadowKeyRef.current = key;
@@ -2291,7 +2269,8 @@ export default function TerrainEditor() {
     if (viewMode !== "3d")
       return undefined;
     initThree();
-    threeRef.current.needsRender = true;
+    // threeRef.current.needsRender = true;
+    invalidate3d();
     rebuildInstances();
     rebuildEntityMarkers();
     const canvas = canvas3dRef.current;
@@ -2326,15 +2305,6 @@ export default function TerrainEditor() {
       dt = Math.min(dt, 0.05);
 
       const st = threeRef.current;
-      const continuous =
-        (globalThis as { __continuous3d?: boolean }).__continuous3d !== false;
-      // (flipped to `=== true` once the triggers are in; see below)
-
-      if (st.renderer && st.scene && st.camera && (st.needsRender || continuous)) {
-        st.needsRender = false;
-        console.count("render3d");
-        st.renderer.render(st.scene, st.camera);
-      }
 
       if (mode === "orbit") {
         const rotFactor = 1 - Math.exp(-dt / 0.09);
@@ -2411,8 +2381,14 @@ export default function TerrainEditor() {
         }
       }
 
-      if (st.renderer && st.scene && st.camera) {
-        console.count("render3d"); // tracker for optimization
+      // set to "true" in console to disable render staleness filter for debugging. This *will* hit performance.
+      const continuous =
+        (globalThis as { __continuous3d?: boolean }).__continuous3d === true; 
+
+      // redraw only when stale
+      if (st.renderer && st.scene && st.camera && (st.needsRender || continuous)) {
+        st.needsRender = false;
+        // console.count("render3d"); // tracker for debugging performance optimization
         st.renderer.render(st.scene, st.camera);
       }
     }
