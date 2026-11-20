@@ -180,7 +180,7 @@ export default function TerrainEditor() {
           syncVoxel3D(change.x, change.y, change.z, change.prevBlock, change.newBlock);
       }
     }
-    draw();
+    requestDraw();
   };
   onEntityEventRef.current = () => {
      scheduleSave();
@@ -2393,7 +2393,7 @@ export default function TerrainEditor() {
       }
 
       if (st.renderer && st.scene && st.camera) {
-        // console.count("render3d");
+        // console.count("render3d"); // tracker for optimization
         st.renderer.render(st.scene, st.camera);
       }
     }
@@ -2616,6 +2616,17 @@ export default function TerrainEditor() {
     }
   )), [entityInstances] );
 
+  // optimization for 2d redraws: scheduling, not repeated calls
+  const rafDrawRef = useRef<number | null>(null);
+  const requestDraw = useCallback(() => {
+    if (rafDrawRef.current !== null) return;    // already scheduled this frame
+    rafDrawRef.current = requestAnimationFrame(() => {
+      rafDrawRef.current = null;
+      drawRef.current();
+    });
+  }, []);
+  
+
   // ---- canvas drawing (2D) ----
   const draw = useCallback(() => {
     // const t0 = performance.now();
@@ -2635,7 +2646,7 @@ export default function TerrainEditor() {
       canvas.width = cw;
       canvas.height = ch;
     }
-    // console.count("draw2d");
+    // console.count("draw2d"); // tracker for optimization
 
     const ctx = canvas.getContext("2d");
     if(!ctx)
@@ -2994,11 +3005,11 @@ export default function TerrainEditor() {
         paintMirrored(x, currentLayer, z, selectedBlock);
       else
         setVoxelMirrored(x, currentLayer, z, tool === "eraser" ? AIR : selectedBlock, 0);
-      draw();
+      requestDraw();
     } else if (tool === "rect-fill" || tool === "rect-hollow" || tool === "rect-erase" || tool === "copy") {
       rectStartRef.current = { x, z };
       previewRectRef.current = { x0: x, z0: z, x1: x, z1: z };
-      draw();
+      requestDraw();
     } else if (tool === "bucket") {
       floodFill(x, z);
     }
@@ -3013,7 +3024,7 @@ export default function TerrainEditor() {
     refreshEntityShadow2d();
     if (tool === "road" && roadStartRef.current) {
       roadHoverRef.current = { x: clamp(pos.x, 0, width - 1), z: clamp(pos.z, 0, depth - 1) };
-      draw(); // road preview
+      requestDraw(); // road preview
     }
   }
 
@@ -3024,7 +3035,7 @@ export default function TerrainEditor() {
       setPan(v.panX + (e.clientX - pd.x), v.panY + (e.clientY - pd.y));
       pd.x = e.clientX;
       pd.y = e.clientY;
-      draw();
+      requestDraw();
       return;
     }
 
@@ -3040,11 +3051,11 @@ export default function TerrainEditor() {
         paintMirrored(x, currentLayer, z, selectedBlock);
       else
         setVoxelMirrored(x, currentLayer, z, tool === "eraser" ? AIR : selectedBlock, 0);
-      draw();
+      requestDraw();
     } else if (tool === "rect-fill" || tool === "rect-hollow" || tool === "rect-erase" || tool === "copy") {
       if (rectStartRef.current) {
         previewRectRef.current = { x0: rectStartRef.current.x, z0: rectStartRef.current.z, x1: x, z1: z };
-        draw();
+        requestDraw();
       }
     }
   }
@@ -3066,7 +3077,7 @@ export default function TerrainEditor() {
       }
       rectStartRef.current = null;
       previewRectRef.current = null;
-      draw();
+      requestDraw();
     } else if (tool === "copy") {
       if (previewRectRef.current) {
         const { x0, z0, x1, z1 } = previewRectRef.current;
@@ -3074,7 +3085,7 @@ export default function TerrainEditor() {
       }
       rectStartRef.current = null;
       previewRectRef.current = null;
-      draw();
+      requestDraw();
     }
   }
 
