@@ -2308,6 +2308,7 @@ export default function TerrainEditor() {
 
     let raf: number;
     let lastTime = performance.now();
+    // 3D animation-frame loop
     function loop() {
       raf = requestAnimationFrame(loop);
       const now = performance.now();
@@ -2392,6 +2393,7 @@ export default function TerrainEditor() {
       }
 
       if (st.renderer && st.scene && st.camera) {
+        // console.count("render3d");
         st.renderer.render(st.scene, st.camera);
       }
     }
@@ -2418,8 +2420,10 @@ export default function TerrainEditor() {
       return;
     if (prev === "2d" && viewMode === "3d")
       syncOrbitFrom2D();
-    else if (prev === "3d" && viewMode === "2d")
+    else if (prev === "3d" && viewMode === "2d") {
       syncViewFrom3D();
+      draw();
+    }
   }, [viewMode]);
 
   function setOrbitPivot(p: THREE.Vector3):void {
@@ -2615,6 +2619,8 @@ export default function TerrainEditor() {
   // ---- canvas drawing (2D) ----
   const draw = useCallback(() => {
     // const t0 = performance.now();
+    if (viewModeRef.current !== "2d") // only re-render when in 2d mode
+      return;
     const cell = CELL_BASE * zoomRef.current;   // same source as the pan, never a stale render value
 
     const canvas = canvasRef.current;
@@ -2629,6 +2635,7 @@ export default function TerrainEditor() {
       canvas.width = cw;
       canvas.height = ch;
     }
+    // console.count("draw2d");
 
     const ctx = canvas.getContext("2d");
     if(!ctx)
