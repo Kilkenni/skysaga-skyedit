@@ -1,9 +1,8 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import * as THREE from "three";
 import {
-  CHUNK, CELL_BASE, REAL_BIOMES, MAX_CHUNKS, MAP_SIZES, mapSizeKey, ENTITIES, ENTITY_CATEGORY, ENTITY_CATALOGUE, ENTITY_COLORS,
-  BLOCK_NAMES, AIR, DEFAULT_PALETTE, STORAGE_KEY, TEXTURES_STORAGE_KEY, STRUCTURES_STORAGE_KEY,
-  EntityCategory,
+  CHUNK, CELL_BASE, MAX_CHUNKS, MAP_SIZES, mapSizeKey, ENTITIES, ENTITY_CATEGORY, ENTITY_CATALOGUE, ENTITY_COLORS,
+  BLOCK_NAMES, AIR, DEFAULT_PALETTE, STORAGE_KEY, TEXTURES_STORAGE_KEY, STRUCTURES_STORAGE_KEY, EntityCategory,
 } from "../constants";
 import { STRINGS } from "../i18n/strings";
 import { colorForId, cssColor } from "../lib/colors";
@@ -25,11 +24,11 @@ import ToolbarRow from "./ToolbarRow";
 import LayerNav from "./LayerNav";
 import { BlockId, VoxelCell, VoxelStore, VoxelStoreEvent } from "../lib/VoxelStore";
 import {storage, createNamedStore, writeJson, readJson } from "../lib/storage.ts";
-import {Hotbar, PaletteEntry, usePalette} from "../hooks/usePalette.ts"
+import {usePalette} from "../hooks/usePalette.ts"
 import PaletteHotbar from "./PaletteHotbar.tsx";
-import { NormalizedParams, normalizeRngParameters, RngParams, TreeParams, VegParams } from "../lib/mapParamNormalizer.ts";
+import { getDefaultRngParams, NormalizedParams, normalizeRngParameters, RngParams, TreeParams, VegParams } from "../lib/ssRngParams.ts";
 import { hotkeyLabel, isFreehand, PAN_KEYS, TOOL_BY_CODE, TOOL_BY_ID } from "../lib/tools.ts";
-import { generateTerrain, regenerateDeco, regenerateOre, regenerateVeg } from "../lib/mapGenerator.ts";
+import { generateTerrain, regenerateDeco, regenerateOre, regenerateVeg } from "../lib/ssMapGenerator.ts";
 import { EntityData, EntityDataId, parseEntities, exportEntity, findAirshipSpot, getEntityYaw, orientationXZ } from "../lib/entities.ts";
 import { EntityStore, EntityStoreEvent } from "../lib/EntityStore.ts";
 import { useEntityList } from "../hooks/useEntityList.ts";
@@ -37,22 +36,7 @@ import { canPlaceEntity, Cell, footprintCells, PlaceCheck } from "../lib/placeme
 import Toolbar from "./tools/Toolbar.tsx";
 import EntityInstancesList from "./EntityInstancesList.tsx";
 import { drawEntityGlyph } from "../rendering/entityGlyph.ts";
-
-export interface MapData {
-  gridX: number,
-  gridY: number,
-  gridZ: number,
-  biomeName: string,
-  gameMode: number
-}
-
-const DEFAULT_MAP_DATA:Readonly<MapData> = {
-  gridX: 6,
-  gridY: 4,
-  gridZ: 6,
-  biomeName: "Forest",
-  gameMode: 1,
-}
+import { DEFAULT_MAP_DATA, getDefaultLevelData, LevelData, MapData } from "../lib/ssLevelData.ts";
 
 export interface RngSnapshot {
   width: number,
@@ -62,39 +46,10 @@ export interface RngSnapshot {
   isWaterMap: Uint8Array
 }
 
-export interface LevelData {
-  mapSizeChunks: { x:number, y:number, z:number },
-  biomeName: string,
-  gameMode: number,
-  voxels: VoxelCell[],
-  entities: EntityData[],
-  paletteLabels?: PaletteEntry[],
-  hotbar?: Hotbar,
-  cameraMode?: "orbit" | "fly",
-}
-
 export interface MapDimensions {
   width: number,
   depth: number,
   height: number,
-}
-
-type DeepReadonly<T> =
-  T extends (infer U)[] ? ReadonlyArray<DeepReadonly<U>> :
-  T extends object ? { readonly [K in keyof T]: DeepReadonly<T[K]> } :
-  T;
-
-//explicitly exclude optionals from default to avoid making them readonly
-const DEFAULT_LEVEL_DATA:DeepReadonly< Pick<LevelData, "mapSizeChunks" | "biomeName" | "gameMode" | "voxels" | "entities"> > = {
-  mapSizeChunks: {
-    x: DEFAULT_MAP_DATA.gridX,
-    y: DEFAULT_MAP_DATA.gridY,
-    z: DEFAULT_MAP_DATA.gridZ,
-  },
-  biomeName: DEFAULT_MAP_DATA.biomeName,
-  gameMode: DEFAULT_MAP_DATA.gameMode,
-  voxels: [],
-  entities: [],
 }
 
 const DEFAULT_SETTINGS = {
@@ -121,101 +76,6 @@ function refusalMessage(check: Extract<PlaceCheck, { ok: false }>, name: string)
   }
 }
 
-export function getDefaultLevelData():LevelData {
-  return {
-    ...DEFAULT_LEVEL_DATA,
-    mapSizeChunks: { ...DEFAULT_LEVEL_DATA.mapSizeChunks },
-    voxels: [],
-    entities: [],
-  }
-}
-
-export const DEFAULT_RNG_PARAMS:Readonly<RngParams> = {
-  randMinH: 0,
-  randMaxH: 25,
-
-  randGroundDepth: 43,
-  randBaseBlock: 24,
-  randSurfaceBlock: 1, 
-  randDecoBlocks: "", 
-  randDecoChance: 0,
-
-  randIsland: true,
-  randIslandMode: "floating",
-  randIslandSize: "small", 
-  randIslandIrregularity: 55,
-  randBottomRoughness: 20,
-  randMaxThickness: 25,
-
-  randArchipelago: false,
-  randIslandCount: 3,
-
-  randSeaLevel: 15,
-  randSeaBlock: 50,
-  
-  randHills: true,
-  randHillStrength: 40,
-  randMountains: false,
-  randMountainHeight: 35,
-  randPlateaus: false,
-  randPlateauHeight: 20,
-  randValleys: false,
-  randValleyDepth: 15,
-
-  randRivers: false,
-  randRiverBlock: 50,
-  randRiverWidth: 3,
-  randWaterfalls: false,
-  randWaterfallDrop: 5,
-
-  randLakes: false,
-  randLakeBlock: 50,
-  randLakeSize: 5,
-
-  randCaves: false,
-  randCaveDensity: 35,
-  randCaveGlow: false,
-  randCaveGlowChance: 3,
-  randCaveGlowBlock: 21,
-
-  randTrees: false,
-  randTreeDensity: 15,
-  randTreeMinHeight: 3,
-  randTreeMaxHeight: 6,
-  randTreeWoodBlock: 5,
-  randTreeLeavesBlock: 14,
-  randTreeSpacing: 3,
-  randForests: false,
-  randForestDensity: 45,
-
-  randBushes: false,
-  randBushDensity: 15,
-  randBushBlock: 14,
-  randBushSpacing: 1,
-
-  randAltitudeBlocks: false,
-  randBeachLevel: 50,
-  randBeachBlock: 24, 
-  randSnowLevel: 85,
-  randSnowBlock: 10,
-
-  randSmoothShore: false,
-  randShoreRadius: 2,
-  randShoreBlock: 24,
-  randShoreCoverage: 45,
-
-  randOres: false,
-  randOreBlocks: "25,26,42",
-  randOreCount: 40,
-  randOreVeinSize: 2,
-  randOreBigChance: 8, 
-  randOreBigSize: 5,
-
-  randErosion: false,
-  randErosionStrength: 40,
-  randErosionIterations: 2,
-}
-
 // Tools
 
 export interface RoadParams {
@@ -225,12 +85,9 @@ export interface RoadParams {
 }
 
 export default function TerrainEditor() {
-  // FIXED (2026-08-21): "Sky_Island" does not exist in Alpha v10 36731's
-  // GeoData.json (confirmed via direct search - zero matches). Real biomes
-  // for this build: Desert, Forest, Jungle, Mountain, NPCfriend. Using
+  // Biomes for build 36731: Desert, Forest, Jungle, Mountain, NPCfriend. Using
   // "Forest" as the default since that's what the server currently sends,
-  // but this is just a free-text field - change it to whichever real biome
-  // name you want per-map.
+  // but this is just a free-text field - change it to whichever real biome name you want per-map.
   const [mapData, setMapData] = useState<MapData>(DEFAULT_MAP_DATA);
   const paletteObj = usePalette({ onChange: scheduleSave })
   const { selectedBlock,
@@ -283,7 +140,7 @@ export default function TerrainEditor() {
 
   const [showRandomPanel, setShowRandomPanel] = useState(false);
 
-  const [rngParameters, setRngParameters] = useState<RngParams>({...DEFAULT_RNG_PARAMS});
+  const [rngParameters, setRngParameters] = useState<RngParams>(getDefaultRngParams);
   function updateRngParameter<K extends keyof RngParams>(paramName: K, value: RngParams[K]) {
     setRngParameters(prev => ({...prev, [paramName]: value}) );
   }

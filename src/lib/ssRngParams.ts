@@ -86,6 +86,92 @@ interface RngParams {
   randErosionIterations: number,
 }
 
+const DEFAULT_RNG_PARAMS:Readonly<RngParams> = {
+  randMinH: 0,
+  randMaxH: 25,
+
+  randGroundDepth: 43,
+  randBaseBlock: 24,
+  randSurfaceBlock: 1, 
+  randDecoBlocks: "", 
+  randDecoChance: 0,
+
+  randIsland: true,
+  randIslandMode: "floating",
+  randIslandSize: "small", 
+  randIslandIrregularity: 55,
+  randBottomRoughness: 20,
+  randMaxThickness: 25,
+
+  randArchipelago: false,
+  randIslandCount: 3,
+
+  randSeaLevel: 15,
+  randSeaBlock: 50,
+  
+  randHills: true,
+  randHillStrength: 40,
+  randMountains: false,
+  randMountainHeight: 35,
+  randPlateaus: false,
+  randPlateauHeight: 20,
+  randValleys: false,
+  randValleyDepth: 15,
+
+  randRivers: false,
+  randRiverBlock: 50,
+  randRiverWidth: 3,
+  randWaterfalls: false,
+  randWaterfallDrop: 5,
+
+  randLakes: false,
+  randLakeBlock: 50,
+  randLakeSize: 5,
+
+  randCaves: false,
+  randCaveDensity: 35,
+  randCaveGlow: false,
+  randCaveGlowChance: 3,
+  randCaveGlowBlock: 21,
+
+  randTrees: false,
+  randTreeDensity: 15,
+  randTreeMinHeight: 3,
+  randTreeMaxHeight: 6,
+  randTreeWoodBlock: 5,
+  randTreeLeavesBlock: 14,
+  randTreeSpacing: 3,
+  randForests: false,
+  randForestDensity: 45,
+
+  randBushes: false,
+  randBushDensity: 15,
+  randBushBlock: 14,
+  randBushSpacing: 1,
+
+  randAltitudeBlocks: false,
+  randBeachLevel: 50,
+  randBeachBlock: 24, 
+  randSnowLevel: 85,
+  randSnowBlock: 10,
+
+  randSmoothShore: false,
+  randShoreRadius: 2,
+  randShoreBlock: 24,
+  randShoreCoverage: 45,
+
+  randOres: false,
+  randOreBlocks: "25,26,42",
+  randOreCount: 40,
+  randOreVeinSize: 2,
+  randOreBigChance: 8, 
+  randOreBigSize: 5,
+
+  randErosion: false,
+  randErosionStrength: 40,
+  randErosionIterations: 2,
+}
+
 interface VegParams {
   isEnabled: boolean,
   chance: number,
@@ -198,6 +284,10 @@ interface NormalizedParams {
     bigVeinChance: number,
     bigVeinSize: number,
   }
+}
+
+function getDefaultRngParams(): RngParams {
+  return {...DEFAULT_RNG_PARAMS};
 }
 
 function normalizeRngParameters(params:RngParams, width: number, depth: number, totalHeight: number):NormalizedParams {
@@ -331,5 +421,6 @@ export {
   NormalizedParams,
   VegParams,
   TreeParams,
-  normalizeRngParameters
+  normalizeRngParameters,
+  getDefaultRngParams
 }

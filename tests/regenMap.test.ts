@@ -2,10 +2,9 @@
 import { describe, it, expect } from "vitest";
 import { AIR } from "../src/constants";
 import { VoxelStore } from "../src/lib/VoxelStore";
-import { generateTerrain, regenerateDeco, regenerateVeg, regenerateOre } from "../src/lib/mapGenerator";
-import { normalizeRngParameters, RngParams } from "../src/lib/mapParamNormalizer";
-import { DEFAULT_RNG_PARAMS } from "../src/components/TerrainEditor";
+import { generateTerrain, regenerateDeco, regenerateVeg, regenerateOre } from "../src/lib/ssMapGenerator";
 import type { RngSnapshot } from "../src/components/TerrainEditor";
+import { getDefaultRngParams, normalizeRngParameters, RngParams } from "../src/lib/ssRngParams";
 
 const DIMS = { width: 64, depth: 64, height: 40 };
 const IDS = { deco: 201, wood: 202, leaves: 203, bush: 204, ore: 205 };
@@ -16,7 +15,7 @@ const FEATURES_OFF: Partial<RngParams> = {
 };
 
 const norm = (overrides: Partial<RngParams> = {}) =>
-  normalizeRngParameters({ ...DEFAULT_RNG_PARAMS, ...FEATURES_OFF, ...overrides }, DIMS.width, DIMS.depth, DIMS.height);
+  normalizeRngParameters({ ...getDefaultRngParams(), ...FEATURES_OFF, ...overrides }, DIMS.width, DIMS.depth, DIMS.height);
 
 function setup(genOverrides: Partial<RngParams> = {}) {
   const { grid, heightMap, isWaterMap } = generateTerrain(DIMS, 1234, norm(genOverrides), []);

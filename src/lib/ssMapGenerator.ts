@@ -2,7 +2,7 @@ import { MapDimensions, RngSnapshot } from "../components/TerrainEditor";
 import { AIR } from "../constants";
 import { VoxelGrid } from "../VoxelGrid";
 import { BlockId, VoxelCell, VoxelStore, VoxelWriter } from "./VoxelStore";
-import { NormalizedParams, TreeParams, VegParams } from "./mapParamNormalizer";
+import { NormalizedParams, TreeParams, VegParams } from "./ssRngParams";
 import { makeValueNoise, makeValueNoise3D, mulberry32 } from "./noise";
 import { pickWeighted } from "./numbers";
 import { getRotatedStructure, Structure } from "./structures";

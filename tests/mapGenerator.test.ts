@@ -1,16 +1,16 @@
 // tests/generateTerrain.test.ts
 import { describe, it, expect } from "vitest";
 import { AIR } from "../src/constants";
-import { generateTerrain, isPlantableColumn } from "../src/lib/mapGenerator";
-import { normalizeRngParameters, type RngParams } from "../src/lib/mapParamNormalizer";
-import { DEFAULT_RNG_PARAMS } from "../src/components/TerrainEditor"; 
+import { generateTerrain, isPlantableColumn } from "../src/lib/ssMapGenerator";
+
 import { type Structure } from "../src/lib/structures";
+import { getDefaultRngParams, normalizeRngParameters, RngParams } from "../src/lib/ssRngParams";
 
 
 const DIMS = { width: 64, depth: 64, height: 48 };
 
 function run(seed: number, overrides: Partial<RngParams> = {}, structures: Structure[] = []) {
-  const params = { ...DEFAULT_RNG_PARAMS, ...overrides };
+  const params = { ...getDefaultRngParams(), ...overrides };
   const norm = normalizeRngParameters(params, DIMS.width, DIMS.depth, DIMS.height);
   return generateTerrain(DIMS, seed, norm, structures);
 }

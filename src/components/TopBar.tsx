@@ -1,9 +1,9 @@
 import { STRINGS } from "../i18n/strings";
 import { inputStyle, actionBtn } from "../styles/inline";
-import { MAP_SIZES, REAL_BIOMES, MAX_CHUNKS, mapSizeKey } from "../constants";
+import { MAP_SIZES, BIOMES, MAX_CHUNKS, mapSizeKey } from "../constants";
 import { clamp } from "../lib/numbers";
 import { useRef } from "react";
-import { MapData } from "./TerrainEditor";
+import { MapData } from "../lib/ssLevelData";
 
 interface Props {
   applyGridResize,
@@ -203,7 +203,7 @@ export default function TopBar({
           }}
           style={{ ...inputStyle, width: 110 }}
         >
-          {REAL_BIOMES.map((b) => (
+          {BIOMES.map((b) => (
             <option key={b} value={b}>
               {b}
             </option>

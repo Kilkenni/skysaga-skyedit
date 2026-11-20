@@ -1,5 +1,5 @@
 import { STRINGS } from "../i18n/strings";
-import { RngParams } from "../lib/mapParamNormalizer";
+import { RngParams } from "../lib/ssRngParams";
 import { inputStyle, actionBtn } from "../styles/inline";
 
 interface Props {
