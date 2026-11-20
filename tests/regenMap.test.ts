@@ -2,8 +2,7 @@
 import { describe, it, expect } from "vitest";
 import { AIR } from "../src/constants";
 import { VoxelStore } from "../src/lib/VoxelStore";
-import { generateTerrain, regenerateDeco, regenerateVeg, regenerateOre } from "../src/lib/ssMapGenerator";
-import type { RngSnapshot } from "../src/components/TerrainEditor";
+import { generateTerrain, regenerateDeco, regenerateVeg, regenerateOre, type RngSnapshot } from "../src/lib/ssMapGenerator";
 import { getDefaultRngParams, normalizeRngParameters, RngParams } from "../src/lib/ssRngParams";
 
 const DIMS = { width: 64, depth: 64, height: 40 };

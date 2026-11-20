@@ -28,7 +28,7 @@ import {usePalette} from "../hooks/usePalette.ts"
 import PaletteHotbar from "./PaletteHotbar.tsx";
 import { getDefaultRngParams, NormalizedParams, normalizeRngParameters, RngParams, TreeParams, VegParams } from "../lib/ssRngParams.ts";
 import { hotkeyLabel, isFreehand, PAN_KEYS, TOOL_BY_CODE, TOOL_BY_ID } from "../lib/tools.ts";
-import { generateTerrain, regenerateDeco, regenerateOre, regenerateVeg } from "../lib/ssMapGenerator.ts";
+import { generateTerrain, regenerateDeco, regenerateOre, regenerateVeg, RngSnapshot } from "../lib/ssMapGenerator.ts";
 import { EntityData, EntityDataId, parseEntities, exportEntity, findAirshipSpot, getEntityYaw, orientationXZ } from "../lib/entities.ts";
 import { EntityStore, EntityStoreEvent } from "../lib/EntityStore.ts";
 import { useEntityList } from "../hooks/useEntityList.ts";
@@ -37,20 +37,9 @@ import Toolbar from "./tools/Toolbar.tsx";
 import EntityInstancesList from "./EntityInstancesList.tsx";
 import { drawEntityGlyph } from "../rendering/entityGlyph.ts";
 import { DEFAULT_MAP_DATA, getDefaultLevelData, LevelData, MapData } from "../lib/ssLevelData.ts";
+import { MapDimensions } from "../VoxelGrid.ts";
 
-export interface RngSnapshot {
-  width: number,
-  depth: number,
-  height: number,
-  heightMap: Int16Array,
-  isWaterMap: Uint8Array
-}
 
-export interface MapDimensions {
-  width: number,
-  depth: number,
-  height: number,
-}
 
 const DEFAULT_SETTINGS = {
   ZOOM_WHEEL_STEP: 1.05,

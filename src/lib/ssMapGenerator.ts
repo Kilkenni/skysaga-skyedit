@@ -1,11 +1,18 @@
-import { MapDimensions, RngSnapshot } from "../components/TerrainEditor";
 import { AIR } from "../constants";
-import { VoxelGrid } from "../VoxelGrid";
+import { MapDimensions, VoxelGrid } from "../VoxelGrid";
 import { BlockId, VoxelCell, VoxelStore, VoxelWriter } from "./VoxelStore";
 import { NormalizedParams, TreeParams, VegParams } from "./ssRngParams";
 import { makeValueNoise, makeValueNoise3D, mulberry32 } from "./noise";
 import { pickWeighted } from "./numbers";
 import { getRotatedStructure, Structure } from "./structures";
+
+interface RngSnapshot {
+  width: number,
+  depth: number,
+  height: number,
+  heightMap: Int16Array,
+  isWaterMap: Uint8Array
+}
 
 // HELPER FUNCTIONS
 
@@ -801,4 +808,5 @@ function generateTerrain(
     regenerateDeco,
     regenerateVeg,
     regenerateOre,
+    RngSnapshot
   }
