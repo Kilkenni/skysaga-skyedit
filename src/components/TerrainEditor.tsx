@@ -10,7 +10,6 @@ import { colorForId, cssColor } from "../lib/colors";
 import { keyOf } from "../lib/keys";
 import { clamp, clampBlockId, isNum, } from "../lib/numbers";
 import { rotateStructure90, getRotatedStructure, generateStructureThumbnail, Structure } from "../lib/structures";
-import { inputStyle, actionBtn } from "../styles/inline";
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react'
 import RandomPanel from "./RandomPanel";
 import StructuresPanel from "./StructuresPanel";
@@ -295,7 +294,7 @@ export default function TerrainEditor() {
   const [presets, setPresets] = useState<string[]>([]);
   const [newPresetName, setNewPresetName] = useState("Preset 1");
 
-  const lastHeightMapRef = useRef<RngSnapshot>(null);
+  const lastRngSnapshotRef = useRef<RngSnapshot>(null);
 
   const [openPopover, setOpenPopover] = useState<string|null>(null);
   const popoverAnchorRef = useRef<any>(null);
@@ -366,9 +365,10 @@ export default function TerrainEditor() {
     const s = shadowEntityRef.current;
     if (!s)
       return;
-    s.root.removeFromParent();
+    s.root.parent?.remove(s.root); //s.root.removeFromParent(); in newer versions of THREE
     s.root.traverse((obj) => {
-      if (obj instanceof THREE.InstancedMesh) obj.dispose();   // instance buffers
+      if (obj instanceof THREE.InstancedMesh) 
+        obj.dispose();   // instance buffers
       if (obj instanceof THREE.Mesh || obj instanceof THREE.Line) {
         obj.geometry.dispose();
         const m = obj.material;
@@ -1259,19 +1259,19 @@ export default function TerrainEditor() {
     
     setStatus(STRINGS.en.generatedSeed(seed));
 
-    lastHeightMapRef.current = {
+    lastRngSnapshotRef.current = {
       width,
       depth,
       height,
-      heightMap/*: heightMap.slice()*/,
-      isWaterMap/*: Array.from(isWaterMap)*/,
+      heightMap,
+      isWaterMap,
     };
   }
 
   // ---- targeted regeneration (decor / trees / ore only, reuses last heightMap) ----
 
   function regenerateDecoHandler(params:RngParams) {
-    const snap = lastHeightMapRef.current;
+    const snap = lastRngSnapshotRef.current;
     if (!snap || snap.width !== width || snap.depth !== depth || snap.height !== height) {
       setStatus(STRINGS.en.regenNeedsGenerate);
       return;
@@ -1286,7 +1286,7 @@ export default function TerrainEditor() {
   }
 
   function regenerateVegHandler(params:RngParams) {
-    const snap = lastHeightMapRef.current;
+    const snap = lastRngSnapshotRef.current;
     if (!snap || snap.width !== width || snap.depth !== depth || snap.height !== height) {
       setStatus(STRINGS.en.regenNeedsGenerate);
       return;
@@ -1303,7 +1303,7 @@ export default function TerrainEditor() {
 
   function regenerateOreHandler(params:RngParams):void {
     
-    const snap = lastHeightMapRef.current;
+    const snap = lastRngSnapshotRef.current;
     if (!snap || snap.width !== width || snap.depth !== depth || snap.height !== height) {
       setStatus(STRINGS.en.regenNeedsGenerate);
       return;
@@ -1517,10 +1517,10 @@ export default function TerrainEditor() {
       scene.remove(entityMarkersGroupRef.current);
       entityMarkersGroupRef.current.traverse((obj) => {
         if (obj instanceof THREE.Mesh) { // TS-related guard. InstancedMesh extends Mesh, so this is fine
-          if (obj.geometry)
-            obj.geometry.dispose();
-          if (obj.material)
-            obj.material.dispose();
+          obj.geometry?.dispose();
+          obj.material?.dispose();
+        }
+        if (obj instanceof THREE.InstancedMesh) {
           obj.dispose(); // frees this mesh's instance buffers only
         }
       });
@@ -3446,7 +3446,7 @@ export default function TerrainEditor() {
     }
     entities.translateAll(dx, dy, dz);
     terrain.replaceAll(cells.map((c) => ({ x: c.x + dx, y: c.y + dy, z: c.z + dz, block: c.block, meta: c.meta })));
-    lastHeightMapRef.current = null; // the "regenerate trees/ore" snapshot no longer matches
+    lastRngSnapshotRef.current = null; // the "regenerate trees/ore" snapshot no longer matches
     setCurrentLayer((layer) => clamp(layer + dy, 0, height - 1)); // Follow the Y layer if it shifts
     setStatus(STRINGS.en.shiftDone(dx, dy, dz));
   }
@@ -3600,7 +3600,7 @@ export default function TerrainEditor() {
       return;
     terrain.replaceAll([]);
     entities.clear();      // debounced autosave doesn't see the old entities
-    lastHeightMapRef.current = null;      // otherwise regenerate* would run on the old map's heightmap
+    lastRngSnapshotRef.current = null;      // otherwise regenerate* would run on the old map's heightmap
     setCurrentLayer(0);
     setStatus("New map");
   }
