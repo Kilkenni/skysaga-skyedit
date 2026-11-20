@@ -89,17 +89,17 @@ class VoxelGrid  {
   get(x: number, y: number, z: number):VoxelCell|undefined {
     const index = this.#index(x, y, z);
     const block = this.#grid[index];
-    if(block === AIR)
+    if(block === AIR || block === undefined)
       return undefined;
     return {
       x, y, z,
       block,
-      meta: this.#meta[index]
+      meta: this.#meta[index]!
     }
   }
 
   /** The block id at the cell */
-  getBlock(x: number, y: number, z: number): BlockId {
+  getBlock(x: number, y: number, z: number): BlockId|undefined {
     const index = this.#index(x, y, z);
     const block = this.#grid[index];
     return block;
@@ -115,9 +115,9 @@ class VoxelGrid  {
       for (let z = 0; z < depth; z++ ) {
         for ( let x = 0; x < width; x++, index++) {
           const block = this.#grid[index];
-          if (block === AIR)
-            continue; // skip empty blocks
-          const meta = this.#meta[index];
+          if (block === AIR || block === undefined)
+            continue; // skip empty blocks or the results that yield no block - if (x, y, z) is out of bounds. The latter should not happen.
+          const meta = this.#meta[index]!;
           yield { x, y, z, block, meta };
         }
       }

@@ -1,4 +1,4 @@
-import { VoxelCell } from "../VoxelStore";
+import { VoxelCell } from "../lib/VoxelStore";
 import { colorForId } from "./colors";
 
 interface Structure {

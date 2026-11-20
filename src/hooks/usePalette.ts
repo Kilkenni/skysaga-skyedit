@@ -56,7 +56,7 @@ function usePalette({onChange}:PaletteProps) {
   // ---- hotbar ----
   function selectHotbarSlot(i: number) {
     const id = hotbarRef.current[i];
-    if (id !== null && id !== AIR)
+    if (id !== null && id !== undefined && id !== AIR)
       setSelectedBlock(id);
   }
 

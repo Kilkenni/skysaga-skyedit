@@ -138,7 +138,8 @@ class VoxelStore {
   /** Old setVoxel(..., record=true). Must be inside begin()/commit() or transaction(). */
   set(x: number, y: number, z: number, block: BlockId, meta = 0): void {
     const stroke = this.#stroke;
-    if (!stroke) throw new Error("VoxelStore: set() outside begin()/transaction()");
+    if (!stroke)
+      throw new Error("VoxelStore: set() outside begin()/transaction()");
     const key = keyOf(x, y, z);
     const prev = this.#map.get(key);
     const prevBlock = prev ? prev.block : AIR;
@@ -153,8 +154,10 @@ class VoxelStore {
       stroke.changes.push({ x, y, z, prevBlock, prevMeta, newBlock: block, newMeta: meta });
     } else {
       const c = stroke.changes[idx];
-      c.newBlock = block;
-      c.newMeta = meta;
+      if(c) {
+        c.newBlock = block;
+        c.newMeta = meta;
+      }
     }
 
     // Live data + notification (one entry per write; views may want live feedback mid-stroke).
@@ -201,6 +204,8 @@ class VoxelStore {
     if (!stroke) return false;
     for (let i = stroke.length - 1; i >= 0; i--) {
       const c = stroke[i];
+      if(!c)
+        continue;
       this.#write(c.x, c.y, c.z, c.prevBlock, c.prevMeta);
       this.#queue(invert(c));
     }
@@ -315,6 +320,8 @@ class VoxelStore {
     if (!stroke) return;
     for (let i = stroke.changes.length - 1; i >= 0; i--) {
       const c = stroke.changes[i];
+      if(!c)
+        continue;
       this.#write(c.x, c.y, c.z, c.prevBlock, c.prevMeta);
       this.#queue(invert(c));
     }
