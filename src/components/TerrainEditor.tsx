@@ -27,7 +27,7 @@ import {storage, createNamedStore, writeJson, readJson } from "../lib/storage.ts
 import {usePalette} from "../hooks/usePalette.ts"
 import PaletteHotbar from "./PaletteHotbar.tsx";
 import { getDefaultRngParams, NormalizedParams, normalizeRngParameters, RngParams, TreeParams, VegParams } from "../lib/ssRngParams.ts";
-import { hotkeyLabel, isFreehand, PAN_KEYS, TOOL_BY_CODE, TOOL_BY_ID } from "../lib/tools.ts";
+import { hotkeyLabel, isFreehand, PAN_KEYS, RoadParams, TOOL_BY_CODE, TOOL_BY_ID } from "../lib/tools.ts";
 import { generateTerrain, regenerateDeco, regenerateOre, regenerateVeg, RngSnapshot } from "../lib/ssMapGenerator.ts";
 import { EntityData, EntityDataId, parseEntities, exportEntity, findAirshipSpot, getEntityYaw, orientationXZ } from "../lib/entities.ts";
 import { EntityStore, EntityStoreEvent } from "../lib/EntityStore.ts";
@@ -39,8 +39,6 @@ import { drawEntityGlyph } from "../rendering/entityGlyph.ts";
 import { DEFAULT_MAP_DATA, getDefaultLevelData, LevelData, MapData } from "../lib/ssLevelData.ts";
 import { MapDimensions } from "../VoxelGrid.ts";
 
-
-
 const DEFAULT_SETTINGS = {
   ZOOM_WHEEL_STEP: 1.05,
   ZOOM_ORBIT_STEP: 1.05,
@@ -50,7 +48,6 @@ const DEFAULT_SETTINGS = {
 
 // For calculating entity shadow: the biggest footprint in the catalogue (194 cells today, PVP_Post)
 const MAX_FOOTPRINT = Math.max(1, ...Object.values(ENTITY_CATALOGUE.footprints).map((f) => f.length));
-
 
 function refusalMessage(check: Extract<PlaceCheck, { ok: false }>, name: string) {
   switch (check.reason) {
@@ -63,14 +60,6 @@ function refusalMessage(check: Extract<PlaceCheck, { ok: false }>, name: string)
       return unhandled;
     }
   }
-}
-
-// Tools
-
-export interface RoadParams {
-  roadPending: {x: number, z: number}|null,
-  roadWidth: number,
-  roadBlock: number,
 }
 
 export default function TerrainEditor() {
@@ -155,18 +144,11 @@ export default function TerrainEditor() {
   const [placingRotation, setPlacingRotation] = useState<number>(0);
   const placingStructureRef = useRef<number|null>(null);
   const placingRotationRef = useRef<number>(0);
-  const structureThumbsRef = useRef(new Map());
-  const [thumbVersion, setThumbVersion] = useState(0);
 
   const [placingEntityName, setPlacingEntityName] = useState<string|null>(null);
   const placingEntityRef = useRef<string|null>(null);
   const [showEntitiesPanel, setShowEntitiesPanel] = useState(false);
   
-  
-  
-  // Search filter for the block palette - needed once BLOCK_NAMES grew from
-  // 48 (Alpha 3-era stub table) to the real 146-entry Alpha v10 36731 list;
-  // an unfiltered flat scroll of 146 rows was unusable.
   const entityMarkersGroupRef = useRef<THREE.Group | null>(null);
   const [viewMode, setViewMode] = useState<"2d"|"3d">("2d");
   
@@ -771,19 +753,6 @@ export default function TerrainEditor() {
   }
 
   // ---- structure rotation & preview ----
-
-  function ensureStructureThumb(entry) {
-    if (!structureThumbsRef.current.has(entry.id)) {
-      try {
-        structureThumbsRef.current.set(entry.id, generateStructureThumbnail(entry));
-        setThumbVersion((v) => v + 1);
-      } catch (e) {
-        // canvas not available yet, will retry on next render
-      }
-    }
-    return structureThumbsRef.current.get(entry.id);
-  }
-
   function stampStructureAt(anchorX: number, anchorY: number, anchorZ: number, entry: Structure, rotationSteps) {
     const dims = dimsRef.current;
     const rotated = getRotatedStructure(entry, rotationSteps);
@@ -3567,7 +3536,6 @@ export default function TerrainEditor() {
           {showStructuresPanel && (
             <StructuresPanel
               deleteStructure={deleteStructure}
-              ensureStructureThumb={ensureStructureThumb}
               importStructureFiles={importStructureFiles}
 
               openPopover={openPopover}
@@ -3581,7 +3549,6 @@ export default function TerrainEditor() {
               setPlacingStructureId={setPlacingStructureId}
               setStructureCount={setStructureCount}
               structures={structures}
-              thumbVersion={thumbVersion}
               toggleStructure={toggleStructure}
               updateStructureField={updateStructureField}
             />

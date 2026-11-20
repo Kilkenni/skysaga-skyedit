@@ -2,8 +2,9 @@ import { STRINGS } from "../i18n/strings";
 import { inputStyle, actionBtn } from "../styles/inline";
 import { clamp } from "../lib/numbers";
 import { useRef, useState } from "react";
+import { getStructureThumb, Structure } from "../lib/structures";
 
-function exportStructure(entry) {
+function exportStructure(entry: Structure) {
     const data = {
       name: entry.name,
       category: entry.category || "other",
@@ -27,7 +28,6 @@ function exportStructure(entry) {
 
 export default function StructuresPanel({
   deleteStructure,
-  ensureStructureThumb,
   importStructureFiles,
 
   openPopover,
@@ -41,7 +41,6 @@ export default function StructuresPanel({
   setPlacingStructureId,
   setStructureCount,
   structures,
-  thumbVersion,
   toggleStructure,
   updateStructureField,
 }) {
@@ -146,8 +145,7 @@ export default function StructuresPanel({
             (s.category || "other") === structureCategoryFilter
         )
         .map((s) => {
-        void thumbVersion;
-        const thumb = ensureStructureThumb(s);
+        const thumb = getStructureThumb(s);
         const isArmed = placingStructureId === s.id;
         const popKey = "struct-" + s.id;
         const isPopOpen = openPopover === popKey;

@@ -16,6 +16,20 @@ interface Structure {
   requireFlat: boolean,
 }
 
+const thumbCache = new Map<Structure["id"], string>();
+
+// synchronous
+function getStructureThumb(entry: Structure) {
+  if (!thumbCache.has(entry.id)) {
+    try {
+      thumbCache.set(entry.id, generateStructureThumbnail(entry));
+    } catch (e) {
+      // canvas not available yet, will retry on next render
+    }
+  }
+  return thumbCache.get(entry.id);
+}
+
 function rotateStructure90(voxels:VoxelCell[], sizeX: number, sizeZ: number) {
   const rotated: VoxelCell[] = voxels.map((v) => ({
     x: v.z,
@@ -27,7 +41,7 @@ function rotateStructure90(voxels:VoxelCell[], sizeX: number, sizeZ: number) {
   return { voxels: rotated, sizeX: sizeZ, sizeZ: sizeX };
 }
 
-function getRotatedStructure(entry, rotationSteps) {
+function getRotatedStructure(entry: Structure, rotationSteps) {
   let cur = { voxels: entry.voxels, sizeX: entry.sizeX, sizeZ: entry.sizeZ };
   const steps = ((rotationSteps % 4) + 4) % 4;
   for (let i = 0; i < steps; i++) {
@@ -36,7 +50,7 @@ function getRotatedStructure(entry, rotationSteps) {
   return { voxels: cur.voxels, sizeX: cur.sizeX, sizeY: entry.sizeY, sizeZ: cur.sizeZ };
 }
 
-function generateStructureThumbnail(entry) {
+function generateStructureThumbnail(entry: Structure) {
   const cell = 4;
   const w = Math.max(1, Math.min(entry.sizeX, 48)) * cell;
   const d = Math.max(1, Math.min(entry.sizeZ, 48)) * cell;
@@ -73,6 +87,6 @@ export {
   rotateStructure90,
   getRotatedStructure,
   generateStructureThumbnail,
-
+  getStructureThumb,
   Structure,
 }

@@ -4,6 +4,12 @@ interface ToolDef {
   views: ("2d" | "3d")[];          // Modes where the tool exists
 }
 
+interface RoadParams {
+  roadPending: {x: number, z: number}|null,
+  roadWidth: number,
+  roadBlock: number,
+}
+
 const TOOLS: ToolDef[] = [
   { id: "pencil",     codes: ["KeyN"], views: ["2d", "3d"] },
   { id: "eraser",     codes: ["KeyE"], views: ["2d", "3d"] },
@@ -40,5 +46,6 @@ export {
   TOOL_BY_ID,
   TOOL_BY_CODE,
   PAN_KEYS,
-  hotkeyLabel
+  hotkeyLabel,
+  RoadParams
 }
